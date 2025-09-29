@@ -31,13 +31,13 @@ const Navbar = () => {
             <Logo />
           </div>
 
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden xl:block">
+          <div className="absolute left-[55%] top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden xl:block">
             <DesktopNav />
           </div>
 
           <div className="flex items-center justify-center relative gap-4">
             <ButtonRSS
-              href="https://app.joinrss.org.in/registration"
+              href="/auth/register"
               variant="primary"
               size="md"
               rounded="left-br"
