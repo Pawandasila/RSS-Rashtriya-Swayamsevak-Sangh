@@ -16,6 +16,5 @@ class Payment(models.Model):
     payment_for = models.CharField(max_length=255)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     notes = models.TextField(blank=True, null=True)
+    order_id = models.CharField(max_length=100, unique=True)
     payment_id = models.CharField(max_length=100, unique=True)
-    gateway_payment_id = models.CharField(max_length=100, unique=True)
-    gateway_signature_id = models.CharField(max_length=255)
