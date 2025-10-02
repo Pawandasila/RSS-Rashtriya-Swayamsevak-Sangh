@@ -17,6 +17,7 @@ class OrderCreateView(APIView):
         razorpay_order = razorpay_client.order.create(dict(amount=data['amount'], currency=data.get('currency', 'INR'), payment_capture='0'))
         razorpay_order_id = razorpay_order['id']
         data['order_id'] = razorpay_order_id
+        data['status'] = 'PENDING'
         serializer = PaymentSerializer(data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
