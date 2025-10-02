@@ -26,14 +26,6 @@ export const registerFormSchema = z.object({
       }
       return age >= 18 && age <= 100;
     }, "आयु 18 से 100 वर्ष के बीच होनी चाहिए"),
-  password: z
-    .string()
-    .min(8, "पासवर्ड कम से कम 8 अक्षर का होना चाहिए")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "पासवर्ड में कम से कम एक बड़ा अक्षर, एक छोटा अक्षर और एक संख्या होनी चाहिए")
-    .regex(/^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, "कृपया पासवर्ड केवल अंग्रेजी अक्षरों और विशेष चिह्नों में लिखें"),
-  confirmPassword: z
-    .string()
-    .min(1, "पासवर्ड की पुष्टि आवश्यक है"),
   referralCode: z
     .string()
     .optional()
@@ -41,9 +33,6 @@ export const registerFormSchema = z.object({
       if (!code || code.trim() === '') return true;
       return /^[a-zA-Z0-9]+$/.test(code);
     }, "रेफरल कोड केवल अंग्रेजी अक्षर और संख्या में होना चाहिए"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "पासवर्ड मेल नहीं खाते",
-  path: ["confirmPassword"],
 });
 
 export type RegisterFormData = z.infer<typeof registerFormSchema>;

@@ -1,10 +1,25 @@
-import * as React from "react"
-import { GalleryVerticalEnd } from "lucide-react"
+"use client";
 
+import * as React from "react"
+import Image from "next/image"
+import { Home, LogOut, Settings, User, ChevronUp, Users, Building, FileText, Shield, Eye, UserPlus, Plus, Cog } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -14,194 +29,222 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { getNavigationItems, getUserRole } from "../actions"
 
-
-const data = {
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "API Reference",
-      url: "#",
-      items: [
-        {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Community",
-      url: "#",
-      items: [
-        {
-          title: "Contribution Guide",
-          url: "#",
-        },
-      ],
-    },
-  ],
-}
+// Icon mapping for dynamic icons
+const iconMap = {
+  Home,
+  Users,
+  Building,
+  FileText,
+  User,
+  Settings,
+  Shield,
+  Eye,
+  UserPlus,
+  Plus,
+  Cog,
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, logout } = useAuth();
+  const [navigationItems, setNavigationItems] = React.useState<any[]>([]);
+  const [userRole, setUserRole] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  // Get user initials for avatar
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Load navigation items and user role on component mount
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [navItems, roleData] = await Promise.all([
+          getNavigationItems(),
+          getUserRole(),
+        ]);
+        
+        setNavigationItems(navItems);
+        setUserRole(roleData);
+      } catch (error) {
+        console.error("Failed to load navigation data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  // Get role badge variant
+  const getRoleBadgeVariant = (roleColor: string) => {
+    switch (roleColor) {
+      case "destructive":
+        return "destructive";
+      case "default":
+        return "default";
+      case "secondary":
+        return "secondary";
+      case "outline":
+        return "outline";
+      default:
+        return "secondary";
+    }
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
+              <a href="/dashboard">
+                <div className=" text-white flex aspect-square size-10 items-center justify-center rounded-lg p-0">
+                  <Image
+                    src="/logo/logo.png"
+                    alt="RSS Logo"
+                    width={100}
+                    height={100}
+                    className="object-contain"
+                  />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Documentation</span>
-                  <span className="">v1.0.0</span>
+                  <span className="font-semibold text-sm">RSS</span>
+                  <span className="text-xs text-muted-foreground">Dashboard</span>
                 </div>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      
       <SidebarContent>
         <SidebarGroup>
-          <SidebarMenu>
-            {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url} className="font-medium">
-                    {item.title}
-                  </a>
-                </SidebarMenuButton>
-                {item.items?.length ? (
-                  <SidebarMenuSub>
-                    {item.items.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild isActive={item.isActive}>
-                          <a href={item.url}>{item.title}</a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                ) : null}
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {loading ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <span>Loading...</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : (
+                navigationItems.map((item) => {
+                  const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Home;
+                  
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={item.isActive}>
+                        <a href={item.url} className="flex items-center gap-3">
+                          <IconComponent className="h-4 w-4" />
+                          <span className="font-medium">{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                      {item.children && item.children.length > 0 && (
+                        <SidebarMenuSub>
+                          {item.children.map((child: any) => {
+                            const ChildIconComponent = iconMap[child.icon as keyof typeof iconMap] || Eye;
+                            return (
+                              <SidebarMenuSubItem key={child.title}>
+                                <SidebarMenuSubButton asChild>
+                                  <a href={child.url} className="flex items-center gap-2">
+                                    <ChildIconComponent className="h-3 w-3" />
+                                    <span>{child.title}</span>
+                                  </a>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            );
+                          })}
+                        </SidebarMenuSub>
+                      )}
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage 
+                      src={user?.image || ""} 
+                      alt={user?.name || "User"} 
+                    />
+                    <AvatarFallback className="rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white">
+                      {user?.name ? getUserInitials(user.name) : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate font-semibold">
+                        {user?.name || "User"}
+                      </span>
+                      {userRole && (
+                        <Badge 
+                          variant={getRoleBadgeVariant(userRole.roleColor) as any}
+                          className="text-xs px-1 py-0 h-4"
+                        >
+                          {userRole.roleDisplay}
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {user?.email || "email@example.com"}
+                    </span>
+                  </div>
+                  <ChevronUp className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="bottom"
+                align="end"
+                sideOffset={4}
+              >
+                <DropdownMenuItem className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="gap-2 text-red-600 focus:text-red-600"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )
