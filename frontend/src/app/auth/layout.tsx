@@ -81,7 +81,7 @@ export default function AuthLayout({
         </div>
       </div>
 
-      {/* Right Panel - Full width on mobile */}
+      
       <div className="flex-1 lg:w-1/2 flex items-center justify-center p-4 lg:p-6 min-h-screen">
         <div className="w-full max-w-2xl mx-auto">
           {children}

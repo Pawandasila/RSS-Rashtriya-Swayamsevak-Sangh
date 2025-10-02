@@ -1,0 +1,616 @@
+"use client";
+
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Heart,
+  Phone,
+  Mail,
+  User,
+  CheckCircle,
+  AlertCircle,
+  Shield,
+  Lock,
+  Award,
+  Gift,
+  CreditCard,
+  Download,
+  Loader2,
+  IndianRupee,
+  Eye,
+  EyeOff,
+  Info,
+  Banknote,
+  Users,
+  Building,
+  BookOpen,
+  Stethoscope,
+  Wrench,
+} from "lucide-react";
+import { donationAmounts, donationTypes } from "./donationSchema";
+import {
+  useDonationPayment,
+  useCurrency,
+  type DonationFormData,
+} from "@/module/donation";
+
+const NewDonationForm = () => {
+  const [isCustomAmount, setIsCustomAmount] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [showSecurityInfo, setShowSecurityInfo] = useState(false);
+  const [formData, setFormData] = useState<DonationFormData>({
+    name: "",
+    email: "",
+    phone: "",
+    amount: 0,
+    donationType: "general",
+    anonymous: false,
+    panCard: "", // Keep for backend compatibility but don't show
+    address: "", // Keep for backend compatibility but don't show
+    message: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const {
+    processPayment,
+    isProcessing,
+    error,
+    success,
+    donationId,
+    receiptUrl,
+    reset,
+  } = useDonationPayment();
+  const { formatCurrency } = useCurrency();
+
+  // Enhanced donation types with icons
+  const enhancedDonationTypes = [
+    {
+      value: "general",
+      label: "General Support",
+      description: "Support overall RSS activities",
+      icon: Users,
+      color: "bg-blue-50 border-blue-200 text-blue-700",
+    },
+    {
+      value: "education",
+      label: "Education",
+      description: "Fund educational programs",
+      icon: BookOpen,
+      color: "bg-green-50 border-green-200 text-green-700",
+    },
+    {
+      value: "health",
+      label: "Health & Wellness",
+      description: "Support health initiatives",
+      icon: Stethoscope,
+      color: "bg-red-50 border-red-200 text-red-700",
+    },
+    {
+      value: "infrastructure",
+      label: "Infrastructure",
+      description: "Building & development projects",
+      icon: Building,
+      color: "bg-purple-50 border-purple-200 text-purple-700",
+    },
+    {
+      value: "other",
+      label: "Other",
+      description: "Specify your purpose",
+      icon: Wrench,
+      color: "bg-gray-50 border-gray-200 text-gray-700",
+    },
+  ];
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name || formData.name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters long";
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (
+      !formData.phone ||
+      !phoneRegex.test(formData.phone.replace(/[^0-9]/g, ""))
+    ) {
+      newErrors.phone = "Please enter a valid 10-digit phone number";
+    }
+
+    if (!formData.amount || formData.amount < 1) {
+      newErrors.amount = "Please select or enter a donation amount";
+    } else if (formData.amount > 500000) {
+      newErrors.amount = "Maximum donation amount is ₹5,00,000";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await processPayment(formData);
+    } catch (error: any) {
+      console.error("Payment submission error:", error);
+    }
+  };
+
+  const handleAmountSelect = (amount: number) => {
+    if (amount === -1) {
+      // Custom amount
+      setIsCustomAmount(true);
+      setSelectedAmount(null);
+      setFormData((prev) => ({ ...prev, amount: 0 }));
+    } else {
+      setIsCustomAmount(false);
+      setSelectedAmount(amount);
+      setFormData((prev) => ({ ...prev, amount }));
+    }
+    // Clear amount error
+    if (errors.amount) {
+      setErrors((prev) => ({ ...prev, amount: "" }));
+    }
+  };
+
+  const handleInputChange = (field: keyof DonationFormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear field error
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleStartNewDonation = () => {
+    reset();
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      amount: 0,
+      donationType: "general",
+      anonymous: false,
+      panCard: "",
+      address: "",
+      message: "",
+    });
+    setErrors({});
+    setIsCustomAmount(false);
+    setSelectedAmount(null);
+    setShowSecurityInfo(false);
+  };
+
+  const handleDownloadReceipt = () => {
+    if (receiptUrl) {
+      window.open(receiptUrl, "_blank");
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <Card className="w-full border-0 shadow-2xl">
+          <CardHeader className="text-center bg-primary/5 rounded-t-lg">
+            <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-10 w-10 text-primary" />
+            </div>
+            <CardTitle className="text-3xl text-primary font-bold">
+              Payment Successful!
+            </CardTitle>
+            <CardDescription className="text-lg text-foreground">
+              Thank you for your generous contribution to RSS
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-8 space-y-6">
+            <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg space-y-3">
+              <p className="font-semibold text-primary text-lg">
+                Donation Details:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <p className="flex justify-between">
+                  <span className="text-muted-foreground">Donation ID:</span>
+                  <span className="font-mono font-semibold text-primary">
+                    {donationId}
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="text-muted-foreground">Amount:</span>
+                  <span className="font-semibold text-primary">
+                    {formatCurrency(formData.amount)}
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="text-muted-foreground">Type:</span>
+                  <span className="capitalize text-primary">
+                    {formData.donationType}
+                  </span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="text-muted-foreground">Date:</span>
+                  <span className="text-primary">
+                    {new Date().toLocaleDateString()}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-4 rounded-lg space-y-2">
+              <p className="text-sm text-foreground flex items-center gap-2">
+                <Mail className="h-4 w-4" />A receipt has been sent to your
+                email address
+              </p>
+              <p className="text-sm text-foreground flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                You can download your receipt anytime
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {receiptUrl && (
+                <Button
+                  onClick={handleDownloadReceipt}
+                  variant="outline"
+                  className="w-full h-12 text-lg"
+                >
+                  <Download className="h-5 w-5 mr-2" />
+                  Download Receipt
+                </Button>
+              )}
+              <Button
+                onClick={handleStartNewDonation}
+                className="w-full h-12 text-lg btn-primary"
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                Make Another Donation
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 hero-badge rounded-full mb-4">
+            <Heart className="h-8 w-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Support RSS Community
+          </h1>
+          <p className="text-muted-foreground">
+            Your contribution makes a difference in building our nation
+          </p>
+        </div>
+
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+          <form onSubmit={handleSubmit}>
+            <CardContent className="p-8 space-y-8">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-foreground mb-6">
+                  Choose Your Contribution
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                  {donationAmounts.map((amount) => (
+                    <Button
+                      key={amount.value}
+                      type="button"
+                      variant={
+                        selectedAmount === amount.value ? "default" : "outline"
+                      }
+                      className={`h-20 flex flex-col items-center justify-center gap-1 transition-all duration-300 transform hover:scale-105 focus-ring ${
+                        selectedAmount === amount.value
+                          ? "btn-primary shadow-lg"
+                          : "hover:border-primary/30 hover:bg-primary/5 hover:shadow-md"
+                      }`}
+                      onClick={() => handleAmountSelect(amount.value)}
+                    >
+                      <IndianRupee className="h-4 w-4" />
+                      <span className="font-bold text-lg">{amount.label}</span>
+                      <span className="text-xs opacity-80">
+                        {amount.description}
+                      </span>
+                    </Button>
+                  ))}
+                  <Button
+                    type="button"
+                    variant={isCustomAmount ? "default" : "outline"}
+                    className={`h-20 flex flex-col items-center justify-center gap-1 transition-all duration-300 transform hover:scale-105 focus-ring ${
+                      isCustomAmount
+                        ? "btn-primary shadow-lg"
+                        : "hover:border-primary/30 hover:bg-primary/5 hover:shadow-md"
+                    }`}
+                    onClick={() => handleAmountSelect(-1)}
+                  >
+                    <Gift className="h-4 w-4" />
+                    <span className="font-bold text-lg">Custom</span>
+                    <span className="text-xs opacity-80">Enter amount</span>
+                  </Button>
+                </div>
+
+                {isCustomAmount && (
+                  <div className="max-w-xs mx-auto">
+                    <div className="relative">
+                      <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        className="pl-12 h-14 text-center text-xl font-semibold border-2 focus-ring rounded-xl"
+                        type="number"
+                        placeholder="0"
+                        min={1}
+                        max={500000}
+                        value={formData.amount || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "amount",
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                      />
+                    </div>
+                    {errors.amount && (
+                      <p className="text-sm text-destructive mt-2">
+                        {errors.amount}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {errors.amount && !isCustomAmount && (
+                  <p className="text-sm text-destructive mt-2">
+                    {errors.amount}
+                  </p>
+                )}
+              </div>
+
+              <Separator className="my-8" />
+
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-foreground text-center">
+                  Your Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-foreground">
+                      Full Name *
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        className="pl-10 h-12 border-2 focus-ring rounded-lg"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          handleInputChange("name", e.target.value)
+                        }
+                      />
+                    </div>
+                    {errors.name && (
+                      <p className="text-sm text-destructive">{errors.name}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-foreground">
+                      Phone Number *
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        className="pl-10 h-12 border-2 focus-ring rounded-lg"
+                        placeholder="10-digit mobile number"
+                        value={formData.phone}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="text-sm text-destructive">{errors.phone}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-foreground">
+                    Email Address *
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      className="pl-10 h-12 border-2 focus-ring rounded-lg"
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={formData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-foreground">
+                    Message (Optional)
+                  </Label>
+                  <Input
+                    className="h-12 border-2 focus-ring rounded-lg"
+                    placeholder="Add a personal message"
+                    value={formData.message}
+                    onChange={(e) =>
+                      handleInputChange("message", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground text-center">
+                  Choose Purpose
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {enhancedDonationTypes.map((type) => {
+                    const IconComponent = type.icon;
+                    return (
+                      <div
+                        key={type.value}
+                        className={`border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                          formData.donationType === type.value
+                            ? "border-primary bg-primary/5 shadow-lg"
+                            : "border-border hover:border-primary/30 hover:bg-primary/5 hover:shadow-md"
+                        }`}
+                        onClick={() =>
+                          handleInputChange("donationType", type.value)
+                        }
+                      >
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="radio"
+                            id={type.value}
+                            name="donationType"
+                            value={type.value}
+                            checked={formData.donationType === type.value}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "donationType",
+                                e.target
+                                  .value as DonationFormData["donationType"]
+                              )
+                            }
+                            className="w-4 h-4 text-primary focus:ring-primary/20"
+                          />
+                          <div className={`p-2 rounded-lg ${type.color}`}>
+                            <IconComponent className="h-5 w-5" />
+                          </div>
+                          <div className="flex-1">
+                            <Label
+                              htmlFor={type.value}
+                              className="font-medium cursor-pointer text-foreground"
+                            >
+                              {type.label}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {type.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-center space-x-3 p-4 bg-muted/50 rounded-xl">
+                  <Checkbox
+                    id="anonymous"
+                    checked={formData.anonymous}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("anonymous", checked)
+                    }
+                  />
+                  <div className="text-center">
+                    <Label
+                      htmlFor="anonymous"
+                      className="text-sm font-medium cursor-pointer text-foreground"
+                    >
+                      Make this donation anonymous
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Your name will not be displayed publicly
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    <span className="font-medium text-primary">
+                      100% Secure Payment
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-primary/10 text-primary text-xs"
+                    >
+                      SSL Protected
+                    </Badge>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-xs text-primary/80 flex items-center justify-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      256-bit encryption • Razorpay gateway • Instant receipt
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-16 text-xl font-bold btn-primary rounded-xl"
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-6 w-6 mr-3 animate-spin" />
+                    Processing Payment...
+                  </>
+                ) : (
+                  <>
+                    <Heart className="h-6 w-6 mr-3" />
+                    Donate{" "}
+                    {formData.amount > 0
+                      ? formatCurrency(formData.amount)
+                      : "Now"}
+                  </>
+                )}
+              </Button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                By proceeding, you agree to our Terms of Service and Privacy
+                Policy
+              </p>
+            </CardContent>
+          </form>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default NewDonationForm;

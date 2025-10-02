@@ -13,12 +13,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { loginFormSchema, type LoginFormData } from './loginSchema';
 import { LogIn, Mail, Lock, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
+
+  const { login } = useAuth();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
@@ -29,30 +33,40 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData, event?: React.BaseSyntheticEvent) => {
+    event?.preventDefault();
     setIsLoading(true);
     setSubmitStatus('idle');
+    setSubmitMessage('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Login attempt:', { email: data.emailOrPhone });
       
-      // TODO: Replace with actual API call
-      console.log('Login data:', data);
+      const result = await login(data.emailOrPhone, data.password);
       
-      setSubmitStatus('success');
-      setSubmitMessage('लॉगिन सफल! आपको डैशबोर्ड पर भेजा जा रहा है...');
+      if (result.success) {
+        setSubmitStatus('success');
+        setSubmitMessage('लॉगिन सफल! आपको डैशबोर्ड पर भेजा जा रहा है...');
+        toast.success('लॉगिन सफल!');
+        
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage(result.message || 'लॉगिन में त्रुटि हुई। कृपया अपने विवरण जांचें और पुनः प्रयास करें।');
+        toast.error(result.message || 'लॉगिन असफल');
+      }
       
-      // Simulate redirect
-      setTimeout(() => {
-        // TODO: Redirect to dashboard
-        console.log('Redirecting to dashboard...');
-      }, 1000);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
+      
+      let errorMessage = 'लॉगिन में त्रुटि हुई। कृपया अपने विवरण जांचें और पुनः प्रयास करें।';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       setSubmitStatus('error');
-      setSubmitMessage('लॉगिन में त्रुटि हुई। कृपया अपने विवरण जांचें और पुनः प्रयास करें।');
+      setSubmitMessage(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +105,13 @@ const LoginForm = () => {
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit(onSubmit)(e);
+            }} 
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="emailOrPhone"
