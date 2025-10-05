@@ -61,3 +61,14 @@ class PaymentListView(ListAPIView):
     filterset_class = PaymentFilter
     search_fields = ['payment_id', 'order_id', 'name', 'email', 'phone']
 
+class PaymentDetailView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request, id):
+        try:
+            payment = Payment.objects.get(id=id)
+        except Payment.DoesNotExist:
+            return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PaymentSerializer(payment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
