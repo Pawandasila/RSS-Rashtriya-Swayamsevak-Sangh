@@ -1,7 +1,6 @@
 # pagination.py
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-import math
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 30
