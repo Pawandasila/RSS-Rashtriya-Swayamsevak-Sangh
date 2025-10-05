@@ -28,6 +28,8 @@ class User(AbstractUser):
     country = models.CharField(max_length=100, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
 
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True, related_name='referrals')
+
     #permission fields
     is_verified = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
