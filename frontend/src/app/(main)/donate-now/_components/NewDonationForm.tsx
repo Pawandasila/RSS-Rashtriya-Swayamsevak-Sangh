@@ -66,29 +66,29 @@ const NewDonationForm = () => {
 
   const enhancedDonationTypes = [
     {
-      value: "general",
-      label: "General Support",
+      value: "donation",
+      label: "Donation",
       description: "Support overall RSS activities",
       icon: Users,
       color: "bg-blue-50 border-blue-200 text-blue-700",
     },
     {
-      value: "education",
-      label: "Education",
+      value: "member",
+      label: "Member",
       description: "Fund educational programs",
       icon: BookOpen,
       color: "bg-green-50 border-green-200 text-green-700",
     },
     {
-      value: "health",
-      label: "Health & Wellness",
+      value: "volunteer",
+      label: "Volunteer",
       description: "Support health initiatives",
       icon: Stethoscope,
       color: "bg-red-50 border-red-200 text-red-700",
     },
     {
-      value: "infrastructure",
-      label: "Infrastructure",
+      value: "vayapari",
+      label: "Vayapari",
       description: "Building & development projects",
       icon: Building,
       color: "bg-purple-50 border-purple-200 text-purple-700",

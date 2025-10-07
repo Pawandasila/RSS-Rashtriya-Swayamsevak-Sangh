@@ -82,6 +82,34 @@ export const DASHBOARD_NAV_ITEMS: NavItemConfig[] = [
     description: "System settings",
     roles: ["admin", "staff"],
   },
+  {
+    title: "Vayapari",
+    url: "/dashboard/vayapari",
+    icon: Settings,
+    description: "Vayapari settings",
+    roles: ["member"],
+  },
+  {
+    title: "Shikayat Portal",
+    url: "/dashboard/shikayat-portal",
+    icon: Settings,
+    description: "Shikayat Portal",
+    roles: ["member"],
+  },
+  {
+    title: "Volunteer Management",
+    url: "/dashboard/volunteer-management",
+    icon: Settings,
+    description: "Manage volunteers",
+    roles: ["member"],
+  },
+  {
+    title: "ID Card Management",
+    url: "/dashboard/id-card-management",
+    icon: Settings,
+    description: "Manage ID cards",
+    roles: ["member"],
+  },
 ];
 
 export const deriveDashboardRoles = (user: User | null): DashboardRole[] => {
