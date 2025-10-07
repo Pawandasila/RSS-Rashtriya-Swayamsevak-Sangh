@@ -26,10 +26,17 @@ class UserJoinView(APIView):
             return Response({"error": "Name is required."}, status=status.HTTP_400_BAD_REQUEST)
         if "phone" not in data:
             return Response({"error": "Phone number is required."}, status=status.HTTP_400_BAD_REQUEST)
-        password = data["dob"].replace("-", "")  # Example: dob '1990-01-01' -> password '19900101'
+        password = data["dob"].replace("-", "")
         data["password"] = make_password(password)
         data["username"] = data["email"]
         user_id = generate_user_id()
+        referral_code = data.get("referred_by", None)
+
+        if referral_code and not User.objects.filter(user_id=referral_code).exists():
+            pass
+        else:
+            referred_by = User.objects.get(user_id=referral_code)
+            data["referred_by"] = referred_by
         while User.objects.filter(user_id=user_id).exists():
             user_id = generate_user_id()
         data["user_id"] = user_id
