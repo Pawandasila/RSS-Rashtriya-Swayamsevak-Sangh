@@ -155,7 +155,10 @@ const NewDonationForm = () => {
 
     try {
       const toastId = toast.loading("Initiating payment...");
-      await processPayment(formData);
+      await processPayment({
+        ...formData,
+        amount: formData.amount * 100
+      });
       toast.dismiss(toastId);
     } catch (error: any) {
       console.error("Payment submission error:", error);

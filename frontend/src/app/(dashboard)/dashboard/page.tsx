@@ -1,7 +1,6 @@
-
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -10,26 +9,161 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, UserPlus } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  UserPlus,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  User as UserIcon,
+  Briefcase,
+} from "lucide-react";
+import Image from "next/image";
+import useAuth from "@/hooks/use-auth";
 
 export default function Page() {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserData = window.localStorage.getItem("user_data");
+      if (storedUserData) {
+        try {
+          setUserData(JSON.parse(storedUserData));
+        } catch (e) {
+          console.warn("Unable to parse user_data", e);
+        }
+      }
+    }
+  }, []);
+
+  const isMember = user?.is_member_account || false;
+
   return (
     <div className="space-y-6">
-      
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Welcome to Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Welcome{user?.name ? `, ${user.name}` : " to Dashboard"}
+        </h1>
         <p className="text-muted-foreground">
-          Welcome to the Rashtriya Swayamsevak Sangh dashboard. Here you can view your activities and information.
+          Welcome to the Rashtriya Swayamsevak Sangh dashboard. Here you can
+          view your activities and information.
         </p>
       </div>
 
-      
+      {/* Member Profile Card - Only show for members */}
+      {isMember && userData && (
+        <Card className="overflow-hidden border bg-white shadow-md">
+          <CardHeader className="border-b ">
+            <div className="flex items-center gap-4">
+              <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-lg">
+                <Image
+                  src={userData?.image || "/logo/logo.png"}
+                  alt={userData?.name || "Member"}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-2xl text-black">
+                {userData.name?.toUpperCase() || "MEMBER"}
+              </CardTitle>
+              <CardDescription className="text-gray-800">
+                RSS Volunteer Member
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className=" pt-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <Mail className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">Email</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {userData.email || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <Phone className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">Phone</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {userData.phone || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <UserIcon className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">Gender</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {userData.gender || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <Calendar className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">
+                  Date of Birth
+                </p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {userData.dob || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <Briefcase className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">Profession</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {userData.profession || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border bg-white p-3 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <MapPin className="h-5 w-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium text-gray-500">Location</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {[userData.city, userData.state].filter(Boolean).join(", ") ||
+                    "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      )}
+
+      {/* Stats - Only show for non-members */}
+      {!isMember && (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Members
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Members</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -98,16 +232,12 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +5 new activities
-            </p>
+            <p className="text-xs text-muted-foreground">+5 new activities</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Monthly Goal
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Monthly Goal</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -123,114 +253,14 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">89%</div>
-            <p className="text-xs text-muted-foreground">
-              Goal Complete
-            </p>
+            <p className="text-xs text-muted-foreground">Goal Complete</p>
           </CardContent>
         </Card>
       </div>
+      )}
 
+      {/* Membership Card - Show for everyone */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-            <CardDescription>
-              Summary of your recent activities
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    New Branch Registration
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    New branch registration in Delhi
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">2 hours ago</div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Training Program
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Training program completed in Mumbai
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">5 hours ago</div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Membership Renewal
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    50 members renewal
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">1 day ago</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
-            <CardDescription>
-              Scheduled events for this week
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold">05</span>
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Weekly Branch
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Morning 6:00 - 7:30
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-green-600 font-semibold">07</span>
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Training Session
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Evening 5:00 - 7:00
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <span className="text-orange-600 font-semibold">10</span>
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Community Service
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Morning 8:00 - 12:00
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card> */}
         <Card className="relative overflow-hidden border border-orange-200 bg-white text-foreground shadow-xl">
           <CardHeader className="space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium text-orange-700">
@@ -276,5 +306,5 @@ export default function Page() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
