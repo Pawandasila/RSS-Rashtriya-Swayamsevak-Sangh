@@ -358,7 +358,7 @@ const BecomeMemberPage = () => {
         name: formState.name,
         email: formState.email,
         phone: formState.phone,
-        amount: 300,
+        amount: 300 * 100,
         payment_for: "member",
         notes: `Membership registration for ${formState.name}`,
       });

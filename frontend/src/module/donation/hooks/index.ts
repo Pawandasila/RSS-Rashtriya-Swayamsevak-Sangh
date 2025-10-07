@@ -163,7 +163,7 @@ export function useDonationPayment() {
 
       const options: RazorpayOptions = {
         key: orderResponse.razorpay_key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-        amount: (orderResponse.amount || 0) * 100, 
+        amount: orderResponse.amount || 0,
         currency: orderResponse.currency || 'INR',
         name: 'RSS - Rashtriya Swayamsevak Sangh',
         description: `Donation - ${formData.payment_for}`,
