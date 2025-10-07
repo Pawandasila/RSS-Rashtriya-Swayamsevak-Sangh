@@ -4,7 +4,7 @@ import { Heart, Shield, CreditCard, Sparkles } from 'lucide-react';
 
 const HeroSection = () => {
   return (
-    <section className="relative py-20 lg:py-28 bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-primary-foreground overflow-hidden">
+    <section className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-primary-foreground overflow-hidden">
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <div className="text-center">

@@ -71,7 +71,7 @@ export const navigationItems: NavItem[] = [
       {
         id: "become-member",
         title: "Become a Member",
-        href: "https://app.joinrss.org.in/registration",
+        href: "/become-member",
         icon: UserCheck,
         description: "सदस्यता के लिए पंजीकरण",
       },

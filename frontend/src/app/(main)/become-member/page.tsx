@@ -1,0 +1,631 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState, type ChangeEvent } from "react";
+import { CheckCircle2, Loader2, LogIn, CreditCard, IndianRupee } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import useAuth from "@/hooks/use-auth";
+import {
+  PersonalDetailsStep,
+  AddressStep,
+  PhotoUploadStep,
+  ReviewStep,
+} from "@/module/dashboard/member/components";
+import { useMemberSubmit } from "@/module/dashboard/member/hooks";
+import { useDonationPayment } from "@/module/donation";
+
+type FormState = {
+  name: string;
+  email: string;
+  phone: string;
+  dob: string;
+  gender: string;
+  profession: string;
+  city: string;
+  sub_district: string;
+  district: string;
+  state: string;
+  postal_code: string;
+  image: File | null;
+  referred_by?: string;
+};
+
+type PersistedKey = Exclude<keyof FormState, "image">;
+type PersistedFormData = Pick<FormState, PersistedKey>;
+
+const PERSISTED_FIELDS: PersistedKey[] = [
+  "name",
+  "email",
+  "phone",
+  "dob",
+  "gender",
+  "profession",
+  "city",
+  "sub_district",
+  "district",
+  "state",
+  "postal_code",
+  "referred_by",
+];
+
+const FORM_STORAGE_KEY = "rss-membership-form";
+
+const defaultFormState: FormState = {
+  name: "",
+  email: "",
+  phone: "",
+  dob: "",
+  gender: "",
+  profession: "",
+  city: "",
+  sub_district: "",
+  district: "",
+  state: "",
+  postal_code: "",
+  image: null,
+  referred_by: "",
+};
+
+type StepConfig = {
+  title: string;
+  description: string;
+};
+
+const steps: StepConfig[] = [
+  {
+    title: "Personal details",
+    description: "Tell us a little about yourself.",
+  },
+  {
+    title: "Address",
+    description: "Where can we reach you?",
+  },
+  {
+    title: "Identification",
+    description: "Upload a recent passport size photo.",
+  },
+  {
+    title: "Review & payment",
+    description: "Confirm everything looks correct.",
+  },
+];
+
+const BecomeMemberPage = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [storageHydrated, setStorageHydrated] = useState(false);
+  const [formState, setFormState] = useState<FormState>(defaultFormState);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (typeof window === "undefined" || storageHydrated) {
+      return;
+    }
+
+    try {
+      const storedFormValue = window.localStorage.getItem(FORM_STORAGE_KEY);
+
+      const storedUserData = window.localStorage.getItem("user_data");
+
+      let userData = null;
+      if (storedUserData) {
+        try {
+          userData = JSON.parse(storedUserData);
+        } catch (e) {
+          console.warn("Unable to parse user_data from localStorage", e);
+        }
+      }
+
+      setFormState((prev) => {
+        const updated = { ...prev };
+
+        if (storedFormValue) {
+          const parsed = JSON.parse(
+            storedFormValue
+          ) as Partial<PersistedFormData>;
+          PERSISTED_FIELDS.forEach((key) => {
+            const value = parsed[key];
+            if (typeof value === "string" && value.trim() !== "") {
+              updated[key] = value;
+            }
+          });
+        }
+
+        if (userData) {
+          if (!updated.name && userData.name) {
+            updated.name = userData.name;
+          }
+          if (!updated.email && userData.email) {
+            updated.email = userData.email;
+          }
+          if (!updated.dob && userData.dob) {
+            updated.dob = userData.dob;
+          }
+          if (!updated.gender && userData.gender) {
+            updated.gender = userData.gender.toLowerCase();
+          }
+          if (!updated.phone && userData.phone) {
+            updated.phone = userData.phone;
+          }
+          if (!updated.profession && userData.profession) {
+            updated.profession = userData.profession
+              .toLowerCase()
+              .replace(/\s+/g, "-");
+          }
+          if (!updated.city && userData.city) {
+            updated.city = userData.city;
+          }
+          if (!updated.sub_district && userData.sub_district) {
+            updated.sub_district = userData.sub_district;
+          }
+          if (!updated.district && userData.district) {
+            updated.district = userData.district;
+          }
+          if (!updated.state && userData.state) {
+            updated.state = userData.state.toLowerCase().replace(/\s+/g, " ");
+          }
+          if (!updated.postal_code && userData.postal_code) {
+            updated.postal_code = userData.postal_code;
+          }
+        }
+
+        return updated;
+      });
+    } catch (error) {
+      console.warn("Unable to read stored membership form data", error);
+    } finally {
+      setStorageHydrated(true);
+    }
+  }, [storageHydrated]);
+
+  useEffect(() => {
+    if (!storageHydrated || typeof window === "undefined") {
+      return;
+    }
+
+    const payload = PERSISTED_FIELDS.reduce((acc, key) => {
+      const value = formState[key];
+      if (typeof value === "string" && value.trim() !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Partial<PersistedFormData>);
+
+    if (Object.keys(payload).length > 0) {
+      try {
+        window.localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(payload));
+      } catch (error) {
+        console.warn("Unable to persist form data", error);
+      }
+    } else {
+      window.localStorage.removeItem(FORM_STORAGE_KEY);
+    }
+  }, [formState, storageHydrated]);
+
+  const clearStoredForm = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(FORM_STORAGE_KEY);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+
+    if (file && file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({
+        ...prev,
+        image: "File must be smaller than 5MB.",
+      }));
+      setFormState((prev) => ({ ...prev, image: null }));
+      event.target.value = "";
+      return;
+    }
+
+    setFormState((prev) => ({ ...prev, image: file }));
+    if (errors.image) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.image;
+        return next;
+      });
+    }
+  };
+
+  const validateStep = (stepIndex: number): boolean => {
+    const stepErrors: Record<string, string> = {};
+
+    if (stepIndex === 0) {
+      if (!formState.name.trim()) {
+        stepErrors.name = "Please enter your full name.";
+      }
+      if (!formState.email.trim()) {
+        stepErrors.email = "Please provide an email address.";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
+        stepErrors.email = "Please enter a valid email address.";
+      }
+      if (!formState.dob.trim()) {
+        stepErrors.dob = "Date of birth is required.";
+      }
+      if (!formState.gender.trim()) {
+        stepErrors.gender = "Please select your gender.";
+      }
+      if (!formState.phone.trim()) {
+        stepErrors.phone = "Mobile number is required.";
+      }
+      if (!formState.profession.trim()) {
+        stepErrors.profession = "Select your profession.";
+      }
+    }
+
+    if (stepIndex === 1) {
+      if (!formState.city.trim()) {
+        stepErrors.city = "Village or city name is required.";
+      }
+      if (!formState.sub_district.trim()) {
+        stepErrors.sub_district = "Please provide your tehsil.";
+      }
+      if (!formState.district.trim()) {
+        stepErrors.district = "District is required.";
+      }
+      if (!formState.state.trim()) {
+        stepErrors.state = "Select your state.";
+      }
+      if (!formState.postal_code.trim()) {
+        stepErrors.postal_code = "PIN code is required.";
+      }
+    }
+
+    if (stepIndex === 2) {
+      if (!formState.image) {
+        stepErrors.image = "Please upload a recent photograph.";
+      }
+    }
+
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (!validateStep(activeStep)) {
+      toast.error("Please fill in all required fields correctly.", {
+        description: "Check the form for any errors highlighted in red.",
+      });
+      return;
+    }
+
+    setErrors({});
+    setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
+  };
+
+  const handleBack = () => {
+    setErrors({});
+    setActiveStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleReset = () => {
+    setFormState(defaultFormState);
+    clearStoredForm();
+    setActiveStep(0);
+    setSubmitted(false);
+    setErrors({});
+  };
+
+  const { submitMemberForm, loading: isMemberSubmitting } = useMemberSubmit();
+  const { processPayment, isProcessing: isPaymentProcessing } = useDonationPayment();
+  
+  const isSubmitting = isMemberSubmitting || isPaymentProcessing;
+
+  const handleSubmit = async () => {
+    if (!validateStep(activeStep)) {
+      return;
+    }
+
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentConfirm = async () => {
+    try {
+      // Step 1: Register member
+      toast.loading("Registering membership...", { id: "member-registration" });
+      await submitMemberForm(formState);
+      toast.success("Registration successful!", { id: "member-registration" });
+      
+      // Step 2: Process payment
+      toast.loading("Opening payment gateway...", { id: "payment-processing" });
+      await processPayment({
+        name: formState.name,
+        email: formState.email,
+        phone: formState.phone,
+        amount: 300,
+        payment_for: "member",
+        notes: `Membership registration for ${formState.name}`,
+      });
+      toast.success("Payment completed successfully!", { id: "payment-processing" });
+      
+      clearStoredForm();
+      setShowPaymentModal(false);
+      setSubmitted(true);
+    } catch (error: any) {
+      console.error("Registration or payment failed:", error);
+      
+      toast.dismiss("member-registration");
+      toast.dismiss("payment-processing");
+      
+      const errorMessage = 
+        error?.response?.data?.error || 
+        error?.response?.data?.message || 
+        error?.message || 
+        "An error occurred. Please try again later.";
+      
+      toast.error(errorMessage, {
+        duration: 5000,
+        description: "If the problem persists, please contact support.",
+      });
+      
+      setShowPaymentModal(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    if (activeStep === 0) {
+      return (
+        <PersonalDetailsStep
+          formData={formState}
+          errors={errors}
+          onChange={handleChange}
+        />
+      );
+    }
+
+    if (activeStep === 1) {
+      return (
+        <AddressStep
+          formData={formState}
+          errors={errors}
+          onChange={handleChange}
+        />
+      );
+    }
+
+    if (activeStep === 2) {
+      return (
+        <PhotoUploadStep
+          formData={formState}
+          errors={errors}
+          onFileChange={handleFileChange}
+        />
+      );
+    }
+
+    return <ReviewStep formData={formState} />;
+  };
+
+  if (submitted) {
+    return (
+      <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-6 rounded-2xl border border-border bg-card p-8 text-center shadow-lg">
+        <div className="flex flex-col items-center gap-4">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <CheckCircle2 className="h-7 w-7" />
+          </span>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Payment details captured
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Thanks for confirming your membership information. We&apos;ll
+              email you a receipt and next steps shortly.
+            </p>
+          </div>
+        </div>
+        <Button className="mt-4" onClick={handleReset}>
+          Fill the form again
+        </Button>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-4">
+      <div className="flex w-full flex-col gap-8 rounded-2xl border border-border bg-card p-6 shadow-lg sm:p-8">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold text-foreground">
+            Membership interest form
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Complete the short form below to let us know how you&apos;d like to
+            contribute.
+          </p>
+        </div>
+
+        <nav
+          aria-label="Steps"
+          className="rounded-md border border-border bg-background px-6 py-6"
+        >
+          <ol className="flex items-center justify-between gap-4">
+            {steps.map((step, index) => {
+              const isActive = index === activeStep;
+              const isCompleted = index < activeStep;
+
+              return (
+                <li
+                  key={step.title}
+                  className="flex flex-1 flex-col items-center gap-2"
+                >
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all ${
+                      isActive
+                        ? "border-primary bg-primary text-primary-foreground shadow-md scale-110"
+                        : isCompleted
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground"
+                    }`}
+                    aria-current={isActive ? "step" : undefined}
+                  >
+                    {index + 1}
+                  </div>
+                  <p
+                    className={`text-xs font-medium text-center ${
+                      isActive ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {step.title}
+                  </p>
+                  {index < steps.length - 1 && (
+                    <span
+                      className="absolute left-1/2 top-5 -z-10 h-0.5 w-full -translate-x-1/2 bg-border"
+                      aria-hidden
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+
+        <div className="rounded-lg border border-border bg-background p-6">
+          {renderStepContent()}
+        </div>
+
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleBack}
+            disabled={activeStep === 0 || isSubmitting}
+          >
+            Back
+          </Button>
+          {activeStep < steps.length - 1 ? (
+            <Button type="button" onClick={handleNext} disabled={isSubmitting}>
+              Next
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Review & Pay"}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Payment Modal */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <IndianRupee className="h-6 w-6 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              Membership Payment
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Complete your RSS membership registration
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="rounded-lg border border-border bg-muted/50 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  Membership Fee
+                </span>
+                <span className="text-2xl font-bold text-foreground">
+                  ₹300
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                One-time registration fee for RSS membership
+              </p>
+            </div>
+
+            <div className="space-y-2 rounded-lg border border-dashed border-border bg-background p-4">
+              <h4 className="text-sm font-medium text-foreground">
+                What you get:
+              </h4>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  Official RSS membership certificate
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  Access to training programs & events
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  Connect with RSS community nationwide
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  Monthly newsletters & updates
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowPaymentModal(false)}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handlePaymentConfirm}
+              disabled={isSubmitting}
+              className="w-full gap-2 sm:w-auto"
+            >
+              {isMemberSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Registering...
+                </>
+              ) : isPaymentProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing Payment...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4" />
+                  Pay ₹300
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </section>
+  );
+};
+
+export default BecomeMemberPage;

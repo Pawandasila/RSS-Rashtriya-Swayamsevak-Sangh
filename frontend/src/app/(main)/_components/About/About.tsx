@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const About = () => {
   return (
-    <section className="py-6 lg:py-10 bg-white">
+    <section className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        
         <div className="text-center mb-6 lg:mb-8">

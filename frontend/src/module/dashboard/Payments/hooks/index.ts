@@ -285,6 +285,23 @@ const defaultStats: PaymentStats = {
   this_month_donations: 0,
 };
 
+const normalizeStats = (raw: any): PaymentStats => ({
+  total_revenue: Number(raw?.total_revenue ?? raw?.totalRevenue ?? 0),
+  monthly_revenue: Number(raw?.monthly_revenue ?? raw?.monthlyRevenue ?? 0),
+  total_transactions: Number(raw?.total_transactions ?? raw?.totalTransactions ?? 0),
+  successful_transactions: Number(
+    raw?.successful_transactions ?? raw?.successfulTransactions ?? 0
+  ),
+  failed_transactions: Number(raw?.failed_transactions ?? raw?.failedTransactions ?? 0),
+  pending_transactions: Number(
+    raw?.pending_transactions ?? raw?.pendingTransactions ?? 0
+  ),
+  active_subscribers: Number(raw?.active_subscribers ?? raw?.activeSubscribers ?? 0),
+  this_month_donations: Number(
+    raw?.this_month_donations ?? raw?.thisMonthDonations ?? 0
+  ),
+});
+
 export function usePaymentStats() {
   const [stats, setStats] = useState<PaymentStats>(defaultStats);
   const [loading, setLoading] = useState(true);
@@ -295,10 +312,7 @@ export function usePaymentStats() {
     try {
       setLoading(true);
       const response = await axios.get("/payment/stats/");
-      setStats({
-        ...defaultStats,
-        ...(response.data as Partial<PaymentStats>),
-      });
+      setStats(normalizeStats(response.data));
       setError(null);
     } catch (err: any) {
       console.error("Error fetching payment stats:", err);

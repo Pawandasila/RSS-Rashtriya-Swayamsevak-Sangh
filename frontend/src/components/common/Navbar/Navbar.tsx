@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ButtonRSS from "@/components/common/button-rss";
 import Logo from "./Logo";
 import DesktopNav from "./DesktopNav";
@@ -9,6 +9,15 @@ import MobileMenuButton from "./MobileMenuButton";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return <div className="h-20" />;
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -52,7 +61,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <MobileNav isOpen={isMobileMenuOpen} onMenuClose={closeMobileMenu} />
+  <MobileNav isOpen={isMobileMenuOpen} onMenuClose={closeMobileMenu} />
       </div>
     </header>
   );

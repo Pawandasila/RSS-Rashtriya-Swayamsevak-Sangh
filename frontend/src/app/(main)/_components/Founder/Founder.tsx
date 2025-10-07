@@ -7,10 +7,10 @@ import { founderInfo } from "./FounderInfo";
 
 const Founder = () => {
   return (
-    <section className="py-12 lg:py-20 bg-background">
+    <section className="bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="text-center mb-8 lg:mb-12">
+  <div className="text-center mb-6 lg:mb-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 px-3 py-2 rounded-full mb-4 lg:mb-6">
             <Star className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
             <span className="text-sm lg:text-base text-primary font-semibold">Leadership</span>
@@ -24,7 +24,7 @@ const Founder = () => {
         </div>
 
         
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-12 lg:mb-16">
+  <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-10 lg:mb-12">
           
           <div className="order-2 lg:order-1 flex justify-center">
             <div className="relative">
@@ -62,7 +62,7 @@ const Founder = () => {
 
             
             <div className="space-y-4 lg:space-y-6">
-              <div className="bg-muted/50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-border">
+              <div className="bg-muted/50 p-4 lg:p-5 rounded-xl lg:rounded-2xl border border-border">
                 <h4 className="text-base lg:text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                   <Heart className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
                   Our Mission
@@ -72,7 +72,7 @@ const Founder = () => {
                 </p>
               </div>
 
-              <div className="bg-primary/5 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-primary/20">
+              <div className="bg-primary/5 p-4 lg:p-5 rounded-xl lg:rounded-2xl border border-primary/20">
                 <h4 className="text-base lg:text-lg font-semibold text-foreground mb-3">
                   Our Objective
                 </h4>
@@ -86,14 +86,14 @@ const Founder = () => {
 
         
         <div className="relative mx-4 lg:mx-0">
-          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 p-6 lg:p-12 rounded-2xl lg:rounded-3xl border border-primary/20 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 p-6 lg:p-10 rounded-2xl lg:rounded-3xl border border-primary/20 relative overflow-hidden">
             
             <div className="absolute top-4 left-4 lg:top-6 lg:left-8 w-8 h-8 lg:w-12 lg:h-12 bg-primary/10 rounded-full" />
             <div className="absolute bottom-4 right-4 lg:bottom-6 lg:right-8 w-6 h-6 lg:w-8 lg:h-8 bg-primary/20 rounded-full" />
             
             <div className="relative flex flex-col items-center text-center">
-              <Quote className="w-8 h-8 lg:w-12 lg:h-12 text-primary/40 mb-4 lg:mb-6" />
-              <blockquote className="text-lg lg:text-2xl xl:text-3xl font-bold text-foreground leading-relaxed mb-6 lg:mb-8 max-w-4xl px-2">
+              <Quote className="w-8 h-8 lg:w-11 lg:h-11 text-primary/40 mb-4 lg:mb-6" />
+              <blockquote className="text-lg lg:text-2xl xl:text-3xl font-bold text-foreground leading-relaxed mb-5 lg:mb-7 max-w-4xl px-2">
                 &ldquo;{founderInfo.quote}&rdquo;
               </blockquote>
               <cite className="text-base lg:text-lg text-primary font-semibold">
@@ -104,9 +104,9 @@ const Founder = () => {
         </div>
 
         
-        <div className="mt-10 lg:mt-16 text-center mx-4 lg:mx-0">
-          <div className="max-w-4xl mx-auto bg-background p-6 lg:p-10 rounded-2xl border border-border shadow-lg">
-            <h4 className="text-xl lg:text-3xl font-bold text-foreground mb-4 lg:mb-6">
+        <div className="mt-8 lg:mt-12 text-center mx-4 lg:mx-0">
+          <div className="max-w-4xl mx-auto bg-background p-6 lg:p-9 rounded-2xl border border-border shadow-lg">
+            <h4 className="text-xl lg:text-3xl font-bold text-foreground mb-4 lg:mb-5">
               Join Our Mission
             </h4>
             <p className="text-base lg:text-xl text-muted-foreground leading-relaxed mb-6 lg:mb-8 px-2">

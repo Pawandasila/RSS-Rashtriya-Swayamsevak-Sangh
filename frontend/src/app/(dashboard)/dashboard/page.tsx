@@ -1,8 +1,16 @@
 
 "use client";
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, CheckCircle, UserPlus } from "lucide-react";
 
 export default function Page() {
   return (
@@ -123,7 +131,7 @@ export default function Page() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Recent Activities</CardTitle>
             <CardDescription>
@@ -221,6 +229,49 @@ export default function Page() {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card> */}
+        <Card className="relative overflow-hidden border border-orange-200 bg-white text-foreground shadow-xl">
+          <CardHeader className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium text-orange-700">
+              <UserPlus className="h-4 w-4 text-orange-600" />
+              Join the movement
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-2xl font-bold tracking-tight text-orange-700">
+                Become a Member
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Unlock access to leadership training, cultural events, and a
+                nationwide community dedicated to service.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              {[
+                "Guided mentorship and training sessions",
+                "Exclusive invites to regional and national events",
+                "Collaborate on community impact initiatives",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                    <CheckCircle className="h-4 w-4" />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Button
+              variant="secondary"
+              className="group h-12 w-full items-center justify-center gap-2 rounded-xl  shadow-lg transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 "
+            >
+              <span className="text-sm font-semibold uppercase tracking-wide">
+                Apply for Membership
+              </span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
           </CardContent>
         </Card>
       </div>
