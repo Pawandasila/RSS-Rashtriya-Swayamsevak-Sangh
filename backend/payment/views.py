@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import Sum
 from django.utils.timezone import now
 
+from account.models import User
 from .models import Payment
 from .serializers import PaymentSerializer
 
@@ -110,6 +111,11 @@ class OrderVerifyView(APIView):
             payment.method = razorpay_payment.get('method')
             payment.status = 'COMPLETED'
             payment.payment_id = data['payment_id']
+            if payment.payment_for == "member":
+                user = User.objects.filter(email=payment.email).first()
+                if user:
+                    user.is_member_account = True
+                    user.save()
             payment.save()
             
             return Response({

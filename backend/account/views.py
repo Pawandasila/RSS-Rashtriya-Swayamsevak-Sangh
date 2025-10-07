@@ -7,7 +7,7 @@ import uuid
 
 from account.models import User
 
-from .serializers import UserJoinSerializer
+from .serializers import UserJoinSerializer, UserMemberSerializer
 
 def generate_user_id():
     return str(uuid.uuid4())[:8]
@@ -31,7 +31,6 @@ class UserJoinView(APIView):
         data["username"] = data["email"]
         user_id = generate_user_id()
         referral_code = data.get("referred_by", None)
-
         if referral_code and not User.objects.filter(user_id=referral_code).exists():
             pass
         else:
@@ -41,6 +40,27 @@ class UserJoinView(APIView):
             user_id = generate_user_id()
         data["user_id"] = user_id
         serializer = UserJoinSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserMemberView(APIView):
+    def post(self, request):
+        data = request.data.copy()
+        password = data["dob"].replace("-", "")
+        data["password"] = make_password(password)
+        data["username"] = data["email"]
+        referral_code = data.get("referred_by", None)
+        if referral_code and not User.objects.filter(user_id=referral_code).exists():
+            pass
+        else:
+            referred_by = User.objects.get(user_id=referral_code)
+            data["referred_by"] = referred_by
+        while User.objects.filter(user_id=user_id).exists():
+            user_id = generate_user_id()
+        data["user_id"] = user_id
+        serializer = UserMemberSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
