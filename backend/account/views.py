@@ -65,7 +65,8 @@ class UserMemberView(APIView):
                 referred_by = User.objects.get(user_id=referral_code)
                 data["referred_by"] = referred_by
             except User.DoesNotExist:
-                pass
+                data["referred_by"] = None
+
         user_id = generate_user_id()
         while User.objects.filter(user_id=user_id).exists():
             user_id = generate_user_id()
