@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
 
 from account.models import User
 
@@ -40,11 +41,9 @@ class UserCountView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
     
-class ReferralListView(APIView):
+class ReferralListView(ListAPIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        referrals = User.objects.filter(referred_by=user)
-        serializer = ReferralSerializer(referrals, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer_class = ReferralSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(referred_by=user).order_by('-date_joined')
