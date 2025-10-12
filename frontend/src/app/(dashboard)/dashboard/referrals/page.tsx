@@ -2,7 +2,13 @@
 
 import React, { useState } from "react";
 import { Search, UserSearch, Users } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,9 +80,10 @@ export default function ReferralsPage() {
     setReferrals([]);
 
     try {
-      // Fetch user info by user_id
-      const userResponse = await axios.get(`/admin/users?user_id=${userId.trim()}/`);
-      
+      const userResponse = await axios.get(
+        `/admin/users?user_id=${userId.trim()}/`
+      );
+
       if (!userResponse.data) {
         setError("इस User ID के साथ कोई उपयोगकर्ता नहीं मिला");
         toast.error("उपयोगकर्ता नहीं मिला");
@@ -86,8 +93,9 @@ export default function ReferralsPage() {
 
       setUserData(userResponse.data);
 
-      // Fetch referrals
-      const referralResponse = await axios.get(`/admin/referrals/${userId.trim()}/`);
+      const referralResponse = await axios.get(
+        `/admin/referrals/${userId.trim()}/`
+      );
       const data = referralResponse.data;
 
       const referralsList = Array.isArray(data.results)
@@ -142,16 +150,15 @@ export default function ReferralsPage() {
           Referral Lookup
         </h1>
         <p className="text-muted-foreground">
-          किसी भी उपयोगकर्ता की रेफरल जानकारी देखने के लिए उनकी User ID दर्ज करें
+          किसी भी उपयोगकर्ता की रेफरल जानकारी देखने के लिए उनकी User ID दर्ज
+          करें
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>User ID से खोजें</CardTitle>
-          <CardDescription>
-            उपयोगकर्ता की अद्वितीय ID दर्ज करें
-          </CardDescription>
+          <CardDescription>उपयोगकर्ता की अद्वितीय ID दर्ज करें</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
@@ -387,7 +394,9 @@ export default function ReferralsPage() {
                       {userData.gender && (
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground">लिंग</p>
-                          <p className="text-sm capitalize">{userData.gender}</p>
+                          <p className="text-sm capitalize">
+                            {userData.gender}
+                          </p>
                         </div>
                       )}
 
