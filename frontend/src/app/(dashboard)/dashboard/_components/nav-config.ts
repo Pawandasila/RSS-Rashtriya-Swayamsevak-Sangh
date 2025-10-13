@@ -1,5 +1,15 @@
 import type { LucideIcon } from "lucide-react";
-import { Calendar, Heart, Home, Settings, Users } from "lucide-react";
+import {
+  Calendar,
+  CreditCard,
+  Home,
+  Users,
+  Store,
+  MessageSquareWarning,
+  UsersRound,
+  IdCard,
+  UserPlus,
+} from "lucide-react";
 
 import type { User } from "@/types/auth.types";
 
@@ -56,7 +66,7 @@ export const DASHBOARD_NAV_ITEMS: NavItemConfig[] = [
   {
     title: "Payment",
     url: "/dashboard/payments",
-    icon: Heart,
+    icon: CreditCard,
     description: "Manage payments",
     badge: "New",
     roles: ["admin", "staff"],
@@ -76,46 +86,39 @@ export const DASHBOARD_NAV_ITEMS: NavItemConfig[] = [
     roles: ["admin", "staff", "volunteer"],
   },
   {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-    description: "System settings",
-    roles: ["admin", "staff"],
-  },
-  {
     title: "Vayapari",
-    url: "/dashboard/vayapari",
-    icon: Settings,
-    description: "Vayapari settings",
+    url: "/dashboard/vyapari",
+    icon: Store,
+    description: "Business directory",
     roles: ["member"],
   },
   {
     title: "Shikayat Portal",
     url: "/dashboard/shikayat-portal",
-    icon: Settings,
-    description: "Shikayat Portal",
+    icon: MessageSquareWarning,
+    description: "Complaint management",
     roles: ["member"],
   },
   {
     title: "Volunteer Management",
     url: "/dashboard/volunteer-management",
-    icon: Settings,
+    icon: UsersRound,
     description: "Manage volunteers",
     roles: ["member"],
   },
   {
     title: "ID Card Management",
     url: "/dashboard/id-card-management",
-    icon: Settings,
+    icon: IdCard,
     description: "Manage ID cards",
     roles: ["member"],
   },
-   {
+  {
     title: "Referral",
     url: "/dashboard/referrals",
-    icon: Settings,
+    icon: UserPlus,
     description: "Manage referrals",
-    roles: ["admin","staff"],
+    roles: ["admin", "staff"],
   },
 ];
 

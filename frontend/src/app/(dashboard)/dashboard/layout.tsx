@@ -49,6 +49,12 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       members: "Members",
       events: "Events",
       settings: "Settings",
+      vyapari: "Vyapari Management",
+      referrals: "Referrals",
+      payments: "Payments",
+      complaints: "Complaints",
+      volunteers: "Volunteers",
+      "id-cards": "ID Cards",
     };
 
     return pathSegments.map((segment, index) => {
