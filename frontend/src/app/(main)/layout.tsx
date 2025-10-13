@@ -14,7 +14,7 @@ export default function MainLayout({
       
       <main 
         id="main-content" 
-        className="flex-1 w-full pt-24 lg:pt-20" 
+        className="flex-1 w-full" 
         role="main" 
         aria-label="Main content"
         tabIndex={-1}
