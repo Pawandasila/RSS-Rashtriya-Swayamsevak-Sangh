@@ -27,7 +27,8 @@ const PhotoCard: React.FC<PhotoCardProps> = ({ photo, index }) => {
     <Dialog>
       <DialogTrigger asChild>
         <div className="group cursor-pointer overflow-hidden rounded-lg break-inside-avoid mb-4 transition-all duration-300 transform hover:scale-[1.02]">
-          <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 aspect-video">
+          {/* Mobile: Fixed aspect ratio */}
+          <div className="relative lg:hidden overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 aspect-video">
             {!imageError ? (
               <>
                 <Image
@@ -37,7 +38,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({ photo, index }) => {
                   className={`object-cover transition-transform duration-300 group-hover:scale-110 rounded-lg ${
                     isLoading ? "opacity-0" : "opacity-100"
                   }`}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  sizes="100vw"
                   onLoad={() => setIsLoading(false)}
                   onError={() => {
                     setImageError(true);
@@ -50,6 +51,73 @@ const PhotoCard: React.FC<PhotoCardProps> = ({ photo, index }) => {
               </>
             ) : (
               <div className="absolute inset-0 bg-gray-200 flex items-center justify-center rounded-lg">
+                <div className="text-gray-400 text-center">
+                  <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Image not found</p>
+                </div>
+              </div>
+            )}
+
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center rounded-lg">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
+                <ZoomIn className="w-8 h-8 mx-auto mb-2" />
+                <p className="text-sm font-semibold">Click to view</p>
+              </div>
+            </div>
+
+            <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <Badge
+                variant="secondary"
+                className={`
+                  ${
+                    photo.category === "religious"
+                      ? "bg-orange-500/90 text-white"
+                      : ""
+                  }
+                  ${
+                    photo.category === "social"
+                      ? "bg-green-500/90 text-white"
+                      : ""
+                  }
+                  ${
+                    photo.category === "other"
+                      ? "bg-blue-500/90 text-white"
+                      : ""
+                  }
+                  font-semibold shadow-lg backdrop-blur-sm
+                `}
+              >
+                {photo.category.charAt(0).toUpperCase() +
+                  photo.category.slice(1)}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Desktop: Pinterest-style natural dimensions */}
+          <div className="hidden lg:block relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            {!imageError ? (
+              <>
+                <Image
+                  src={photo.imageUrl}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  className={`w-full h-auto transition-transform duration-300 group-hover:scale-110 rounded-lg ${
+                    isLoading ? "opacity-0" : "opacity-100"
+                  }`}
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  onLoad={() => setIsLoading(false)}
+                  onError={() => {
+                    setImageError(true);
+                    setIsLoading(false);
+                  }}
+                />
+                {isLoading && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
+                )}
+              </>
+            ) : (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
                 <div className="text-gray-400 text-center">
                   <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Image not found</p>
@@ -168,7 +236,6 @@ const PhotoGallery: React.FC = () => {
   const displayedPhotos = useMemo(() => {
     if (showAll) return filteredPhotos;
 
-    const mobileLimit = 5;
     const desktopLimit = 17;
 
     return filteredPhotos.slice(0, desktopLimit);

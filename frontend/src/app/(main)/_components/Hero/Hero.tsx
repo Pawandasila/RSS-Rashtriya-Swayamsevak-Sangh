@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Heart, Globe, Award, Users, MapPin } from "lucide-react";
 import { heroSlides } from "./HeroData";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, FreeMode } from 'swiper/modules';
+import 'swiper/css';
 
 const Hero = () => {
   return (
@@ -14,25 +17,34 @@ const Hero = () => {
       <div className="relative z-10 px-4 py-12 sm:py-16 sm:px-6 lg:px-8 lg:max-w-7xl lg:mx-auto lg:py-20 xl:py-28 lg:grid lg:grid-cols-2">
         <div className="lg:pr-8 pt-12 lg:pt-0">
           <div className="lg:hidden">
-            <div className="w-full overflow-x-auto">
-              <div className="flex gap-4 px-4 py-6">
+            <div className="w-full px-4 py-6">
+              <Swiper
+                modules={[Autoplay, FreeMode]}
+                spaceBetween={16}
+                slidesPerView="auto"
+                freeMode={true}
+                autoplay={{
+                  delay: 2000,
+                  disableOnInteraction: false,
+                }}
+                loop={true}
+                speed={800}
+              >
                 {heroSlides.map((slide) => (
-                  <Link
-                    key={slide.id}
-                    href={slide.ctaLink}
-                    className="flex-shrink-0 block"
-                  >
-                    <div className="relative w-[320px] h-[180px] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <Image
-                        src={slide.image}
-                        alt={slide.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </Link>
+                  <SwiperSlide key={slide.id} style={{ width: '320px' }}>
+                    <Link href={slide.ctaLink} className="block">
+                      <div className="relative w-[320px] h-[180px] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <Image
+                          src={slide.image}
+                          alt={slide.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </Link>
+                  </SwiperSlide>
                 ))}
-              </div>
+              </Swiper>
             </div>
           </div>
 
@@ -152,11 +164,22 @@ const Hero = () => {
 
       <div className="hidden lg:block pb-8 lg:pb-0">
         <div className="flex flex-col items-center justify-center lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 lg:z-20">
-          <div className="w-full px-4 lg:px-8 overflow-x-auto hero-scroll">
-            <div className="flex gap-6 pb-4 w-max">
+          <div className="w-full px-4 lg:px-8">
+            <Swiper
+              modules={[Autoplay, FreeMode]}
+              spaceBetween={24}
+              slidesPerView="auto"
+              freeMode={true}
+              autoplay={{
+                delay: 2000,
+                disableOnInteraction: false,
+              }}
+              loop={true}
+              speed={800}
+            >
               {heroSlides.map((slide) => (
-                <div key={slide.id} className="flex-shrink-0">
-                  <div className="relative flex flex-col overflow-hidden transition-all duration-200 transform bg-background border border-border shadow w-60 md:w-80 h-[500px] group rounded-xl hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                <SwiperSlide key={slide.id} style={{ width: '320px' }}>
+                  <div className="relative flex flex-col overflow-hidden transition-all duration-200 transform bg-background border border-border shadow w-80 h-[500px] group rounded-xl hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                     <Link
                       href={slide.ctaLink}
                       className="flex shrink-0 cursor-pointer"
@@ -204,9 +227,9 @@ const Hero = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </SwiperSlide>
               ))}
-            </div>
+            </Swiper>
           </div>
         </div>
       </div>
