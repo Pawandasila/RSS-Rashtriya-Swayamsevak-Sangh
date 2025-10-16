@@ -4,4 +4,4 @@ from .models import Payment
 class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
-        exclude = ['timestamp', 'status']
+        fields = '__all__'

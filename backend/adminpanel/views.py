@@ -9,8 +9,9 @@ from django.db.models import Count
 
 from account.models import User
 from payment.models import Payment
+from payment.serializers import PaymentSerializer
 from dashboard.serializers import UserInfoSerializer
-from dashboard.serializers import PaymentSerializer, ReferralSerializer
+from dashboard.serializers import ReferralSerializer
 from dashboard.filters import PaymentFilter
 
 class UserListView(ListAPIView):

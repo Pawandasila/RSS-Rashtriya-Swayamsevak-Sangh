@@ -10,11 +10,6 @@ class UserInfoSerializer(ModelSerializer):
         model = User
         exclude = ['password', 'groups', 'user_permissions', 'is_staff', 'is_active', 'first_name', 'last_name']
 
-class PaymentSerializer(ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = '__all__'
-
 class ReferralSerializer(ModelSerializer):
     referral_count = serializers.IntegerField(read_only=True)
     class Meta:

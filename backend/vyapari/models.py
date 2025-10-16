@@ -44,3 +44,24 @@ class Vyapari(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Advertisement(models.Model):
+    ADVERTISEMENT_TYPE=[
+        ('global', 'Global'),
+        ('district', 'District'),
+        ('market', 'Market'),
+        ('state', 'State'),
+        ('category', 'Category'),
+        ('subcategory', 'SubCategory'),
+    ]
+    vyapari = models.ForeignKey(Vyapari, related_name='advertisements', on_delete=models.CASCADE)
+    ad_type = models.CharField(max_length=20, choices=ADVERTISEMENT_TYPE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='advertisement_images/')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.vyapari.name} - {self.title}"

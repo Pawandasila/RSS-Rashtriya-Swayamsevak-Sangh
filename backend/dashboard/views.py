@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
 
 from account.models import User
+from payment.models import Payment
+from payment.serializers import PaymentSerializer
 
 from .serializers import UserInfoSerializer, ReferralSerializer
 
@@ -47,3 +49,10 @@ class ReferralListView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return User.objects.filter(referred_by=user).order_by('-date_joined')
+    
+class PaymentListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PaymentSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Payment.objects.filter(email=user.email).order_by('-timestamp')
