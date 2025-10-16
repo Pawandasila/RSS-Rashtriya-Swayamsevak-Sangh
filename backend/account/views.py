@@ -6,7 +6,13 @@ from django.contrib.auth.hashers import make_password
 import uuid
 
 from account.models import User
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
+from dashboard.permissions import IsAdmin, IsStaff
+from dashboard.serializers import UserInfoSerializer
 from .serializers import UserJoinSerializer, UserMemberSerializer
 
 def generate_user_id():
@@ -60,4 +66,45 @@ class UserMemberView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserListView(ListAPIView):
+    permission_classes = [IsAdmin, IsStaff]
+    queryset = User.objects.annotate(referral_count=Count('referrals'))
+    serializer_class = UserInfoSerializer
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filterset_fields = ['is_verified', 'is_blocked', 'is_member_account', 'is_volunteer', 'is_business_account', 'is_staff_account', 'is_admin_account', 'user_id', 'id']
+    search_fields = ['name', 'email', 'phone', 'user_id']
+
+class UserDetailView(APIView):
+    permission_classes = [IsAdmin, IsStaff]
+
+    def get(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UserInfoSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def put(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UserInfoSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

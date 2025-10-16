@@ -24,7 +24,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('payment/', include('payment.urls')),
-    path('admin/', include('adminpanel.urls')),
+    # path('admin/', include('adminpanel.urls')),
     path('vyapari/', include('vyapari.urls')),
 ]
 

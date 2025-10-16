@@ -4,11 +4,16 @@ from rest_framework import status
 from django.conf import settings
 from django.db.models import Sum
 from django.utils.timezone import now
+from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 
 from account.models import User
 from .models import Payment
 from .serializers import PaymentSerializer
 from dashboard.permissions import IsStaff, IsAdmin
+from dashboard.filters import PaymentFilter
 
 import razorpay
 
@@ -183,3 +188,30 @@ class PaymentCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PaymentListView(ListAPIView):
+    permission_classes = [IsAdmin, IsStaff]
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filterset_class = PaymentFilter
+    search_fields = ['payment_id', 'order_id', 'name', 'email', 'phone']
+
+class PaymentDetailView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request, id):
+        try:
+            payment = Payment.objects.get(id=id)
+        except Payment.DoesNotExist:
+            return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PaymentSerializer(payment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserPaymentListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PaymentSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Payment.objects.filter(email=user.email).order_by('-timestamp')
