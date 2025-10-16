@@ -38,6 +38,7 @@ class User(AbstractUser):
     is_business_account = models.BooleanField(default=False)
     is_staff_account = models.BooleanField(default=False)
     is_member_account = models.BooleanField(default=False)
+    is_field_worker = models.BooleanField(default=False)
 
     def __str__(self):
         return self.email
