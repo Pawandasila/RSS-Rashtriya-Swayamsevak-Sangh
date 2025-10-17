@@ -6,12 +6,11 @@ from django.contrib.auth.hashers import make_password
 import uuid
 
 from account.models import User
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
-from dashboard.permissions import IsAdmin, IsStaff
+from dashboard.permissions import IsAdminOrIsStaff
 from dashboard.serializers import UserInfoSerializer
 from .serializers import UserJoinSerializer, UserMemberSerializer
 
@@ -69,7 +68,7 @@ class UserMemberView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserListView(ListAPIView):
-    permission_classes = [IsAdmin, IsStaff]
+    permission_classes = [IsAdminOrIsStaff]
     queryset = User.objects.annotate(referral_count=Count('referrals'))
     serializer_class = UserInfoSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
@@ -77,7 +76,7 @@ class UserListView(ListAPIView):
     search_fields = ['name', 'email', 'phone', 'user_id']
 
 class UserDetailView(APIView):
-    permission_classes = [IsAdmin, IsStaff]
+    permission_classes = [IsAdminOrIsStaff]
 
     def get(self, request, id):
         try:

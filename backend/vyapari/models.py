@@ -1,4 +1,5 @@
 from django.db import models
+from account.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -41,6 +42,7 @@ class Vyapari(models.Model):
     is_verified = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
+    referred_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='vyapari_referrals')
 
     def __str__(self):
         return self.name

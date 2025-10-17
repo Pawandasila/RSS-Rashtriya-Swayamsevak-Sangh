@@ -6,7 +6,7 @@ from rest_framework.generics import ListAPIView
 from django.db.models import Count
 
 from account.models import User
-from dashboard.permissions import IsAdmin, IsStaff
+from dashboard.permissions import IsAdminOrIsStaff
 from .serializers import UserInfoSerializer, ReferralSerializer
 
 class DashboardView(APIView):
@@ -50,7 +50,7 @@ class ReferralListView(ListAPIView):
         return User.objects.filter(referred_by=user).order_by('-date_joined')
     
 class UserReferralListView(ListAPIView):
-    permission_classes = [IsAdmin, IsStaff]
+    permission_classes = [IsAdminOrIsStaff]
     serializer_class = ReferralSerializer
     def get_queryset(self):
         user_id = self.kwargs['user_id']

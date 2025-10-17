@@ -12,7 +12,7 @@ from rest_framework.generics import ListAPIView
 from account.models import User
 from .models import Payment
 from .serializers import PaymentSerializer
-from dashboard.permissions import IsStaff, IsAdmin
+from dashboard.permissions import IsAdminOrIsStaff
 from dashboard.filters import PaymentFilter
 
 import razorpay
@@ -180,7 +180,7 @@ class PaymentStatView(APIView):
         return Response(stats)
     
 class PaymentCreateView(APIView):
-    permission_classes = [IsStaff, IsAdmin]
+    permission_classes = [IsAdminOrIsStaff]
     def post(self, request):
         data = request.data
         serializer = PaymentSerializer(data=data)
@@ -190,7 +190,7 @@ class PaymentCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PaymentListView(ListAPIView):
-    permission_classes = [IsAdmin, IsStaff]
+    permission_classes = [IsAdminOrIsStaff]
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
@@ -198,7 +198,7 @@ class PaymentListView(ListAPIView):
     search_fields = ['payment_id', 'order_id', 'name', 'email', 'phone']
 
 class PaymentDetailView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrIsStaff]
 
     def get(self, request, id):
         try:
