@@ -17,11 +17,12 @@ class VyapariListCreateView(ListCreateAPIView):
     
     filter_backends = [DjangoFilterBackend, SearchFilter] 
     
-    # 2. Specify the custom FilterSet for DjangoFilterBackend
     filterset_class = VyapariFilter
     search_fields = [
         'name', 
-        'address', 
+        'address__city', 
+        'address__state',
+        'address__district', 
         'tags', 
         'category__name',
         'subcategory__name'

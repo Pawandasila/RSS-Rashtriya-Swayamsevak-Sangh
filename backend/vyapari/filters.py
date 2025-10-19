@@ -14,12 +14,12 @@ class VyapariFilter(django_filters.FilterSet):
     city = django_filters.CharFilter(
         field_name='address__city', 
         lookup_expr='icontains',
-        label='City (partial match)'
+        label='City'
     )
     state = django_filters.CharFilter(
         field_name='address__state', 
         lookup_expr='iexact',
-        label='State (exact match)'
+        label='State'
     )
     district = django_filters.CharFilter(
         field_name='address__district', 
