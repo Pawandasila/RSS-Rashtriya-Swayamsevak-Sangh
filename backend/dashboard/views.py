@@ -16,13 +16,13 @@ class DashboardView(APIView):
 
     def get(self, request):
         user = request.user
-        if user.is_business_user:
+        if user.is_business_account:
             vyapari = Vyapari.objects.get(email=user.email)
             vyapari_serializer = VyapariSerializer(vyapari)
         user_serializer = UserInfoSerializer(user)
         data = {
             "user_info": user_serializer.data,
-            "vyapari_info": vyapari_serializer.data if user.is_business_user else None,
+            "vyapari_info": vyapari_serializer.data if user.is_business_account else None,
         }
         return Response(data, status=status.HTTP_200_OK)
 
