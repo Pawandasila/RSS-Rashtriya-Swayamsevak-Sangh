@@ -20,11 +20,19 @@ export default function Page() {
 
   useEffect(() => {
     const data = async () => {
-      const api = await axios.get('/dashboard/referrals');
-      console.log(api);
+      try {
+        const api = await axios.get('/dashboard/referrals');
+        console.log("Referral data:", api);
+      } catch (error) {
+        console.error("Error fetching referral data:", error);
+      }
     }
     data();
   },[])
+
+  useEffect(() => {
+    console.log("Current user data:", user);
+  }, [user]);
 
 
   const referralCount = referralData.total_referrals ?? 0;

@@ -29,10 +29,23 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const fetchDashboardData = async () => {
       try {
         const response = await axiosInstance.get("/dashboard/");
-
-        setUserData(response.data);
+        
+        if (response.data && response.data.user_info) {
+          setUserData(response.data);
+        }
       } catch (error) {
         console.error("Dashboard API Error:", error);
+        const storedData = localStorage.getItem('user_data');
+        if (storedData) {
+          try {
+            const parsedData = JSON.parse(storedData);
+            if (parsedData.user_info) {
+              setUserData(parsedData);
+            }
+          } catch (parseError) {
+            console.error("Error parsing stored data:", parseError);
+          }
+        }
       }
     };
 

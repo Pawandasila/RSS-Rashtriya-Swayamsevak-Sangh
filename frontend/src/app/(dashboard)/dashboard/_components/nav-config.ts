@@ -19,6 +19,7 @@ export type DashboardRole =
   | "staff"
   | "volunteer"
   | "member"
+  | "field_worker"
   | "audience";
 
 export interface NavItemConfig {
@@ -52,6 +53,10 @@ export const DASHBOARD_ROLE_DEFINITIONS: RoleDefinition[] = [
   {
     role: "member",
     flags: ["is_member_account"],
+  },
+  {
+    role: "field_worker",
+    flags: ["is_field_worker"],
   },
 ];
 
@@ -144,7 +149,8 @@ export const deriveDashboardRoles = (user: User | null): DashboardRole[] => {
     !roles.has("admin") &&
     !roles.has("staff") &&
     !roles.has("volunteer") &&
-    !roles.has("member")
+    !roles.has("member") &&
+    !roles.has("field_worker")
   ) {
     roles.add("audience");
   }

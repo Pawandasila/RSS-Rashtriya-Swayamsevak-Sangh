@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronUp, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -60,6 +60,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  const getUserImageUrl = React.useMemo(() => {
+    if (!user?.image) return undefined;
+
+    if (user.image.startsWith("http://") || user.image.startsWith("https://")) {
+      return user.image;
+    }
+
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    return `${baseURL}${user.image}`;
+  }, [user?.image]);
 
   const isActive = (url: string) => {
     if (url === "/dashboard") {
@@ -126,7 +137,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             : "text-sidebar-foreground hover:translate-x-0.5"
                         }
                       `}
-                    >
+                      >
                         <Link
                           href={item.url}
                           className="flex items-center gap-3 w-full"
@@ -189,6 +200,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
+                      {getUserImageUrl && (
+                        <AvatarImage
+                          src={getUserImageUrl}
+                          alt={user?.name || "User"}
+                        />
+                      )}
                       <AvatarFallback className="rounded-lg bg-orange-500 text-white">
                         {user?.name ? getUserInitials(user.name) : "U"}
                       </AvatarFallback>
@@ -229,6 +246,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ) : (
               <SidebarMenuButton size="lg" className="cursor-default">
                 <Avatar className="h-8 w-8 rounded-lg">
+                  {getUserImageUrl && (
+                    <AvatarImage
+                      src={getUserImageUrl}
+                      alt={user?.name || "User"}
+                    />
+                  )}
                   <AvatarFallback className="rounded-lg bg-orange-500 text-white">
                     {user?.name ? getUserInitials(user.name) : "U"}
                   </AvatarFallback>

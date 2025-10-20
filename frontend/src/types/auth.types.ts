@@ -34,6 +34,7 @@ export interface User {
   is_business_account: boolean;
   is_staff_account: boolean;
   is_member_account: boolean;
+  is_field_worker: boolean;
   
   // Referral
   referred_by?: string | null;

@@ -59,12 +59,14 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }));
   }, []);
 
-  const setUserData = useCallback((userData: User) => {
-    localStorage.setItem('user_data', JSON.stringify(userData));
+  const setUserData = useCallback((userData: any) => {
+    const user = userData.user_info || userData;
+    
+    localStorage.setItem('user_data', JSON.stringify({ user_info: user }));
     
     setAuthState((prev) => ({
       ...prev,
-      user: userData,
+      user: user,
       isAuthenticated: true,
       loading: false,
       error: null,
@@ -72,7 +74,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }));
   }, []);
 
-  // Default user data factory
+  
   const createDefaultUser = useCallback((): User => ({
     id: 1,
     user_id: "unknown",
@@ -87,6 +89,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     is_business_account: false,
     is_staff_account: false,
     is_member_account: false,
+    is_field_worker: false,
     is_staff: false,
     is_active: true,
     is_superuser: false,
@@ -106,7 +109,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const storedUserData = localStorage.getItem('user_data');
         if (storedUserData) {
           try {
-            const userData = JSON.parse(storedUserData);
+            const parsedData = JSON.parse(storedUserData);
+            const userData = parsedData.user_info || parsedData;
             setAuthState((prev) => ({
               ...prev,
               user: userData,
@@ -141,7 +145,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         
         if (storedUserData) {
           try {
-            userData = JSON.parse(storedUserData);
+            const parsedData = JSON.parse(storedUserData);
+            userData = parsedData.user_info || parsedData;
           } catch (error) {
             console.error('Error parsing stored user data:', error);
             localStorage.removeItem('user_data');
