@@ -72,7 +72,7 @@ class UserListView(ListAPIView):
     queryset = User.objects.annotate(referral_count=Count('referrals'))
     serializer_class = UserInfoSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['is_verified', 'is_blocked', 'is_member_account', 'is_volunteer', 'is_business_account', 'is_staff_account', 'is_admin_account', 'user_id', 'id']
+    filterset_fields = ['is_verified', 'is_blocked', 'is_member_account', 'is_volunteer', 'is_business_account', 'is_staff_account', 'is_admin_account', 'user_id', 'id', 'email']
     search_fields = ['name', 'email', 'phone', 'user_id']
 
 class UserDetailView(APIView):
