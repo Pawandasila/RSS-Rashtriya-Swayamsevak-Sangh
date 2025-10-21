@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useContext,
 } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -210,7 +211,17 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
           await checkAuth();
 
-          router.push("/dashboard");
+          // Check if there's a redirect URL stored
+          const redirectUrl = typeof window !== "undefined" 
+            ? localStorage.getItem("redirectAfterLogin") 
+            : null;
+          
+          if (redirectUrl) {
+            localStorage.removeItem("redirectAfterLogin");
+            router.push(redirectUrl);
+          } else {
+            router.push("/dashboard");
+          }
 
           return {
             success: true,
@@ -423,6 +434,14 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export { AuthContext, AuthProvider };

@@ -211,6 +211,47 @@ export function UserTable({
     handleFilterChange(filterType);
   }, [filterType, handleFilterChange]);
 
+  const getUserRoles = (
+    user: User
+  ): Array<{
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+  }> => {
+    const roles: Array<{
+      label: string;
+      variant: "default" | "secondary" | "destructive" | "outline";
+    }> = [];
+
+    if (user.is_blocked) {
+      roles.push({ label: "Blocked", variant: "destructive" });
+    }
+
+    if (user.is_admin_account || user.is_superuser) {
+      roles.push({ label: "Admin", variant: "destructive" });
+    }
+    if (user.is_staff_account) {
+      roles.push({ label: "Staff", variant: "default" });
+    }
+    if (user.is_volunteer) {
+      roles.push({ label: "Volunteer", variant: "outline" });
+    }
+    if (user.is_member_account) {
+      roles.push({ label: "Member", variant: "secondary" });
+    }
+    if (user.is_business_account) {
+      roles.push({ label: "Business", variant: "outline" });
+    }
+    if (user.is_field_worker) {
+      roles.push({ label: "Field Worker", variant: "outline" });
+    }
+
+    if (roles.length === 0) {
+      roles.push({ label: "User", variant: "secondary" });
+    }
+
+    return roles;
+  };
+
   const getUserPrimaryRole = (
     user: User
   ): {
@@ -315,7 +356,7 @@ export function UserTable({
               <TableHead>Phone</TableHead>
               <TableHead>Profession</TableHead>
               <TableHead>Gender</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Roles</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -331,7 +372,7 @@ export function UserTable({
               </TableRow>
             ) : (
               sortedUsers.map((user) => {
-                const primaryRole = getUserPrimaryRole(user);
+                const userRoles = getUserRoles(user);
                 return (
                   <TableRow key={user.id}>
                     <TableCell>
@@ -398,9 +439,13 @@ export function UserTable({
                       {user.gender || "N/A"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={primaryRole.variant}>
-                        {primaryRole.label}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {userRoles.map((role, index) => (
+                          <Badge key={index} variant={role.variant} className="text-xs">
+                            {role.label}
+                          </Badge>
+                        ))}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
