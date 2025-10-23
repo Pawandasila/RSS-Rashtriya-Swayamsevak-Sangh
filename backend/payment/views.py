@@ -22,6 +22,10 @@ razorpay_client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KE
 class OrderCreateView(APIView):
     def post(self, request):
         data = request.data.copy()
+        if data['payment_for'] == 'member':
+            user = User.objects.filter(email=data['email']).first()
+            if user and user.is_member_account:
+                return Response({"message": "User already a member."})
         razorpay_order = razorpay_client.order.create(dict(amount=data['amount'], currency=data.get('currency', 'INR'), payment_capture='0'))
         razorpay_order_id = razorpay_order['id']
         data['order_id'] = razorpay_order_id
