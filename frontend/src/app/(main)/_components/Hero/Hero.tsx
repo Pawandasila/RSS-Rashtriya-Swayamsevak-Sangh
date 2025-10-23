@@ -57,7 +57,7 @@ const Hero = () => {
                   variant="secondary"
                   className="inline-flex items-center gap-2 mb-6 px-4 py-3 text-sm sm:text-base font-medium bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border border-orange-300/50 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
                 >
-                  <Heart className="w-6 h-6 sm:w-5 sm:h-5 flex-shrink-0 text-white" />
+                  
                   <span className="text-white font-medium">
                     United for Dharma, Dedicated for Nation
                   </span>
@@ -101,10 +101,10 @@ const Hero = () => {
                   Our Growing Community
                 </p>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-background dark:from-orange-950/20 dark:to-background rounded-lg border border-orange-200/50 dark:border-orange-800/30 shadow-[inset_0_2px_8px_rgba(249,115,20,0.10)] hover:shadow-[inset_0_2px_12px_rgba(249,115,22,0.12)] transition-all duration-300">
                     <div className="flex items-center justify-center mb-2">
-                      <Users className="w-5 h-5 text-primary mr-2" />
-                      <div className="text-2xl font-bold text-primary">
+                      <Users className="w-5 h-5 text-orange-600 dark:text-orange-500 mr-2" />
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-500">
                         10K+
                       </div>
                     </div>
@@ -112,19 +112,19 @@ const Hero = () => {
                       Active Members
                     </div>
                   </div>
-                  <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-background dark:from-orange-950/20 dark:to-background rounded-lg border border-orange-200/50 dark:border-orange-800/30 shadow-[inset_0_2px_8px_rgba(249,115,20,0.10)] hover:shadow-[inset_0_2px_12px_rgba(249,115,22,0.12)] transition-all duration-300">
                     <div className="flex items-center justify-center mb-2">
-                      <MapPin className="w-5 h-5 text-primary mr-2" />
-                      <div className="text-2xl font-bold text-primary">50+</div>
+                      <MapPin className="w-5 h-5 text-orange-600 dark:text-orange-500 mr-2" />
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-500">50+</div>
                     </div>
                     <div className="text-xs md:text-sm text-muted-foreground">
                       Cities
                     </div>
                   </div>
-                  <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-background dark:from-orange-950/20 dark:to-background rounded-lg border border-orange-200/50 dark:border-orange-800/30 shadow-[inset_0_2px_8px_rgba(249,115,20,0.10)] hover:shadow-[inset_0_2px_12px_rgba(249,115,22,0.12)] transition-all duration-300">
                     <div className="flex items-center justify-center mb-2">
-                      <Award className="w-5 h-5 text-primary mr-2" />
-                      <div className="text-2xl font-bold text-primary">
+                      <Award className="w-5 h-5 text-orange-600 dark:text-orange-500 mr-2" />
+                      <div className="text-2xl font-bold text-orange-600 dark:text-orange-500">
                         100+
                       </div>
                     </div>
