@@ -17,6 +17,7 @@ class Level(models.Model):
 class Designation(models.Model):
     title = models.CharField(max_length=100)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='designations')
+    total_positions = models.PositiveIntegerField()
     def __str__(self):
         return self.title
     
