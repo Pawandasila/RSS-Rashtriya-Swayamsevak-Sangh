@@ -26,6 +26,7 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     # path('admin/', include('adminpanel.urls')),
     path('vyapari/', include('vyapari.urls')),
+    path('volunteer/', include('volunteer.urls')),
 ]
 
 if settings.DEBUG:
