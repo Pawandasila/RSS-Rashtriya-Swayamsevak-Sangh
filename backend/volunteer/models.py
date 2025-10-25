@@ -1,6 +1,9 @@
 from django.db import models
 from account.models import User
 
+def volunteer_directory_path(instance, filename):
+    return f'volunteer_uploads/{instance.user.username}/{filename}'
+
 class Wing(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -24,6 +27,7 @@ class Designation(models.Model):
 class Volunteer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='volunteer')
     phone_number = models.CharField(max_length=15, unique=True)
+    affidavit = models.FileField(upload_to=volunteer_directory_path, blank=True, null=True)
     wing = models.ForeignKey(Wing, on_delete=models.SET_NULL, null=True, related_name='volunteers')
     level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True, related_name='volunteers')
     designation = models.ForeignKey(Designation, on_delete=models.SET_NULL, null=True, related_name='volunteers')
