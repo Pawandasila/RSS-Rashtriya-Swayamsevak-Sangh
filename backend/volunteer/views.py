@@ -114,3 +114,28 @@ class ApplicationDetailView(RetrieveUpdateDestroyAPIView):
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             return [IsAdminOrIsStaff()]
         return [AllowAny()]
+    
+class AssignVolunteerFromApplicationView(RetrieveUpdateDestroyAPIView):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+
+    def put(self, request, *args, **kwargs):
+        application = self.get_object()
+        volunteer, created = Volunteer.objects.get_or_create(
+            user=application.user,
+            defaults={
+                'phone_number': application.phone_number,
+                'wing': application.wing,
+                'level': application.level,
+                'designation': application.designation,
+                'affidavit': application.affidavit,
+            }
+        )
+        if not created:
+            return Response({'detail': 'Volunteer already exists.'}, status=400)
+        
+        application.status = 'Approved'
+        application.remarks = request.data.get('remarks', '')
+        application.save()
+
+        return Response({'detail': 'Volunteer assigned successfully.'}) 

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import WingListCreateView, WingDetailView, LevelListCreateView, LevelDetailView, DesignationListCreateView, DesignationDetailView, VolunteerListCreateView, VolunteerDetailView, ApplicationListCreateView, ApplicationDetailView, WingDetailWithLevelsView
+from .views import WingListCreateView, WingDetailView, LevelListCreateView, LevelDetailView, DesignationListCreateView, DesignationDetailView, VolunteerListCreateView, VolunteerDetailView, ApplicationListCreateView, ApplicationDetailView, WingDetailWithLevelsView, AssignVolunteerFromApplicationView
 
 urlpatterns = [
     path('wings/', WingListCreateView.as_view(), name='wing-list-create'),
@@ -17,4 +17,6 @@ urlpatterns = [
 
     path('applications/', ApplicationListCreateView.as_view(), name='application-list-create'),
     path('applications/<int:pk>/', ApplicationDetailView.as_view(), name='application-detail'),
+
+    path('applications/assign/<int:pk>/', AssignVolunteerFromApplicationView.as_view(), name='assign-volunteer-from-application'),
 ]
