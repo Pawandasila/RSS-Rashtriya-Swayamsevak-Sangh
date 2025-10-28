@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny
-from django.db.models import Q, Count
+from django.db.models import Count
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 
 from dashboard.permissions import IsAdminOrIsStaff
 from .models import Volunteer, Wing, Level, Designation, Application
@@ -40,6 +41,20 @@ class LevelListCreateView(ListCreateAPIView):
         if self.request.method in ['POST']:
             return [IsAdminOrIsStaff()]
         return [AllowAny()]
+    
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        wing = data.get("wing")
+        levels = data.get("level")
+        if not wing or not isinstance(levels, list):
+            return Response(
+                {"detail": "Invalid data. Expected {'wing': ..., 'level': [...]}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        level_objs = [Level(name=lvl, wing_id=wing) for lvl in levels]
+        created_levels = Level.objects.bulk_create(level_objs)
+        serializer = self.get_serializer(created_levels, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class LevelDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Level.objects.all()
