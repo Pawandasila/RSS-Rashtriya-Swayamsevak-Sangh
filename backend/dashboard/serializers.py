@@ -5,7 +5,8 @@ from account.models import User
 from payment.models import Payment
 
 class UserInfoSerializer(ModelSerializer):
-    referral_count = referral_count = serializers.IntegerField(read_only=True)
+    referral_count = serializers.IntegerField(read_only=True)
+    referred_by = serializers.SlugRelatedField(slug_field='user_id', read_only=True)
     class Meta:
         model = User
         exclude = ['password', 'groups', 'user_permissions', 'is_staff', 'is_active', 'first_name', 'last_name']
