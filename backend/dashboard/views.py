@@ -101,7 +101,7 @@ class GetDocumentView(APIView):
             "reg_no": f'R{user.user_id}',
             "in": user.volunteer.designation if user.is_volunteer else "Member",
             "mob": user.phone,
-            "date": user.volunteer.joining_date.strftime("%d-%m-%Y") if user.is_volunteer else user.date_joined.strftime("%d-%m-%Y"),
+            "date": user.volunteer.joined_date.strftime("%d-%m-%Y") if user.is_volunteer else user.date_joined.strftime("%d-%m-%Y"),
             "block": f'{user.sub_district}, {user.city}',
             "district": user.district,
             "state": user.state,
