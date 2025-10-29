@@ -21,6 +21,10 @@ class DesignationSerializer(ModelSerializer):
         fields = '__all__'
 
 class VolunteerSerializer(ModelSerializer):
+    user = UserInfoSerializer(read_only=True)
+    wing_name = serializers.CharField(source='wing.name', read_only=True)
+    level_name = serializers.CharField(source='level.name', read_only=True)
+    designation_title = serializers.CharField(source='designation.title', read_only=True)   
     class Meta:
         model = Volunteer
         fields = '__all__'
