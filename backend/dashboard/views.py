@@ -11,6 +11,16 @@ from .serializers import UserInfoSerializer, ReferralSerializer
 from vyapari.serializers import VyapariSerializer
 from vyapari.models import Vyapari
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.http import FileResponse
+from .pdf_builder.utils.builder import generate_pdf
+from .pdf_builder.utils.templates import ID_CARD_LAYOUT, CERTIFICATE_LAYOUT
+
+import os
+from django.conf import settings
+
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -68,3 +78,40 @@ class UserReferralListView(ListAPIView):
         except User.DoesNotExist:
             return User.objects.none()
         return User.objects.filter(referred_by=user).order_by('-date_joined').annotate(referral_count=Count('referrals'))
+    
+class GetDocumentView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        doc_type = request.data.get("document_type")
+        user = request.user
+        photo = user.image if user.image else None
+        if not doc_type:
+            return Response({"error": "Missing document type"}, status=400)
+        if doc_type == "idcard":
+            template_path = os.path.join(settings.BASE_DIR, "dashboard", "pdf_builder", "templates", "documents", "id_card.pdf")
+            layout = ID_CARD_LAYOUT
+        elif doc_type == "certificate":
+            template_path = os.path.join(settings.BASE_DIR, "dashboard", "pdf_builder", "templates", "documents", "certificate.pdf")
+            layout = CERTIFICATE_LAYOUT
+        else:
+            return Response({"error": "Unknown document type"}, status=400)
+        
+        data = {
+            "name": user.name,
+            "reg_id": f'R{user.user_id}',
+            "in": user.volunteer.designation if user.is_volunteer else "Member",
+            "mob": user.phone,
+            "date": user.volunteer.joining_date.strftime("%d-%m-%Y") if user.is_volunteer else user.date_joined.strftime("%d-%m-%Y"),
+            "block": f'{user.sub_district}, {user.city}',
+            "district": user.district,
+            "state": user.state,
+        }
+        qr_text = f"{settings.FRONTEND_URL}/verify/{user.user_id}/{doc_type}"
+        layout["qr"]["data"] = qr_text
+        pdf_buffer = generate_pdf(template_path, data, image_file=photo)
+        return FileResponse(
+            pdf_buffer,
+            as_attachment=True,
+            filename=f"{doc_type}.pdf",
+            content_type="application/pdf",
+        )
