@@ -78,7 +78,7 @@ const GalleryPage = () => {
         </div>
       </section>
 
-      <section className="py-8 py-16 mt-12 sm:mt-20 lg:mt-0">
+      <section className="py-16 mt-12 sm:mt-20 lg:mt-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           <Tabs defaultValue="photos" className="w-full">
             <div className="flex justify-center mb-6 sm:mb-8">
