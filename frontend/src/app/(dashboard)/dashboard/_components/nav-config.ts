@@ -130,7 +130,7 @@ export const DASHBOARD_NAV_ITEMS: NavItemConfig[] = [
     url: "/dashboard/volunteer-registration",
     icon: CreditCard,
     description: "Volunteer Registration",
-    roles: ["volunteer"],
+    roles: ["volunteer", "member"],
   },
   {
     title: "Volunteer Details",
