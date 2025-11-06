@@ -27,7 +27,7 @@ class Designation(models.Model):
 class Volunteer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='volunteer')
     phone_number = models.CharField(max_length=15, unique=True)
-    affidavit = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
+    # affidavit = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     wing = models.ForeignKey(Wing, on_delete=models.SET_NULL, null=True, related_name='volunteers')
     level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True, related_name='volunteers')
     designation = models.ForeignKey(Designation, on_delete=models.SET_NULL, null=True, related_name='volunteers')
@@ -36,6 +36,8 @@ class Volunteer(models.Model):
     aadhar_card_back = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     image = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     can_view_member_data = models.BooleanField(default=False)
+    can_view_volunteer_data = models.BooleanField(default=True)
+    hindi_name = models.CharField(max_length=150, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -52,10 +54,9 @@ class Application(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     wing = models.ForeignKey(Wing, on_delete=models.SET_NULL, null=True)
     level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True)
-    level_hindi_value = models.CharField(max_length=150, blank=True, null=True)
     designation = models.ForeignKey(Designation, on_delete=models.SET_NULL, null=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    affidavit = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
+    # affidavit = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     aadhar_card_front = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     aadhar_card_back = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)
     image = models.ImageField(upload_to=volunteer_directory_path, blank=True, null=True)

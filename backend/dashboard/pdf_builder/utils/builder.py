@@ -1,24 +1,32 @@
+# -*- coding: utf-8 -*-
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from PyPDF2 import PdfReader, PdfWriter
-from PIL import Image, ImageDraw, ImageEnhance
+from PIL import Image, ImageDraw, ImageEnhance, ImageFont
 import qrcode
 from io import BytesIO
 import barcode
 from barcode.writer import ImageWriter
+import os
 
-from .templates import ID_CARD_LAYOUT, CERTIFICATE_LAYOUT
+from django.conf import settings
+
 
 # -------------------------------
 # Reusable helper functions
 # -------------------------------
 
+pdfmetrics.registerFont(TTFont("NotoSansDevanagari", os.path.join(settings.BASE_DIR, "dashboard", "pdf_builder", "templates", "Noto_Sans_Devanagari", "static", "NotoSansDevanagari_Condensed-ExtraBold.ttf")))
+# pdfmetrics.registerFont(TTFont("KRDEV_BOLD", os.path.join(settings.BASE_DIR, "dashboard", "pdf_builder", "templates", "Tiro_Devanagari_Hindi", "TiroDevanagariHindi-Regular.TTF")))
+
 def barcode_generator(data: str, width=200, height=50):
     """Generate a barcode image reader."""
     CODE128 = barcode.get_barcode_class('code128')
-    code128 = CODE128(data, writer=ImageWriter(), add_checksum=False)
+    code128 = CODE128(data, writer=ImageWriter())
     barcode_bytes = BytesIO()
-    code128.write(barcode_bytes, {'module_width': 0.2, 'module_height': height / 10.0, 'font_size': 10, 'text_distance': 1})
+    code128.write(barcode_bytes, {'module_width': 0.2, 'module_height': height / 10.0, 'font_size': 10, 'write_text': False})
     barcode_bytes.seek(0)
     return ImageReader(barcode_bytes)
 
@@ -93,7 +101,6 @@ def make_soft_round_image(img_file, size=(100, 100), radius=20, dpi=300, sharpen
     rounded_bytes.seek(0)
     return ImageReader(rounded_bytes)
 
-
 def generate_qr(data: str, box_size=2):
     """Generate a QR code image reader."""
     qr = qrcode.QRCode(box_size=box_size, border=1)
@@ -156,6 +163,7 @@ def generate_pdf(template_path, data_fields, document_type, layout, image_file=N
         field = item["name"]
         if field in data_fields:
             value = str(data_fields[field])
+            print(f"[FILL FIELD] {field}='{value}'")
             font = item.get("font", "Helvetica")
             size = item.get("size", 10)
             align = item.get("align", "left")
@@ -167,6 +175,8 @@ def generate_pdf(template_path, data_fields, document_type, layout, image_file=N
                 c.setFillColorRGB(1, 1, 1)
             elif color == "black":
                 c.setFillColorRGB(0, 0, 0)
+            elif isinstance(color, tuple) and len(color) == 3:
+                c.setFillColorRGB(color[0]/255, color[1]/255, color[2]/255)
             else:
                 c.setFillColorRGB(0, 0, 0) # Default to black
                 
@@ -228,9 +238,21 @@ def generate_pdf(template_path, data_fields, document_type, layout, image_file=N
         )
         # print(f"[DRAW QR] '{qr_text_data}' at ({qr_conf['x']},{qr_conf['y']})")
 
+
+    if LAYOUT.get("barcode"):
+        barcode_text = data_fields.get("reg_no", "000000")
+        barcode_conf = LAYOUT["barcode"]
+        barcode_reader = barcode_generator(barcode_text, width=barcode_conf["width"], height=barcode_conf["height"])
+        c.drawImage(
+            barcode_reader,
+            barcode_conf["x"],
+            barcode_conf["y"],
+            width=barcode_conf["width"],
+            height=barcode_conf["height"],
+        )
+        
     c.save()
     packet.seek(0)
-
     # --- 6. Merge overlay ---
     overlay_pdf = PdfReader(packet)
     output_pdf = PdfWriter()
