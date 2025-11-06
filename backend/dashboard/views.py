@@ -102,7 +102,6 @@ class GetDocumentView(APIView):
             "district": user.district,
             "state": user.state,
             }
-            qr_text = f"{settings.FRONTEND_URL}/idcard-verify/{user.user_id}"
             pdf_buffer = generate_pdf(template_path, data, document_type=doc_type, layout=layout, image_file=photo, qr_text=qr_text)
         elif doc_type == "certificate":
             if not user.is_volunteer:
@@ -111,11 +110,13 @@ class GetDocumentView(APIView):
             layout = CERTIFICATE_LAYOUT
             data = {
                 "image": user.volunteer.image,
-                "name": user.name,
+                "name": user.volunteer.hindi_name if user.volunteer.hindi_name else user.name,
                 "reg_no": f'R{user.user_id}',
                 "reg_date": user.volunteer.joined_date.strftime("%d-%m-%Y"),
                 "valid_till": user.volunteer.joined_date.replace(year=user.volunteer.joined_date.year + 1).strftime("%d-%m-%Y"),
             }
+            print(f"[DEBUG] Generating certificate for {data['name']} with reg_no {data['reg_no']}, image: {data['image']}")
+            pdf_buffer = generate_pdf(template_path, data, document_type=doc_type, layout=layout, image_file=photo, qr_text=qr_text)
             
         else:
             return Response({"error": "Unknown document type"}, status=400)

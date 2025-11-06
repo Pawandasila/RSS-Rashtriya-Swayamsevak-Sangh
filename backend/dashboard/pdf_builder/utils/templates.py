@@ -21,12 +21,27 @@ ID_CARD_LAYOUT = {
 CERTIFICATE_LAYOUT = {
     "scaling": None,
     "text_fields": [
-        {"name": "name", "x": 300, "y": 400, "font": "Helvetica-Bold", "size": 18},
-        {"name": "reg_no", "x": 280, "y": 370, "size": 14},
-        {"name": "reg_date", "x": 280, "y": 340, "size": 12},
-        {"name": "valid_till", "x": 280, "y": 310, "size": 12},
+        {"name": "name", "x": 300, "y": 400, "font": "NotoSansDevanagari", "size": 20, "align": "center", "max_width": 100, "color": (14, 47, 117)},
+        {"name": "reg_no", "x": 290, "y": 86, "size": 9},
+        {"name": "reg_date", "x": 290, "y": 75, "size": 9},
+        {"name": "valid_till", "x": 290, "y": 64, "size": 9},
     ],
-    "image": {"x": 450, "y": 420, "width": 80, "height": 80, "shape": "round"},
-    "qr": {"x": 500, "y": 100, "width": 60, "height": 60, "data": "Sample QR"},
+    "image": {"x": 240, "y": 420, "width": 120, "height": 130, "shape": "soft_round", "radius": 15},
+    "qr": {"x": 480, "y": 730, "width": 80, "height": 80},
+    "barcode": {"x": 210, "y": 100, "width": 170, "height": 40},
+    "duplicate_page": False,
+}
+
+JOINING_LETTER_LAYOUT = {
+    "scaling": None,
+    "text_fields": [
+        {"name": "name", "x": 100, "y": 700, "font": "NotoSansDevanagari", "size": 16, "align": "left", "max_width": 300, "color": (0, 0, 0)},
+        {"name": "address", "x": 100, "y": 680, "size": 10},
+        {"name": "reg_no", "x": 100, "y": 660, "size": 10},
+        {"name": "joining_date", "x": 100, "y": 640, "size": 10},
+    ],
+    "image": None,
+    "qr": None,
+    "barcode": None,
     "duplicate_page": False,
 }
