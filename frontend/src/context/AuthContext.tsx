@@ -104,7 +104,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         }
       }
 
-      console.error("Failed to refresh user data:", response.status);
+      if (response.status !== 401) {
+        console.error("Failed to refresh user data:", response.status);
+      } else {
+        console.warn("Token expired while refreshing user data (401)");
+      }
       return false;
     } catch (error) {
       console.error("Error refreshing user data:", error);
