@@ -78,6 +78,7 @@ services:
     restart: always
     env_file:
       - ./frontend/.env.local
+      - ./frontend/.env.production
     depends_on:
       - backend
     networks:
