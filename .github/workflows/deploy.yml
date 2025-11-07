@@ -29,4 +29,5 @@ jobs:
           script: |
             cd /home/${{ secrets.VPS_USER }}/app
             docker compose down
+            git pull origin main
             docker compose up -d --build
