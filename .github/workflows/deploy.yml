@@ -20,7 +20,7 @@ jobs:
           source: "."
           target: "/home/${{ secrets.VPS_USER }}/app"
 
-      - name: SSH into VPS and rebuild containers
+      - name: Rebuild containers on VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -29,5 +29,4 @@ jobs:
           script: |
             cd /home/${{ secrets.VPS_USER }}/app
             docker compose down
-            git pull origin main
             docker compose up -d --build
