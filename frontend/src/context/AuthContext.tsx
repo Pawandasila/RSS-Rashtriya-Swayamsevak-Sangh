@@ -52,13 +52,26 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const apiCall = useCallback(
     async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
+      const accessToken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("access_token="))
+        ?.split("=")[1];
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(options.headers instanceof Headers
+          ? Object.fromEntries(options.headers)
+          : (options.headers as Record<string, string> || {})),
+      };
+
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
+
       return fetch(`${baseURL}${endpoint}`, {
         ...options,
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
+        headers,
       });
     },
     [baseURL]
