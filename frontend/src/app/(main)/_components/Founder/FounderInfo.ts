@@ -28,28 +28,28 @@ export const founderInfo: FounderData = {
       id: 1,
       name: "हिमांशु जोशी",
       designation: "संस्थापक, राष्ट्रीय अध्यक्ष",
-      photo: "https://joinrss.org.in/wp-content/uploads/2025/07/Picsart_25-07-21_14-58-16-109-scaled.jpg",
+      photo: "/people/himanshu_joshi.jpg",
       quote: "राष्ट्र प्रथम की भावना से ही भारत सशक्त और आत्मनिर्भर बनेगा।"
     },
     {
       id: 2,
-      name: "राज कुमार",
-      designation: "उपाध्यक्ष",
-      photo: "https://joinrss.org.in/wp-content/uploads/2025/07/Picsart_25-07-21_14-58-16-109-scaled.jpg",
+      name: "पू. स्वामी श्री दर्शन भारती जी",
+      designation: "मुख्य संरक्षक",
+      photo: "/people/darshan.jpg",
       quote: "सेवा ही सच्ची भक्ति है।"
     },
     {
       id: 3,
-      name: "विक्रम सिंह",
-      designation: "महासचिव",
-      photo: "https://joinrss.org.in/wp-content/uploads/2025/07/Picsart_25-07-21_14-58-16-109-scaled.jpg",
+      name: "पू. योगी श्री आदित्यनाथ जी",
+      designation: "प्रेरणा स्रोत",
+      photo: "/people/yogi_ji.jpg",
       quote: "संगठन में ही शक्ति है।"
     },
     {
       id: 4,
-      name: "अनिता शर्मा",
-      designation: "महिला प्रभारी",
-      photo: "https://joinrss.org.in/wp-content/uploads/2025/07/Picsart_25-07-21_14-58-16-109-scaled.jpg",
+      name: "प. पू. डॉ. केशव बलिराम हेडगेवार जी",
+      designation: "मुख्य प्रेरणा स्रोत",
+      photo: "/people/keshav_ji.jpg",
       quote: "नारी शक्ति से ही राष्ट्र शक्ति।"
     }
   ]
