@@ -32,8 +32,8 @@ services:
       - redis
     volumes:
       - ./backend:/app
+      - ./backend/mediafiles:/app/mediafiles
       - static_volume:/app/staticfiles
-      - media_volume:/app/mediafiles
     networks:
       - app_network
     expose:
@@ -100,8 +100,8 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./backend/mediafiles:/media
       - static_volume:/staticfiles
-      - media_volume:/media
     networks:
       - app_network
 
