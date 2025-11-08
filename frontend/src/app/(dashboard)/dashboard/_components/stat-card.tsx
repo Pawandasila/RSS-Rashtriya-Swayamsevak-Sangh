@@ -134,9 +134,13 @@ const StatCard: React.FC<StatCardProps> = ({
     const accessToken = Cookies.get("access_token");
 
     if (!accessToken) {
-      console.error("Access token not found in cookies!");
+      toast.error("Authentication required", {
+        description: "Please login again to download your ID card",
+      });
       return;
     }
+
+    toast.loading("Generating ID card PDF...", { id: "pdf-download" });
 
     try {
       const res = await fetch(
@@ -152,14 +156,38 @@ const StatCard: React.FC<StatCardProps> = ({
       );
 
       if (!res.ok) {
-        console.error("Error generating PDF:", await res.text());
+        const errorText = await res.text();
+        let errorMessage = "Failed to generate ID card";
+        
+        switch (res.status) {
+          case 400:
+            errorMessage = "Invalid request. Please check your account details.";
+            break;
+          case 401:
+            errorMessage = "Session expired. Please login again.";
+            break;
+          case 403:
+            errorMessage = "You don't have permission to download ID card.";
+            break;
+          case 404:
+            errorMessage = "ID card service not found.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again later.";
+            break;
+          default:
+            errorMessage = `Error: ${res.status} - ${res.statusText}`;
+        }
+        
+        toast.error(errorMessage, {
+          id: "pdf-download",
+          description: errorText || "Please contact support if the issue persists.",
+        });
         return;
       }
 
       const blob = await res.blob();
-
       const url = window.URL.createObjectURL(blob);
-
       const link = document.createElement("a");
       link.href = url;
       link.download = "idcard.pdf";
@@ -167,9 +195,15 @@ const StatCard: React.FC<StatCardProps> = ({
 
       setTimeout(() => window.URL.revokeObjectURL(url), 5000);
 
-      console.log("PDF downloaded successfully!");
+      toast.success("ID card downloaded successfully!", {
+        id: "pdf-download",
+      });
     } catch (error) {
       console.error("Error generating PDF:", error);
+      toast.error("Network error", {
+        id: "pdf-download",
+        description: "Failed to connect to the server. Please check your internet connection.",
+      });
     }
   }
 
@@ -177,9 +211,13 @@ const StatCard: React.FC<StatCardProps> = ({
     const accessToken = Cookies.get("access_token");
 
     if (!accessToken) {
-      console.error("Access token not found in cookies!");
+      toast.error("Authentication required", {
+        description: "Please login again to download your certificate",
+      });
       return;
     }
+
+    toast.loading("Generating volunteer certificate PDF...", { id: "certificate-download" });
 
     try {
       const res = await fetch(
@@ -195,14 +233,38 @@ const StatCard: React.FC<StatCardProps> = ({
       );
 
       if (!res.ok) {
-        console.error("Error generating PDF:", await res.text());
+        const errorText = await res.text();
+        let errorMessage = "Failed to generate volunteer certificate";
+        
+        switch (res.status) {
+          case 400:
+            errorMessage = "Invalid request. Please check your account details.";
+            break;
+          case 401:
+            errorMessage = "Session expired. Please login again.";
+            break;
+          case 403:
+            errorMessage = "You don't have permission to download certificate.";
+            break;
+          case 404:
+            errorMessage = "Certificate service not found.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again later.";
+            break;
+          default:
+            errorMessage = `Error: ${res.status} - ${res.statusText}`;
+        }
+        
+        toast.error(errorMessage, {
+          id: "certificate-download",
+          description: errorText || "Please contact support if the issue persists.",
+        });
         return;
       }
 
       const blob = await res.blob();
-
       const url = window.URL.createObjectURL(blob);
-
       const link = document.createElement("a");
       link.href = url;
       link.download = "volunteer_certificate.pdf";
@@ -210,9 +272,15 @@ const StatCard: React.FC<StatCardProps> = ({
 
       setTimeout(() => window.URL.revokeObjectURL(url), 5000);
 
-      console.log("PDF downloaded successfully!");
+      toast.success("Volunteer certificate downloaded successfully!", {
+        id: "certificate-download",
+      });
     } catch (error) {
       console.error("Error generating PDF:", error);
+      toast.error("Network error", {
+        id: "certificate-download",
+        description: "Failed to connect to the server. Please check your internet connection.",
+      });
     }
   }
 
@@ -424,28 +492,37 @@ const StatCard: React.FC<StatCardProps> = ({
             <div className="space-y-3 pt-4 border-t">
               <p className="text-sm font-medium text-foreground">Quick Actions</p>
               <div className="space-y-2">
-                <Button 
-                  onClick={getpdf} 
-                  variant="default"
-                  className="w-full justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                  size="sm"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  ID Card PDF
-                </Button>
-                <Button 
-                  onClick={getVolunteerCertificate}
-                  variant="default"
-                  className="w-full justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                  size="sm"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                  Volunteer Certificate
-                </Button>
+                {user?.is_member_account && (
+                  <Button 
+                    onClick={getpdf} 
+                    variant="default"
+                    className="w-full justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                    size="sm"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    ID Card PDF
+                  </Button>
+                )}
+                {user?.is_volunteer && (
+                  <Button 
+                    onClick={getVolunteerCertificate}
+                    variant="default"
+                    className="w-full justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                    size="sm"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                    Volunteer Certificate
+                  </Button>
+                )}
+                {!user?.is_member_account && !user?.is_volunteer && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No documents available
+                  </p>
+                )}
               </div>
             </div>
 

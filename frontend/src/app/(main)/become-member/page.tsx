@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef, type ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   Loader2,
@@ -25,6 +26,7 @@ import {
   PersonalDetailsStep,
   AddressStep,
   PhotoUploadStep,
+  DeclarationStep,
   ReviewStep,
 } from "@/module/dashboard/member/components";
 import { useMemberSubmit } from "@/module/dashboard/member/hooks";
@@ -46,8 +48,10 @@ type FormState = {
   postal_code: string;
   image: File | null;
   referred_by?: string;
+  declaration_accepted: boolean;
+  declaration_date: string;
+  declaration_name: string;
 };
-
 
 
 const defaultFormState: FormState = {
@@ -64,6 +68,9 @@ const defaultFormState: FormState = {
   postal_code: "",
   image: null,
   referred_by: "",
+  declaration_accepted: false,
+  declaration_date: new Date().toISOString().split('T')[0],
+  declaration_name: "",
 };
 
 type StateDistrictData = typeof rawStateDistrictData;
@@ -92,6 +99,10 @@ const steps: StepConfig[] = [
     description: "Upload a recent passport size photo.",
   },
   {
+    title: "Legal Declaration",
+    description: "Accept terms and conditions.",
+  },
+  {
     title: "Review & payment",
     description: "Confirm everything looks correct.",
   },
@@ -105,6 +116,8 @@ const BecomeMemberPage = () => {
   const [userDataLoaded, setUserDataLoaded] = useState(false);
   const [formState, setFormState] = useState<FormState>(defaultFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const router = useRouter();
 
   const formDataRef = useRef<{
     name: string;
@@ -123,7 +136,6 @@ const BecomeMemberPage = () => {
   const { user } = useAuth();
   const stateOptions = useMemo(() => getIndianStates(rawStateDistrictData), []);
 
-  // Pre-fill form from authenticated user data (from AuthContext only, no localStorage)
   useEffect(() => {
     if (userDataLoaded || !user) {
       return;
@@ -210,7 +222,7 @@ const BecomeMemberPage = () => {
     setUserDataLoaded(true);
   }, [user, userDataLoaded, stateOptions]);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | boolean) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => {
@@ -294,6 +306,15 @@ const BecomeMemberPage = () => {
       }
     }
 
+    if (stepIndex === 3) {
+      if (!formState.declaration_name.trim()) {
+        stepErrors.declaration_name = "Please enter your name for declaration.";
+      }
+      if (!formState.declaration_accepted) {
+        stepErrors.declaration_accepted = "You must accept the terms and declaration to proceed.";
+      }
+    }
+
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
   };
@@ -304,6 +325,13 @@ const BecomeMemberPage = () => {
         description: "Check the form for any errors highlighted in red.",
       });
       return;
+    }
+
+    if (activeStep === 2 && formState.name && !formState.declaration_name) {
+      setFormState((prev) => ({
+        ...prev,
+        declaration_name: prev.name,
+      }));
     }
 
     setErrors({});
@@ -343,32 +371,24 @@ const BecomeMemberPage = () => {
 
       setSubmitted(true);
 
-      
-        const receiptParams = new URLSearchParams({
-          name: savedFormData.name || "",
-          phone: savedFormData.phone || "",
-          date: new Date().toLocaleDateString("en-IN"),
-          mode: "Online payment",
-          amount: "199",
-          amountWords: "One Hundred Ninety Nine Rupees Only",
-          receiptNumber: "MEMBER_" + Date.now(),
-          country: savedFormData.country || "India",
-          state: savedFormData.state || "",
-          city: savedFormData.city || "",
-          postal_code: savedFormData.postal_code || "",
-        });
+      // Navigate to receipt page instead of opening popup
+      const receiptParams = new URLSearchParams({
+        name: savedFormData.name || "",
+        phone: savedFormData.phone || "",
+        date: new Date().toLocaleDateString("en-IN"),
+        mode: "Online payment",
+        amount: "199",
+        amountWords: "One Hundred Ninety Nine Rupees Only",
+        receiptNumber: "MEMBER_" + Date.now(),
+        country: savedFormData.country || "India",
+        state: savedFormData.state || "",
+        city: savedFormData.city || "",
+        postal_code: savedFormData.postal_code || "",
+      });
 
-        const receiptUrl = `/receipt?${receiptParams.toString()}`;
-
-        const link = document.createElement("a");
-        link.href = receiptUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      router.push(`/receipt?${receiptParams.toString()}`);
     }
-  }, [paymentSuccess, submitted]);
+  }, [paymentSuccess, submitted, router]);
 
   useEffect(() => {
     if (paymentError) {
@@ -503,6 +523,16 @@ const BecomeMemberPage = () => {
           formData={formState}
           errors={errors}
           onFileChange={handleFileChange}
+        />
+      );
+    }
+
+    if (activeStep === 3) {
+      return (
+        <DeclarationStep
+          formData={formState}
+          errors={errors}
+          onChange={handleChange}
         />
       );
     }
