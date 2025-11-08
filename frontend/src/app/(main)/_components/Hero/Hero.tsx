@@ -152,7 +152,7 @@ const Hero = () => {
                   asChild
                 >
                   <Link
-                    href="https://app.joinrss.org.in/registration"
+                    href="/auth/login"
                     className="flex items-center justify-center text-white"
                   >
                     Join Now

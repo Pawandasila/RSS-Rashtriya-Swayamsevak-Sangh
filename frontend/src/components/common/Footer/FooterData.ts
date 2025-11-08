@@ -20,12 +20,12 @@ export const quickLinks: FooterLink[] = [
   { label: "About Us", href: "/about" },
   {
     label: "Join Now",
-    href: "https://app.joinrss.org.in/registration/join",
+    href: "/auth/login",
     external: true,
   },
   {
     label: "Donate",
-    href: "https://app.joinrss.org.in/donate_now/donate",
+    href: "/donate-now",
     external: true,
   },
   { label: "Contact", href: "/contact" },
