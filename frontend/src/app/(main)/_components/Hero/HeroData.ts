@@ -16,7 +16,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "संस्कारों का पुनर्जागरण, भारत का पुनर्निर्माण",
     description: "Join us in our mission to restore traditional values and build a stronger nation through dedicated service.",
     ctaText: "Join Now",
-    ctaLink: "https://app.joinrss.org.in/registration"
+    ctaLink: "#"
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "सेवा का आह्वान, उत्थान का कर्तव्य",
     description: "Answer the call of service and be part of the movement that uplifts our society.",
     ctaText: "Donate Now",
-    ctaLink: "https://app.joinrss.org.in/donate_now"
+    ctaLink: "#"
   },
   {
     id: 3,
@@ -34,7 +34,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "वैदिक राष्ट्र का निर्माण, हम सबका संकल्प",
     description: "United in our vision to create a nation rooted in ancient wisdom and modern progress.",
     ctaText: "Join Now",
-    ctaLink: "https://app.joinrss.org.in/registration"
+    ctaLink: "#"
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "भारत सर्वोपरि, धर्म शाश्वत",
     description: "Putting our nation first while upholding the eternal principles of dharma.",
     ctaText: "Donate Now",
-    ctaLink: "https://app.joinrss.org.in/donate_now"
+    ctaLink: "#"
   },
   {
     id: 5,
@@ -52,7 +52,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "सेवा से समर्पण तक",
     description: "Your small contribution can make a significant impact on our mission of national service.",
     ctaText: "Support Us",
-    ctaLink: "https://app.joinrss.org.in/donate_now"
+    ctaLink: "#"
   },
   {
     id: 6,
@@ -61,7 +61,7 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "एक संकल्प - वैदिक भारत",
     description: "United by one sacred vow to build a nation rooted in Vedic principles and values.",
     ctaText: "Click Here",
-    ctaLink: "https://app.joinrss.org.in/registration"
+    ctaLink: "#"
   },
   {
     id: 7,
@@ -70,6 +70,6 @@ export const heroSlides: HeroSlide[] = [
     titleHindi: "हम साथ हैं, हम सक्षम हैं",
     description: "When we unite with shared purpose and determination, we become an unstoppable force for positive change.",
     ctaText: "Click Here",
-    ctaLink: "https://app.joinrss.org.in/registration"
+    ctaLink: "#"
   }
 ];
