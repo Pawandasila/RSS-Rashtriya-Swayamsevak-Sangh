@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
 from django.db.models import Count
 from django.http import FileResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
 from account.models import User
 from dashboard.permissions import IsAdminOrIsStaff
@@ -143,6 +144,8 @@ class GetDocumentView(APIView):
 class DistrictListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = District.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['state']
     serializer_class = DistrictSerializer
 
 class StateListView(ListAPIView):
