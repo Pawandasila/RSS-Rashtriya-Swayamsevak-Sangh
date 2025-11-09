@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.generics import ListAPIView
 from django.db.models import Count
 from django.http import FileResponse
@@ -142,13 +142,13 @@ class GetDocumentView(APIView):
         )
 
 class DistrictListView(ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = District.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['state']
     serializer_class = DistrictSerializer
 
 class StateListView(ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = State.objects.all()
     serializer_class = StateSerializer
