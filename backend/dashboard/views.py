@@ -13,8 +13,8 @@ from dashboard.permissions import IsAdminOrIsStaff
 from .serializers import UserInfoSerializer, ReferralSerializer
 from vyapari.serializers import VyapariSerializer
 from vyapari.models import Vyapari
-from .models import District
-from .serializers import DistrictSerializer
+from .models import District, State
+from .serializers import DistrictSerializer, StateSerializer
 from .pdf_builder.utils.builder import generate_pdf
 from .pdf_builder.utils.templates import ID_CARD_LAYOUT, CERTIFICATE_LAYOUT, JOINING_LETTER_LAYOUT
 
@@ -144,3 +144,8 @@ class DistrictListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
+
+class StateListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = State.objects.all()
+    serializer_class = StateSerializer
