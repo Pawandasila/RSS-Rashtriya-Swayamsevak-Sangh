@@ -45,27 +45,39 @@ export default function UserProfileModel({id} : {id : number | null}) {
     });
   };
 
+  // Icon components from lucide-react created with forwardRef are objects (not functions);
+  // previous logic tried to render that object directly, causing "Objects are not valid as a React child".
+  // Accept either a React element or a component type and render safely.
   const InfoRow = ({
     icon: Icon,
     label,
     value,
   }: {
-    icon: React.ReactNode | React.ComponentType<{ className?: string }>;
+    icon: React.ElementType | React.ReactElement;
     label: string;
     value: string | undefined;
-  }) => (
-    <div className="flex items-start gap-3 py-2">
-      {typeof Icon === 'function' ? (
-        <Icon className="h-4 w-4 text-muted-foreground mt-0.5" />
-      ) : (
-        Icon
-      )}
-      <div className="flex-1 space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <p className="text-sm">{value || "Not provided"}</p>
+  }) => {
+    let renderedIcon: React.ReactElement;
+    if (React.isValidElement(Icon)) {
+      const existingClass = (Icon.props as any)?.className || '';
+      renderedIcon = React.cloneElement(Icon as React.ReactElement<any>, {
+        className: `${existingClass} h-4 w-4 text-muted-foreground mt-0.5`.trim(),
+      });
+    } else {
+      renderedIcon = React.createElement(Icon as React.ElementType, {
+        className: 'h-4 w-4 text-muted-foreground mt-0.5',
+      });
+    }
+    return (
+      <div className="flex items-start gap-3 py-2">
+        {renderedIcon}
+        <div className="flex-1 space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="text-sm">{value || 'Not provided'}</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   useEffect(() => {
     if (id) {
