@@ -115,6 +115,20 @@ class ApplicationListCreateView(ListCreateAPIView):
     filterset_fields = ['status', 'wing', 'level', 'designation']
     search_fields = ['user__name', 'user__email', 'user__user_id']
 
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        referred_by = data.get("referred_by_volunteer")
+        referred_user = User.objects.filter(user_id=referred_by).first() if referred_by else None    
+        if referred_by and not referred_user:
+            return Response({'detail': 'Referring user does not exist.'}, status=400)
+        if referred_by and not referred_user.is_volunteer:
+            return Response({'detail': 'Referring user is not a volunteer.'}, status=400)
+        data["referred_by_volunteer"] = referred_user.id if referred_user else None
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 class ApplicationDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationDetailSerializer
