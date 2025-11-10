@@ -63,6 +63,11 @@ export const ROUTE_ACCESS_MAP: RouteAccess[] = [
     allowedRoles: ["volunteer", "member"],
     description: "Volunteer detail view - volunteers and members",
   },
+  {
+    path: "/dashboard/country-state-management",
+    allowedRoles: ["admin", "staff"],
+    description: "Country and State management - admin and staff only",
+  }
 ];
 
 function findRouteAccess(path: string): RouteAccess | undefined {

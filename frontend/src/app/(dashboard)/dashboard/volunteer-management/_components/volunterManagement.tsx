@@ -32,8 +32,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useAxios from "@/hooks/use-axios";
-import stateDistrictData from "@/lib/state-district.json";
+import { useAuth } from "@/hooks/use-auth";
 import { VolunteerWithUser } from "@/module/dashboard/volunteer/types";
+import { useCountryApi } from "@/module/country/hooks";
+import {
+  StateSelect,
+  DistrictSelect,
+} from "@/module/country/components/country-select";
 
 interface EditingVolunteer extends VolunteerWithUser {
   selectedStates: string[];
@@ -47,6 +52,19 @@ interface UpdateVolunteerData {
 
 export default function VolunteerTable() {
   const axios = useAxios();
+  const { isAdmin, isStaff } = useAuth();
+  const {
+    states,
+    districts,
+    isLoadingStates,
+    isLoadingDistricts,
+    statesError,
+    districtsError,
+    fetchStates,
+    fetchDistricts,
+  } = useCountryApi();
+
+  const canCreateStateDistrict = isAdmin() || isStaff();
 
   const [editing, setEditing] = useState<EditingVolunteer | null>(null);
   const [openEditUser, setOpenEditUser] = useState(false);
@@ -55,79 +73,41 @@ export default function VolunteerTable() {
     useState<VolunteerWithUser | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [selectedState, setSelectedState] = useState<string>("");
-  const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
-  const [districtDropdownOpen, setDistrictDropdownOpen] = useState(false);
 
   const [volunteers, setVolunteers] = useState<VolunteerWithUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const INDIAN_STATES = useMemo(() => {
-    return Object.keys(stateDistrictData.India);
-  }, []);
+  useEffect(() => {
+    fetchStates();
+  }, [fetchStates]);
 
-  const getDistrictsForState = useCallback((stateName: string): string[] => {
-    const stateData =
-      stateDistrictData.India[
-        stateName as keyof typeof stateDistrictData.India
-      ];
-    if (!stateData || !stateData.districts) return [];
-    return Object.keys(stateData.districts);
-  }, []);
+  useEffect(() => {
+    if (selectedState) {
+      const selectedStateItem = states.find((s) => s.name === selectedState);
+      if (selectedStateItem?.id) {
+        fetchDistricts(selectedStateItem.id);
+      }
+    }
+  }, [selectedState, states, fetchDistricts]);
 
-  const isDistrictLevel = useCallback((levelName: string | undefined): boolean => {
-    if (!levelName) return false;
-    const levelNameLower = levelName.toLowerCase();
-    const levelNameHindi = levelName;
-
-    return (
-      levelNameLower.includes("division") ||
-      levelNameLower.includes("district") ||
-      levelNameLower.includes("mandal") ||
-      levelNameHindi.includes("संभाग") ||
-      levelNameHindi.includes("मंडल") ||
-      levelNameHindi.includes("जिला")
-    );
-  }, []);
-
-  const getLocationOptionsCallback = useCallback(
-    (levelName: string | undefined): string[] => {
-      if (!levelName) return INDIAN_STATES;
-
+  const isDistrictLevel = useCallback(
+    (levelName: string | undefined): boolean => {
+      if (!levelName) return false;
       const levelNameLower = levelName.toLowerCase();
       const levelNameHindi = levelName;
 
-      if (
-        levelNameLower.includes("state") ||
-        levelNameLower.includes("pradesh") ||
-        levelNameHindi.includes("प्रदेश")
-      ) {
-        return INDIAN_STATES;
-      }
-
-      if (
+      return (
         levelNameLower.includes("division") ||
         levelNameLower.includes("district") ||
         levelNameLower.includes("mandal") ||
         levelNameHindi.includes("संभाग") ||
         levelNameHindi.includes("मंडल") ||
         levelNameHindi.includes("जिला")
-      ) {
-        if (selectedState) {
-          return getDistrictsForState(selectedState);
-        }
-
-        return INDIAN_STATES;
-      }
-
-      return INDIAN_STATES;
+      );
     },
-    [selectedState, INDIAN_STATES, getDistrictsForState]
+    []
   );
-
-  const locationOptions = useMemo(() => {
-    return getLocationOptionsCallback(editing?.level_name);
-  }, [editing?.level_name, getLocationOptionsCallback]);
 
   const initialStates = (
     v: VolunteerWithUser & { states?: string[] }
@@ -222,13 +202,27 @@ export default function VolunteerTable() {
     [axios, refetch]
   );
 
-  const toggleState = useCallback((location: string) => {
-    if (!editing) return;
-    const set = new Set(editing.selectedStates || []);
-    if (set.has(location)) set.delete(location);
-    else set.add(location);
-    setEditing({ ...editing, selectedStates: Array.from(set) });
-  }, [editing]);
+  const toggleState = useCallback(
+    (location: string) => {
+      if (!editing) return;
+      const set = new Set(editing.selectedStates || []);
+      if (set.has(location)) set.delete(location);
+      else set.add(location);
+      setEditing({ ...editing, selectedStates: Array.from(set) });
+    },
+    [editing]
+  );
+
+  const removeSelectedLocation = useCallback(
+    (location: string) => {
+      if (!editing) return;
+      const updatedStates = (editing.selectedStates || []).filter(
+        (s) => s !== location
+      );
+      setEditing({ ...editing, selectedStates: updatedStates });
+    },
+    [editing]
+  );
 
   const rows = useMemo(() => volunteers || [], [volunteers]);
 
@@ -386,42 +380,32 @@ export default function VolunteerTable() {
 
                     {/* Simple Select for State Level */}
                     {!isDistrictLevel(editing?.level_name) ? (
-                      <div className="relative">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                          onClick={() =>
-                            setStateDropdownOpen(!stateDropdownOpen)
-                          }
-                        >
-                          Select states...
-                        </Button>
-                        {stateDropdownOpen && (
-                          <div className="absolute z-50 mt-1 w-full border rounded-md bg-popover shadow-md">
-                            <div className="max-h-[300px] overflow-y-scroll p-2 space-y-1">
-                              {INDIAN_STATES.map((state) => {
-                                const isSelected =
-                                  editing.selectedStates?.includes(state);
-                                return (
-                                  <div
-                                    key={state}
-                                    className={`px-3 py-2 hover:bg-accent rounded-sm cursor-pointer text-sm flex items-center justify-between ${
-                                      isSelected
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : ""
-                                    }`}
-                                    onClick={() => toggleState(state)}
-                                  >
-                                    <span>{state}</span>
-                                    {isSelected && (
-                                      <Check className="h-4 w-4" />
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
+                      <div className="space-y-2">
+                        <StateSelect
+                          label=""
+                          placeholder="Select states..."
+                          value=""
+                          onValueChange={(stateName) => {
+                            if (
+                              stateName &&
+                              !editing.selectedStates?.includes(stateName)
+                            ) {
+                              setEditing({
+                                ...editing,
+                                selectedStates: [
+                                  ...(editing.selectedStates || []),
+                                  stateName,
+                                ],
+                              });
+                            }
+                          }}
+                          error={statesError}
+                          disabled={isLoadingStates}
+                          showCreateOption={canCreateStateDistrict}
+                          onCreateState={async (newStateName) => {
+                            console.log("New state created:", newStateName);
+                          }}
+                        />
                       </div>
                     ) : (
                       /* District Level - Two Step Selection */
@@ -430,21 +414,18 @@ export default function VolunteerTable() {
                           <label className="text-xs font-medium text-muted-foreground">
                             Step 1: Select State
                           </label>
-                          <Select
+                          <StateSelect
+                            label=""
+                            placeholder="Choose a state..."
                             value={selectedState}
                             onValueChange={setSelectedState}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose a state..." />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                              {INDIAN_STATES.map((state) => (
-                                <SelectItem key={state} value={state}>
-                                  {state}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            error={statesError}
+                            disabled={isLoadingStates}
+                            showCreateOption={canCreateStateDistrict}
+                            onCreateState={async (newStateName) => {
+                              setSelectedState(newStateName);
+                            }}
+                          />
                         </div>
 
                         {selectedState && (
@@ -452,43 +433,41 @@ export default function VolunteerTable() {
                             <label className="text-xs font-medium text-muted-foreground">
                               Step 2: Select Districts from {selectedState}
                             </label>
-                            <div className="relative">
-                              <Button
-                                variant="outline"
-                                className="w-full justify-start text-left font-normal"
-                                onClick={() =>
-                                  setDistrictDropdownOpen(!districtDropdownOpen)
+                            <DistrictSelect
+                              label=""
+                              placeholder="Select districts..."
+                              value=""
+                              onValueChange={(districtName) => {
+                                if (
+                                  districtName &&
+                                  !editing.selectedStates?.includes(
+                                    districtName
+                                  )
+                                ) {
+                                  setEditing({
+                                    ...editing,
+                                    selectedStates: [
+                                      ...(editing.selectedStates || []),
+                                      districtName,
+                                    ],
+                                  });
                                 }
-                              >
-                                Select districts...
-                              </Button>
-                              {districtDropdownOpen && (
-                                <div className="absolute z-50 mt-1 w-full border rounded-md bg-popover shadow-md">
-                                  <div className="max-h-[300px] overflow-y-scroll p-2 space-y-1">
-                                    {locationOptions.map((loc: string) => {
-                                      const isSelected =
-                                        editing.selectedStates?.includes(loc);
-                                      return (
-                                        <div
-                                          key={loc}
-                                          className={`px-3 py-2 hover:bg-accent rounded-sm cursor-pointer text-sm flex items-center justify-between ${
-                                            isSelected
-                                              ? "bg-primary/10 text-primary font-medium"
-                                              : ""
-                                          }`}
-                                          onClick={() => toggleState(loc)}
-                                        >
-                                          <span>{loc}</span>
-                                          {isSelected && (
-                                            <Check className="h-4 w-4" />
-                                          )}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
+                              }}
+                              error={districtsError}
+                              disabled={isLoadingDistricts}
+                              stateSelected={!!selectedState}
+                              selectedStateId={
+                                states.find((s) => s.name === selectedState)?.id
+                              }
+                              selectedStateName={selectedState}
+                              showCreateOption={canCreateStateDistrict}
+                              onCreateDistrict={async (newDistrictName) => {
+                                console.log(
+                                  "New district created:",
+                                  newDistrictName
+                                );
+                              }}
+                            />
                           </div>
                         )}
                       </div>
@@ -514,7 +493,7 @@ export default function VolunteerTable() {
                               <span className="text-xs">{location}</span>
                               <button
                                 type="button"
-                                onClick={() => toggleState(location)}
+                                onClick={() => removeSelectedLocation(location)}
                                 className="ml-1 rounded-full hover:bg-destructive/40 p-0.5 transition-colors"
                                 aria-label={`Remove ${location}`}
                               >

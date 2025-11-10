@@ -121,8 +121,17 @@ const PressCard: React.FC<PressCardProps> = ({
                 </div>
               )}
 
-              {/* Category Badge */}
-              <div className="absolute top-3 left-3">
+              {/* External Link Icon */}
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-white/90 rounded-full p-2">
+                  <ExternalLink className="w-4 h-4 text-gray-800" />
+                </div>
+              </div>
+            </div>
+
+            {/* Card Content */}
+            <div className="p-4">
+               <div className="">
                 <Badge
                   className={`${getCategoryColor(
                     item.category
@@ -135,17 +144,6 @@ const PressCard: React.FC<PressCardProps> = ({
                   </span>
                 </Badge>
               </div>
-
-              {/* External Link Icon */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="bg-white/90 rounded-full p-2">
-                  <ExternalLink className="w-4 h-4 text-gray-800" />
-                </div>
-              </div>
-            </div>
-
-            {/* Card Content */}
-            <div className="p-4">
               <h3 className="font-bold text-gray-900 text-lg mb-2 leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
                 {item.title}
               </h3>

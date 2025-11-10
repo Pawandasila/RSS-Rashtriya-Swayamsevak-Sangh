@@ -52,6 +52,7 @@ export const SECURITY_CONFIG = {
     '/dashboard/payments',
     '/dashboard/volunteer-management',
     '/dashboard/referrals',
+    '/dashboard/country-state-management',
   ],
   
   XSS_PATTERNS: [
