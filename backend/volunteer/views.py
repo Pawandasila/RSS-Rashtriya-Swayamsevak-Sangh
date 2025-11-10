@@ -145,12 +145,6 @@ class AssignVolunteerFromApplicationView(RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         application = self.get_object()
         referred_by = application.referred_by_volunteer
-        user = User.objects.filter(user_id=referred_by).first() if referred_by else None
-        if not user:
-            return Response({'detail': 'Referring user does not exist.'}, status=400)
-        if not user.is_volunteer:
-            return Response({'detail': 'Referring user is not a volunteer.'}, status=400)
-        referred_by = user
         volunteer, created = Volunteer.objects.get_or_create(
             user=application.user,
             defaults={
