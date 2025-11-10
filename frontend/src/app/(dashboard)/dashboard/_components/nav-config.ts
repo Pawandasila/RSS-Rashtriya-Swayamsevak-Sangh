@@ -7,6 +7,7 @@ import {
   MessageSquareWarning,
   UsersRound,
   UserPlus,
+  MapIcon,
 } from "lucide-react";
 
 import type { User } from "@/types/auth.types";
@@ -129,6 +130,13 @@ export const DASHBOARD_NAV_ITEMS: NavItemConfig[] = [
     icon: Users,
     description: "Volunteer Information",
     roles: ["volunteer", "member"],
+  },
+  {
+    title: "State Management",
+    url: "/dashboard/country-state-management",
+    icon: MapIcon,
+    description: "Manage states and districts",
+    roles: ["admin", "staff"],
   }
 ];
 
