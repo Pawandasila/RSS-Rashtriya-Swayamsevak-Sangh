@@ -13,31 +13,32 @@ const About = () => {
         <div className="text-center mb-6 lg:mb-8">
           <div className="relative inline-block">
             <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-2 relative pb-4">
-              {aboutData.title}
-              <Image
-                src="/Svg/text/original-underline.svg"
+              {/* {aboutData.title} */}
+              <span className="text-primary">About </span><span className="text-black">Us</span>
+              {/* <Image
+                src="/Svg/text/gradient-underline.svg"
                 alt="decorative underline"
                 width={200}
                 height={20}
                 className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-auto animate-pulse"
                 placeholder="blur"
                 blurDataURL={IMAGE_BLUR_DATA_URL}
-              />
+              /> */}
             </h2>
           </div>
-          <p className="text-lg text-gray-600 mt-4">{aboutData.subtitle}</p>
+          {/* <p className="text-lg text-gray-600 mt-4">{aboutData.subtitle}</p> */}
         </div>
 
         <div className="w-full grid lg:grid-cols-2 gap-4 lg:gap-8 mb-6 items-center">
           <div className="order-1 lg:order-2 flex justify-center items-center">
-            <div className="relative w-full h-64 lg:h-80 rounded-lg overflow-hidden">
+            <div className="relative w-full aspect-[3/2] rounded-lg overflow-hidden">
               <Image
                 src={aboutData.image}
                 alt={aboutData.imageAlt}
                 fill
                 priority
-                sizes="(max-width: 1023px) 100vw, 50vw"
-                className="object-contain w-full h-full hover:scale-105 transition-transform duration-500"
+                // sizes="(max-width: 1023px) 100vw, 50vw"
+                className="object-cover aspect-[3/2] w-full h-full hover:scale-105 transition-transform duration-500"
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwABmQ/9k="
               />
@@ -85,7 +86,7 @@ const About = () => {
             &quot;
           </div>
 
-          <blockquote className="relative z-10 text-lg lg:text-2xl font-bold text-primary leading-relaxed text-center max-w-4xl mx-auto px-8 lg:px-16">
+          <blockquote className="relative z-10 text-lg lg:text-2xl font-bold text-primary leading-relaxed text-center max-w-4xl mx-auto px-2 lg:px-16">
             {aboutData.content.quote}
           </blockquote>
 
