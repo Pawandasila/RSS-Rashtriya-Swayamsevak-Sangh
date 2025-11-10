@@ -97,12 +97,11 @@ const DonationList = () => {
           </Badge>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
-            हमारे दानवीर
+            Our Generous Donors
           </h2>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            राष्ट्रीय सेवा संघ के सेवा कार्यों में योगदान देने वाले उदार हृदय
-            दानदाताओं की सूची
+            List of generous donors contributing to the service work of Rashtriya Seva Sangh
           </p>
         </div>
 
@@ -137,7 +136,7 @@ const DonationList = () => {
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="दानदाता का नाम या स्थान खोजें..."
+              placeholder="Search donor name or location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -148,8 +147,8 @@ const DonationList = () => {
         <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden relative">
           <Table>
             <TableCaption className="py-4 text-muted-foreground">
-              राष्ट्रीय सेवा संघ के दानदाताओं की सूची - कुल{" "}
-              {tickerDonations.length} प्रविष्टियां
+              List of donors to Rashtriya Seva Sangh - Total{" "}
+              {tickerDonations.length} entries
             </TableCaption>
           </Table>
           
@@ -171,7 +170,7 @@ const DonationList = () => {
                       <div>
                         <p className="font-semibold text-foreground">
                           {donation.isAnonymous
-                            ? "गुप्त दानदाता"
+                            ? "Anonymous Donor"
                             : donation.donorName}
                         </p>
                       </div>
@@ -217,7 +216,7 @@ const DonationList = () => {
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">
-                        कोई संदेश नहीं
+                        No message
                       </span>
                     )}
                   </TableCell>
@@ -238,7 +237,7 @@ const DonationList = () => {
                       <div>
                         <p className="font-semibold text-foreground">
                           {donation.isAnonymous
-                            ? "गुप्त दानदाता"
+                            ? "Anonymous Donor"
                             : donation.donorName}
                         </p>
                       </div>
@@ -284,7 +283,7 @@ const DonationList = () => {
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">
-                        कोई संदेश नहीं
+                        No message
                       </span>
                     )}
                   </TableCell>
@@ -304,7 +303,7 @@ const DonationList = () => {
               onClick={loadMore}
               className="px-8 py-3 font-semibold"
             >
-              और देखें
+              Load More
             </NormalButton>
           </div>
         )}
@@ -313,11 +312,10 @@ const DonationList = () => {
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 md:p-12 max-w-4xl mx-auto">
             <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
             <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-              आपका भी नाम इस सूची में हो सकता है
+              Your Name Can Be on This List Too
             </h3>
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              राष्ट्रीय सेवा संघ के पवित्र कार्यों में योगदान देकर समाज सेवा का
-              हिस्सा बनें। आपका हर दान किसी के जीवन में बदलाव ला सकता है।
+              Become a part of social service by contributing to the sacred work of Rashtriya Seva Sangh. Your every donation can bring change to someone's life.
             </p>
           </div>
         </div>
