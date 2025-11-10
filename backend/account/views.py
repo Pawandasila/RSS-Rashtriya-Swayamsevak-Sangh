@@ -4,6 +4,7 @@ from rest_framework import status
 from datetime import datetime
 from django.contrib.auth.hashers import make_password
 import uuid
+from rest_framework.permissions import IsAuthenticated
 
 from account.models import User
 from rest_framework.generics import ListAPIView
@@ -80,7 +81,7 @@ class UserListView(ListAPIView):
     search_fields = ['name', 'email', 'phone', 'user_id']
 
 class UserDetailView(APIView):
-    permission_classes = [IsAdminOrIsStaff]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
         try:
