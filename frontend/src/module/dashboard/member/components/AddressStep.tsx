@@ -1,16 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import rawStateDistrictData from "@/lib/state-district.json";
-import { useMemo, useState } from "react";
+import { CountrySelect, StateSelect, DistrictSelect } from "@/module/country/components/country-select";
+import { useState } from "react";
 
 type AddressStepProps = {
   formData: {
@@ -25,113 +16,67 @@ type AddressStepProps = {
   stateOptions?: string[];
   readOnlyFields?: Partial<Record<string, boolean>>;
 };
-export const AddressStep = ({ formData, errors, onChange, stateOptions, readOnlyFields }: AddressStepProps) => {
-  const [showCustomDistrictInput, setShowCustomDistrictInput] = useState(false);
-  
-  const stateDistrictData = rawStateDistrictData as { India?: Record<string, { districts?: Record<string, unknown> }> };
-  
-  const derivedStates: string[] = (stateOptions && stateOptions.length > 0)
-    ? stateOptions
-    : Object.keys(stateDistrictData?.India || {}).sort((a: string, b: string) => a.localeCompare(b));
 
-  const availableDistricts = useMemo(() => {
-    if (!formData.state) return [];
-    const stateData = stateDistrictData?.India?.[formData.state];
-    if (!stateData?.districts) return [];
-    return Object.keys(stateData.districts).sort((a: string, b: string) => a.localeCompare(b));
-  }, [formData.state, stateDistrictData]);
+export const AddressStep = ({ formData, errors, onChange, readOnlyFields }: AddressStepProps) => {
+  const [country] = useState("India");
+  const [selectedStateId, setSelectedStateId] = useState<number | undefined>(undefined);
+
   return (
     <div className="space-y-6">
+      {/* Country (fixed to India) */}
+      <CountrySelect
+        label="Country"
+        value={country}
+        onValueChange={() => {}} // Read-only
+        required
+        disabled
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
+        {/* State */}
         <div className="space-y-2">
-          <Label>State</Label>
           {readOnlyFields?.state ? (
-            <div className="px-3 py-1 h-9 rounded-md border bg-transparent">{formData.state}</div>
+            <>
+              <Label>State</Label>
+              <div className="px-3 py-1 h-9 rounded-md border bg-transparent">{formData.state}</div>
+            </>
           ) : (
-            <Select
-              value={formData.state || undefined}
-              onValueChange={(value) => onChange("state", value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a state" />
-              </SelectTrigger>
-              <SelectContent>
-                {derivedStates.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-          {errors.state && (
-            <p className="text-sm text-destructive">{errors.state}</p>
+            <StateSelect
+              label="State"
+              value={formData.state}
+              onValueChange={(value) => {
+                onChange("state", value);
+                // Reset district when state changes
+                onChange("district", "");
+              }}
+              onStateChange={(stateName, stateId) => {
+                setSelectedStateId(stateId);
+              }}
+              countrySelected={!!country}
+              required
+              error={errors.state}
+            />
           )}
         </div>
+
+        {/* District */}
         <div className="space-y-2">
-          <Label htmlFor="district">District</Label>
           {readOnlyFields?.district ? (
-            <div className="px-3 py-1 h-9 rounded-md border bg-transparent">{formStateLabel(formData.district)}</div>
-          ) : (
             <>
-              {!showCustomDistrictInput ? (
-                <Select
-                  value={formData.district || undefined}
-                  onValueChange={(value) => {
-                    if (value === "__ADD_CUSTOM__") {
-                      setShowCustomDistrictInput(true);
-                      onChange("district", "");
-                    } else {
-                      onChange("district", value);
-                    }
-                  }}
-                  disabled={!formData.state}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={formData.state ? "Select a district" : "Select state first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableDistricts.map((district) => (
-                      <SelectItem key={district} value={district}>
-                        {district}
-                      </SelectItem>
-                    ))}
-                    {formData.state && availableDistricts.length > 0 && (
-                      <SelectItem value="__ADD_CUSTOM__" className="text-primary font-medium">
-                        <div className="flex items-center">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add your district
-                        </div>
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="space-y-2">
-                  <Input
-                    id="district"
-                    value={formData.district}
-                    onChange={(e) => onChange("district", e.target.value)}
-                    placeholder="Enter your district"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => {
-                      setShowCustomDistrictInput(false);
-                      onChange("district", "");
-                    }}
-                  >
-                    Back to district list
-                  </Button>
-                </div>
-              )}
+              <Label htmlFor="district">District</Label>
+              <div className="px-3 py-1 h-9 rounded-md border bg-transparent">{formData.district}</div>
             </>
-          )}
-          {errors.district && (
-            <p className="text-sm text-destructive">{errors.district}</p>
+          ) : (
+            <DistrictSelect
+              label="District"
+              value={formData.district}
+              onValueChange={(value) => onChange("district", value)}
+              stateSelected={!!formData.state}
+              selectedStateId={selectedStateId}
+              selectedStateName={formData.state}
+              required
+              error={errors.district}
+            />
           )}
         </div>
       </div>
