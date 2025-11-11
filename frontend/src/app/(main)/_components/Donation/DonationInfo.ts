@@ -19,12 +19,12 @@ export interface DonationData {
 }
 
 export const donationData: DonationData = {
-  title: "राष्ट्र निर्माण में सहयोग करें",
-  description: "राष्ट्रीय सेवा संघ के सेवा कार्यों में आपका योगदान अमूल्य है। कृपया नीचे दिए गए QR कोड को स्कैन करें या सीधे बैंक खाते में दान करें।",
+  title: "Support Nation Building",
+  description: "Your contribution to Rashtriya Seva Sangh's service work is invaluable. Please scan the QR code below or donate directly to the bank account.",
   qrCode: {
     image: "/hero/qr-code.jpg",
-    alt: "दान हेतु QR कोड",
-    description: "📲 स्कैन करें और दान करें"
+    alt: "QR Code for Donation",
+    description: "📲 Scan and Donate"
   },
   bankDetails: {
     accountName: "Rashtriya Seva Sangh",

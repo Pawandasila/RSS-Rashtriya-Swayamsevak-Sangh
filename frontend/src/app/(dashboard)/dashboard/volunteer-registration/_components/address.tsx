@@ -107,7 +107,8 @@ const AddressForm = ({ data, setData, onNext, onBack }: AddressFormProps) => {
     required = false,
     placeholder?: string,
     pattern?: string,
-    title?: string
+    title?: string,
+    maxLength?: number
   ) => (
     <div>
       <Label htmlFor={name} className="mb-2">
@@ -135,6 +136,7 @@ const AddressForm = ({ data, setData, onNext, onBack }: AddressFormProps) => {
           pattern={pattern}
           title={title}
           required={required}
+          maxLength={maxLength}
         />
       )}
     </div>
@@ -173,7 +175,7 @@ const AddressForm = ({ data, setData, onNext, onBack }: AddressFormProps) => {
       </div>
       <div className="grid grid-cols-2 gap-4">
         {renderInput('Country', 'country', true, 'Country')}
-        {renderInput('Postal Code', 'postal_code', true, 'e.g. 110001', '^\\d{5,6}$', 'Enter a valid 5 or 6-digit postal code')}
+        {renderInput('Postal Code', 'postal_code', true, 'e.g. 110001', '^\\d{5,6}$', 'Enter a valid 5 or 6-digit postal code', 6)}
         {renderInput('Mandal', 'mandal', true, 'Enter your mandal')}
       </div>
 

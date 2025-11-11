@@ -59,6 +59,6 @@ export const divineMissionData: MissionCard[] = [
 ];
 
 export const missionSectionData = {
-  title: "हमारा दिव्य मिशन",
-  subtitle: "राष्ट्रीय सेवा संघ के प्रमुख सेवा क्षेत्र"
+  title: "Our Divine Mission",
+  subtitle: "Key Service Areas of Rashtriya Seva Sangh"
 };
