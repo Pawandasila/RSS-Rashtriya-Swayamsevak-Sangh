@@ -228,12 +228,10 @@ const Press: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Press <span className="text-orange-600">Coverage</span>
+            RSS In The <span className="text-orange-600">News</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore our media coverage, press releases, and recognition in
-            newspapers, magazines, and digital platforms showcasing our impact
-            and achievements.
+          <p className="text-xl text-gray-600 text-justify max-w-3xl mx-auto">
+            Our Mission Vetted: See How National and Digital Platforms are Highlighting Rashtriya Seva Sangh&apos;s Service and Dedication.
           </p>
         </div>
 
