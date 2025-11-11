@@ -26,7 +26,7 @@ const Supporters = () => {
           {/* <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb- lg:mb-6 ">
             The
           </h2> */}
-          <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-4 lg:mb-6 ">
+          <h2 className="text-3xl lg:text-5xl font-bold text-foreground whitespace-nowrap mb-4 lg:mb-6 ">
             Rashtriya Seva <span className="text-red-600">Sangh</span>
           </h2>
           <p className="text-base lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
