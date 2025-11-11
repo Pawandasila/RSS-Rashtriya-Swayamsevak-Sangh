@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
+import React from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,39 +11,21 @@ import { Badge } from "@/components/ui/badge";
 import { donationData } from "./DonationInfo";
 import {
   Heart,
-  QrCode,
-  CreditCard,
-  Copy,
-  Check,
-  Banknote,
-  Building2,
   CheckCircle,
   Users,
   Video,
   Calendar,
 } from "lucide-react";
-import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholder";
+import Link from "next/link";
 
 const benefits = [
   { icon: CheckCircle, text: "आभार प्रमाणपत्र" },
   { icon: Users, text: "संघ की सदस्यता" },
   { icon: Video, text: "सेवा कार्यों की रिपोर्ट" },
-  { icon: Calendar, text: "आयोजनों में विशेष आमंत्रण" }
+  { icon: Calendar, text: "आयोजनों में विशेष आमंत्रण" },
 ];
 
 const Donation = () => {
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-
-  const copyToClipboard = async (text: string, field: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
-
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-background via-primary/5 to-background">
       <div className="max-w-6xl mx-auto">
@@ -59,7 +39,7 @@ const Donation = () => {
           </Badge>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
-            {donationData.title}
+            Support our <span className="text-red-600">Mission</span>
           </h2>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
@@ -68,7 +48,7 @@ const Donation = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-          <Card className="group overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-2 border-primary/10 hover:border-primary/20">
+          {/* <Card className="group overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-2 border-primary/10 hover:border-primary/20">
             <CardHeader className="text-center pb-4">
               <div className="flex items-center justify-center gap-3 mb-2">
                 <QrCode className="w-6 h-6 text-primary" />
@@ -99,9 +79,9 @@ const Donation = () => {
                 </p>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
-          <Card className="group overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-2 border-primary/10 hover:border-primary/20">
+          {/* <Card className="group overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-2 border-primary/10 hover:border-primary/20">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-center gap-3 mb-2">
                 <Building2 className="w-6 h-6 text-primary" />
@@ -208,11 +188,61 @@ const Donation = () => {
                 </div>
               </div>
             </CardContent>
+          </Card> */}
+        </div>
+
+        <div className="max-w-6xl mx-auto mb-6 relative">
+          <Card className="shadow-2xl border-2 border-primary/20 bg-gradient-to-br from-orange-50/80 via-amber-50/80 to-orange-50/80 backdrop-blur-sm relative overflow-hidden">
+            <CardHeader className="text-center pb-3 pt-6 relative">
+              <div className="inline-block mx-auto mb-3">
+                <Badge className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-5 py-1.5 text-sm md:text-base">
+                  💫 सेवा ही धर्म है
+                </Badge>
+              </div>
+              <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+                इस संकल्प में सहभागी बनें
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative px-4 md:px-8 pb-6">
+              {/* Desktop: Side by side layout, Mobile: Stacked */}
+              <div className="grid lg:grid-cols-2 gap-4 lg:gap-5 mb-4">
+                <div className="bg-white/60 rounded-xl p-4 md:p-5 border border-primary/20 shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed text-center">
+                    क्योंकि हम जानते हैं — आप केवल दर्शक नहीं,{" "}
+                    <strong className="text-primary text-lg md:text-xl lg:text-2xl block mt-2">
+                      बल्कि धर्म और देश के रक्षक
+                    </strong>
+                    {" "}भी हैं।
+                  </p>
+                </div>
+
+                <div className="bg-white/60 rounded-xl p-4 md:p-5 border border-primary/20 shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed text-center">
+                    आपका एक छोटा सहयोग हमारे लिए एक नई आशा, और किसी पीड़ित के लिए{" "}
+                    <strong className="text-primary text-lg md:text-xl lg:text-2xl block mt-2">
+                      संपूर्ण जीवन
+                    </strong>
+                    {" "}बन सकता है।
+                  </p>
+                </div>
+              </div>
+
+              {/* Bottom section */}
+              <div className="space-y-3 text-center">
+                <p className="text-base md:text-lg lg:text-xl text-muted-foreground italic">
+                  ✨ यह केवल संगठन नहीं, यह आपकी आत्मा का उत्तर है।
+                </p>
+                <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-xl p-4 md:p-5 border-2 border-primary/30 shadow-md">
+                  <p className="text-lg md:text-xl lg:text-2xl font-bold text-foreground">
+                    🔥 यह केवल दान नहीं, यह धर्मयुद्ध में आपकी उपस्थिति है!
+                  </p>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </div>
 
-        {/* Benefits Section */}
-        <div className="mt-16 max-w-5xl mx-auto">
+        <div className=" max-w-5xl mx-auto">
           <Card className="shadow-lg border-2 border-primary/10">
             <CardHeader className="text-center pb-4">
               <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
@@ -220,7 +250,7 @@ const Donation = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {benefits.map((item, index) => {
                   const IconComponent = item.icon;
                   return (
@@ -240,37 +270,12 @@ const Donation = () => {
           </Card>
         </div>
 
-        {/* Why We Ask Section */}
-        <div className="mt-8 max-w-5xl mx-auto">
-          <Card className="shadow-lg border-2 border-primary/10">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl md:text-3xl font-bold text-foreground">
-                हम क्यों माँगते हैं आपका साथ?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-center">
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                क्योंकि हम जानते हैं — आप केवल दर्शक नहीं,
-                <br />
-                <strong className="text-foreground">
-                बल्कि  धर्म और देश के रक्षक
-                </strong>
-                भी हैं।
-              </p>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                आपका एक छोटा सहयोग हमारे लिए एक नई आशा, और किसी पीड़ित के लिए{" "}
-                <strong className="text-foreground">संपूर्ण जीवन</strong> बन
-                सकता है।
-              </p>
-              <p className="text-base md:text-lg text-muted-foreground italic mb-3">
-                  यह केवल संगठन नहीं, यह आपकी आत्मा का उत्तर है।
-                </p>
-                <p className="text-lg md:text-xl font-bold text-foreground">
-                  यह केवल दान नहीं, यह धर्मयुद्ध में आपकी उपस्थिति है!
-                </p>
-            </CardContent>
-          </Card>
-        </div>
+        <Link
+          href="/donate-now"
+          className="flex justify-center text-2xl bg-primary rounded-lg text-white mt-6 p-3 hover:bg-primary/20 transition-all"
+        >
+          Donate Now
+        </Link>
 
         {/* Final Call to Action */}
         {/* <div className="mt-8 max-w-5xl mx-auto">
