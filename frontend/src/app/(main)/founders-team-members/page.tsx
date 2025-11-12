@@ -78,7 +78,7 @@ const FoundersTeamPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background mt-3 lg:mt-0 mt-10">
+    <div className="min-h-screen bg-background lg:mt-0 mt-10">
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90 py-12 sm:py-16 lg:py-20">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,_var(--primary-foreground)_0%,_transparent_50%)]"></div>

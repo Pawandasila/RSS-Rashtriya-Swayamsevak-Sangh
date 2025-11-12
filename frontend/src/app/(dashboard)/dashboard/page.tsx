@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "@/hooks/use-auth";
 import { useReferrals } from "@/module/dashboard/referrals/hooks";
 // import IDCardManagement from "./id-card-management/page";
@@ -8,6 +8,9 @@ import StatCard from "./_components/stat-card";
 import UserTransactionHistory from "@/module/dashboard/Payments/components/transaction-history";
 import useAxios from "@/hooks/use-axios";
 import Link from "next/link";
+import ProfileCompletionModal, {
+  isProfileIncomplete,
+} from "./_components/profile-completion-modal";
 
 export default function Page() {
   const { user } = useAuth();
@@ -17,6 +20,7 @@ export default function Page() {
     loading: referralLoading,
     error: referralError,
   } = useReferrals();
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
     const data = async () => {
@@ -27,39 +31,51 @@ export default function Page() {
       }
     };
     data();
-    
   }, [axios]);
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Welcome
-            {user?.name
-              ? `, ${
-                  user.name.charAt(0).toUpperCase() +
-                  user.name.slice(1).toLowerCase()
-                }`
-              : " to Dashboard"}
-          </h1>
-          <p className="text-muted-foreground">
-            Welcome to the RASHTRIYA SEVA SANGH dashboard. Here you can
-            view your activities and information.
-          </p>
-        </div>
+  useEffect(() => {
+    if (user && isProfileIncomplete(user)) {
+      setShowProfileModal(true);
+    }
+  }, [user]);
 
-        {!user?.is_member_account && (
-          <div className="flex gap-2">
-            <Link
-              href="/become-member"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            >
-              Become Member
-            </Link>
+  return (
+    <>
+      <ProfileCompletionModal
+        user={user}
+        open={showProfileModal}
+        onOpenChange={setShowProfileModal}
+      />
+
+      <div className="space-y-2 sm:space-y-6 sm:p-0">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Welcome
+              {user?.name
+                ? `, ${
+                    user.name.charAt(0).toUpperCase() +
+                    user.name.slice(1).toLowerCase()
+                  }`
+                : " to Dashboard"}
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Welcome to the RASHTRIYA SEVA SANGH dashboard. Here you can
+              view your activities and information.
+            </p>
           </div>
-        )}
-      </div>
+
+          {!user?.is_member_account && (
+            <div className="flex gap-2">
+              <Link
+                href="/become-member"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                Become Member
+              </Link>
+            </div>
+          )}
+        </div>
 
       <StatCard
         user={user}
@@ -77,5 +93,6 @@ export default function Page() {
         /> */}
       </div>
     </div>
+    </>
   );
 }
