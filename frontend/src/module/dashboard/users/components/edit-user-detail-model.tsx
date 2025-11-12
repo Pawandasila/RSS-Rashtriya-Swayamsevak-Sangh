@@ -394,7 +394,7 @@ export function EditUserDetailModal({
 
               <Separator className="my-6" />
 
-              {/* Address Information */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
@@ -509,7 +509,7 @@ export function EditUserDetailModal({
 
               <Separator className="my-6" />
 
-              {/* Government IDs */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -565,7 +565,7 @@ export function EditUserDetailModal({
 
               <Separator className="my-6" />
 
-              {/* User Roles */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-muted-foreground" />
@@ -698,7 +698,7 @@ export function EditUserDetailModal({
 
               <Separator className="my-6" />
 
-              {/* Account Status */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-muted-foreground" />
@@ -822,7 +822,7 @@ export function EditUserDetailModal({
         </div>
       </DialogContent>
 
-      {/* Verification Confirmation Dialog */}
+      
       <AlertDialog open={showVerifyDialog} onOpenChange={setShowVerifyDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
