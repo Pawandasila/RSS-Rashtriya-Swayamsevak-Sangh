@@ -100,7 +100,6 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'users.auth_backends.MultiFieldAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
