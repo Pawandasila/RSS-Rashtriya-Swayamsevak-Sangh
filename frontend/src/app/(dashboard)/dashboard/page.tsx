@@ -44,7 +44,7 @@ export default function Page() {
               : " to Dashboard"}
           </h1>
           <p className="text-muted-foreground">
-            Welcome to the Rashtriya Swayamsevak Sangh dashboard. Here you can
+            Welcome to the RASHTRIYA SEVA SANGH dashboard. Here you can
             view your activities and information.
           </p>
         </div>
