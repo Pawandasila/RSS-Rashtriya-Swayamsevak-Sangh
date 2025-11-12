@@ -14,7 +14,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
 from dashboard.permissions import IsAdminOrIsStaff
 from dashboard.serializers import UserInfoSerializer
-from .serializers import UserJoinSerializer, UserMemberSerializer, LoginSerializer
+from .serializers import UserJoinSerializer, UserMemberSerializer, CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 def generate_user_id():
@@ -146,10 +147,5 @@ class VerifyUserView(APIView):
             status=status.HTTP_200_OK,
         )
 
-class LoginView(APIView):
-    permission_classes = []
-
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
