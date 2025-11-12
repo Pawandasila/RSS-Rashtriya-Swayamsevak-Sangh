@@ -128,12 +128,12 @@ export function useUsers(page: number = 1, page_size: number = 30) {
       let payload: Partial<User> | FormData;
       let headers: Record<string, string> = {};
 
-      // Check if data is already FormData or if it contains a File object
+      
       if (data instanceof FormData) {
         payload = data;
         headers = { "Content-Type": "multipart/form-data" };
       } else if (options?.useFormData) {
-        // Convert object to FormData if requested
+        
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
           if (value !== null && value !== undefined) {
@@ -147,7 +147,7 @@ export function useUsers(page: number = 1, page_size: number = 30) {
         payload = formData;
         headers = { "Content-Type": "multipart/form-data" };
       } else {
-        // Check if any value is a File object
+        
         const hasFile = typeof File !== 'undefined' && Object.values(data).some(
           (value): value is File => value instanceof File
         );
@@ -289,6 +289,7 @@ export function useUpdateCurrentUser() {
 
   const updateCurrentUser = useCallback(
     async (
+      userId: number,
       data: Partial<User> | FormData | Record<string, any>,
       options?: { useFormData?: boolean }
     ) => {
@@ -299,12 +300,12 @@ export function useUpdateCurrentUser() {
         let payload: Partial<User> | FormData;
         let headers: Record<string, string> = {};
 
-        // Check if data is already FormData or if it contains a File object
+        
         if (data instanceof FormData) {
           payload = data;
           headers = { "Content-Type": "multipart/form-data" };
         } else if (options?.useFormData) {
-          // Convert object to FormData if requested
+          
           const formData = new FormData();
           Object.entries(data).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
@@ -318,7 +319,7 @@ export function useUpdateCurrentUser() {
           payload = formData;
           headers = { "Content-Type": "multipart/form-data" };
         } else {
-          // Check if any value is a File object
+          
           const hasFile = typeof File !== 'undefined' && Object.values(data).some(
             (value): value is File => value instanceof File
           );
@@ -339,8 +340,8 @@ export function useUpdateCurrentUser() {
             payload = data as Partial<User>;
           }
         }
-
-        const response = await axios.patch("/account/update/", payload, {
+ 
+        const response = await axios.put(`/account/detail/${userId}/`, payload, {
           headers: Object.keys(headers).length > 0 ? headers : undefined,
         });
 

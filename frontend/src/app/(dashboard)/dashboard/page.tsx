@@ -11,6 +11,9 @@ import Link from "next/link";
 import ProfileCompletionModal, {
   isProfileIncomplete,
 } from "./_components/profile-completion-modal";
+import EmailChangeModal, {
+  hasRssIndiaEmail,
+} from "./_components/email-change-modal";
 
 export default function Page() {
   const { user } = useAuth();
@@ -34,13 +37,16 @@ export default function Page() {
   }, [axios]);
 
   useEffect(() => {
-    if (user && isProfileIncomplete(user)) {
+    if (user && !hasRssIndiaEmail(user) && isProfileIncomplete(user)) {
       setShowProfileModal(true);
     }
   }, [user]);
 
   return (
     <>
+      {/* Email change modal - takes priority over profile completion */}
+      <EmailChangeModal user={user} />
+      
       <ProfileCompletionModal
         user={user}
         open={showProfileModal}

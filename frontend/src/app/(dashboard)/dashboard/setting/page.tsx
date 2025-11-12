@@ -3,17 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateCurrentUser } from "@/module/dashboard/users/hooks";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -30,13 +19,12 @@ import {
   MapPin,
   CreditCard,
   Camera,
-  Save,
   Loader2,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { NotProvided } from "./_components/NotProvided";
 import { EditableField } from "./_components/EditableField";
+import { getUserImageUrl } from "@/lib/media";
 
 interface UserFormData {
   name: string;
@@ -49,6 +37,7 @@ interface UserFormData {
   aadhar_number: string;
   pan_number: string;
   street: string;
+  username: string;
   sub_district: string;
   district: string;
   city: string;
@@ -75,6 +64,7 @@ export default function SettingsPage() {
     profession: "",
     aadhar_number: "",
     pan_number: "",
+    username: "",
     street: "",
     sub_district: "",
     district: "",
@@ -97,6 +87,7 @@ export default function SettingsPage() {
         profession: user.profession || "",
         aadhar_number: user.aadhar_number || "",
         pan_number: user.pan_number || "",
+        username: user.username || "",
         street: user.street || "",
         sub_district: user.sub_district || "",
         district: user.district || "",
@@ -125,12 +116,36 @@ export default function SettingsPage() {
   };
 
   const handleFieldSave = async (fieldName: string) => {
+    if (!user?.id) return;
+    
     const fieldValue = formData[fieldName as keyof UserFormData];
     
-    const result = await updateCurrentUser({ [fieldName]: fieldValue });
+    const result = await updateCurrentUser(user.id, { [fieldName]: fieldValue });
 
     if (result.success && result.data) {
       setUserData(result.data);
+      
+      setFormData({
+        name: result.data.name || "",
+        email: result.data.email || "",
+        phone: result.data.phone || "",
+        dob: result.data.dob || "",
+        blood_group: result.data.blood_group || "",
+        gender: result.data.gender || "",
+        profession: result.data.profession || "",
+        aadhar_number: result.data.aadhar_number || "",
+        pan_number: result.data.pan_number || "",
+        username: result.data.username || "",
+        street: result.data.street || "",
+        sub_district: result.data.sub_district || "",
+        district: result.data.district || "",
+        city: result.data.city || "",
+        division: result.data.division || "",
+        state: result.data.state || "",
+        country: result.data.country || "",
+        postal_code: result.data.postal_code || "",
+      });
+      
       toast.success(`${fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} updated successfully!`);
       setEditingField(null);
     } else {
@@ -150,6 +165,8 @@ export default function SettingsPage() {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user?.id) return;
+    
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -165,7 +182,7 @@ export default function SettingsPage() {
       return;
     }
 
-    const result = await updateCurrentUser({ image: file });
+    const result = await updateCurrentUser(user.id, { image: file });
 
     if (result.success && result.data) {
       setUserData(result.data);
@@ -183,11 +200,11 @@ export default function SettingsPage() {
     );
   }
 
-  const userImageUrl = user.image?.startsWith("http")
-    ? user.image
-    : user.image
-    ? `${process.env.NEXT_PUBLIC_API_BASE_URL}${user.image}`
-    : null;
+  // Get properly formatted image URL
+  const userImageUrl = getUserImageUrl(user.image);
+
+  // Check if user has rssindia.org email
+  const hasRssIndiaEmail = user?.email?.toLowerCase().includes("@rssindia.org");
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
@@ -199,6 +216,48 @@ export default function SettingsPage() {
           Manage your profile information and account settings
         </p>
       </div>
+
+      {/* Urgent Email Change Banner */}
+      {hasRssIndiaEmail && (
+        <div className="mb-6 bg-red-50 border-2 border-red-500 rounded-lg p-4 animate-pulse">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-6 w-6 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-red-900 mb-2">
+                🚨 URGENT: Email Change Required
+              </h3>
+              <p className="text-red-800 mb-3">
+                Your current email address uses the <strong>@rssindia.org</strong> domain, 
+                which is no longer supported. You must update your email address immediately 
+                to continue accessing the platform.
+              </p>
+              <p className="text-sm text-red-700 mb-3">
+                Please scroll down to the <strong>Basic Information</strong> section and 
+                update your email address to a valid personal or organizational email.
+              </p>
+              <div className="bg-red-100 border border-red-300 rounded p-3">
+                <p className="text-sm text-red-900 font-medium">
+                  ⚠️ Your account access may be restricted until you update your email address.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}

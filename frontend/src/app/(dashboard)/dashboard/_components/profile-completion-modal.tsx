@@ -38,6 +38,8 @@ export const isProfileIncomplete = (user: User | null): boolean => {
   return requiredFields.some((field) => !field || field.trim() === "");
 };
 
+// rssindia.org
+
 export default function ProfileCompletionModal({
   user,
   open,
