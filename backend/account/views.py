@@ -5,6 +5,7 @@ from datetime import datetime
 from django.contrib.auth.hashers import make_password
 import uuid
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Max
 
 from account.models import User
 from rest_framework.generics import ListAPIView
@@ -14,6 +15,7 @@ from django.db.models import Count
 from dashboard.permissions import IsAdminOrIsStaff
 from dashboard.serializers import UserInfoSerializer
 from .serializers import UserJoinSerializer, UserMemberSerializer
+
 
 def generate_user_id():
     return str(uuid.uuid4())[:8]
@@ -74,7 +76,7 @@ class UserMemberView(APIView):
     
 class UserListView(ListAPIView):
     permission_classes = [IsAdminOrIsStaff]
-    queryset = User.objects.annotate(referral_count=Count('user_referrals'))
+    queryset = User.objects.annotate(referral_count=Count('user_referrals')).order_by('-date_joined')
     serializer_class = UserInfoSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
     filterset_fields = ['is_verified', 'is_blocked', 'is_member_account', 'is_volunteer', 'is_business_account', 'is_staff_account', 'is_admin_account', 'user_id', 'id', 'email']
@@ -112,3 +114,29 @@ class UserDetailView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VerifyUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        user.is_verified = True
+        last_user = User.objects.filter(user_id__startswith="R").aggregate(Max("user_id"))["user_id__max"]
+        if last_user:
+            last_num = int(last_user[1:])
+            new_num = last_num + 1
+        else:
+            new_num = 1
+        user.user_id = f"R{new_num:07d}"
+        user.username = user.user_id
+        user.save()
+        return Response(
+            {
+                "message": "User verified successfully.",
+                "new_user_id": user.user_id
+            },
+            status=status.HTTP_200_OK,
+        )
