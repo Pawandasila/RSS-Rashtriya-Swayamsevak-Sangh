@@ -735,3 +735,17 @@ h1, h2, h3, h4, h5, h6 {
 .animate-tricolor-flow {
   animation: tricolor-diagonal 3s ease-in-out infinite;
 }
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
