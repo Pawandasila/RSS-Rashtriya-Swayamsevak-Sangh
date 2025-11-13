@@ -29,12 +29,15 @@ import {
   IndianRupee,
   Users,
   Wrench,
+  MapPin,
 } from "lucide-react";
 import {
   useDonationPayment,
   useCurrency,
   type DonationFormData,
 } from "@/module/donation";
+import { useCountryApi } from "@/module/country/hooks";
+import { StateSelect, DistrictSelect } from "@/module/country/components/country-select";
 
 const impactAmounts = [
   { amount: 151, label: "₹151", desc: "एक बच्चे का एक दिन का भोजन" },
@@ -55,6 +58,8 @@ const NewDonationForm = () => {
     amount: 0,
     payment_for: "general",
     notes: "",
+    state: "",
+    district: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -67,6 +72,7 @@ const NewDonationForm = () => {
     reset,
   } = useDonationPayment();
   const { formatCurrency } = useCurrency();
+  const { states, fetchDistricts } = useCountryApi();
 
   
   const convertNumberToWords = (num: number): string => {
@@ -99,34 +105,7 @@ const NewDonationForm = () => {
     return result.trim() + " Rupees Only";
   };
 
-  
-  useEffect(() => {
-    if (success && formData.amount > 0) {
-      setTimeout(() => {
-        const receiptParams = new URLSearchParams({
-          name: formData.name || '',
-          phone: formData.phone || '',
-          date: new Date().toLocaleDateString('en-IN'),
-          mode: 'Online payment',
-          amount: String(formData.amount),
-          amountWords: convertNumberToWords(formData.amount),
-          receiptNumber: 'DONATION_' + Date.now(),
-          location: formData.payment_for || 'general'
-        });
-
-        const receiptUrl = `/receipt?${receiptParams.toString()}`;
-        
-        
-        const link = document.createElement('a');
-        link.href = receiptUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }, 500);
-    }
-  }, [success, formData]);
+  // Receipt opening is handled centrally in useDonationPayment hook after verification
 
   const enhancedDonationTypes = [
     {
@@ -272,6 +251,8 @@ const NewDonationForm = () => {
       amount: 0,
       payment_for: "general",
       notes: "",
+      state: "",
+      district: "",
     });
     setErrors({});
     setIsCustomAmount(false);
@@ -510,6 +491,33 @@ const NewDonationForm = () => {
                     placeholder="Add a personal note"
                     value={formData.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <StateSelect
+                    label="State"
+                    placeholder="Select your state"
+                    value={formData.state}
+                    onStateChange={(stateName, stateId) => {
+                      handleInputChange("state", stateName);
+                      handleInputChange("district", "");
+                      if (stateId) {
+                        fetchDistricts(stateId);
+                      }
+                    }}
+                    className="w-full"
+                  />
+
+                  <DistrictSelect
+                    label="District"
+                    placeholder="Select your district"
+                    value={formData.district}
+                    onValueChange={(value) => handleInputChange("district", value)}
+                    stateSelected={!!formData.state}
+                    selectedStateId={states.find(s => s.name === formData.state)?.id}
+                    selectedStateName={formData.state}
+                    className="w-full"
                   />
                 </div>
               </div>
