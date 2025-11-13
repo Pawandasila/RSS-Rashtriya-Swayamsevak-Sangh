@@ -110,17 +110,17 @@ function UsersPageContent() {
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage all users, volunteers, staff, and administrators
           </p>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-            <p className="mt-4 text-muted-foreground">Loading users...</p>
+            <div className="inline-block h-6 w-6 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+            <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">Loading users...</p>
           </div>
         </div>
       </div>
@@ -129,19 +129,19 @@ function UsersPageContent() {
 
   if (error) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage all users, volunteers, staff, and administrators
           </p>
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <p className="text-destructive font-semibold">
+            <p className="text-sm sm:text-base text-destructive font-semibold">
               Error loading users
             </p>
-            <p className="mt-2 text-muted-foreground">{error}</p>
+            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">{error}</p>
           </div>
         </div>
       </div>
@@ -151,10 +151,10 @@ function UsersPageContent() {
   const safeUsers = Array.isArray(users) ? users : [];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Management</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage all users, volunteers, staff, and administrators
         </p>
       </div>
@@ -170,13 +170,13 @@ function UsersPageContent() {
       />
 
       {pagination.count > 0 && (
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 border rounded-lg bg-card">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg bg-card">
           {/* Left: Page info in one line */}
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
             <span className="font-medium text-foreground whitespace-nowrap">
               Page {pagination.current_page} of {pagination.total_pages}
             </span>
-            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground hidden sm:inline">•</span>
             <span className="text-muted-foreground whitespace-nowrap">
               {pagination.count} total user{pagination.count !== 1 ? 's' : ''}
             </span>
@@ -285,7 +285,7 @@ function UsersPageContent() {
               params.set("page_size", newSize.toString());
               router.push(`?${params.toString()}`, { scroll: false });
             }}
-            className="text-sm border rounded-lg px-3 py-2 bg-background hover:bg-accent transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 min-w-[140px]"
+            className="text-xs sm:text-sm border rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-background hover:bg-accent transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 w-full sm:w-auto sm:min-w-[140px]"
           >
             <option value="5">5 per page</option>
             <option value="10">10 per page</option>
@@ -329,17 +329,17 @@ export default function UsersPage() {
   return (
     <RoleGuard allowedRoles="auto" showUnauthorized={true}>
       <Suspense fallback={
-        <div className="space-y-6 p-6">
+        <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Management</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Manage all users, volunteers, staff, and administrators
             </p>
           </div>
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-              <p className="mt-4 text-muted-foreground">Loading...</p>
+              <div className="inline-block h-6 w-6 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">Loading...</p>
             </div>
           </div>
         </div>
