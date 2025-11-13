@@ -24,7 +24,6 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
   const axiosInstance = useAxios();
   const { user , setUserData } = useAuth();
 
-  console.log(user);
   const pathname = usePathname();
 
   useEffect(() => {
