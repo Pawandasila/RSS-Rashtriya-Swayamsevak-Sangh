@@ -25,6 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import useAxios from "@/hooks/use-axios";
+import useAuth from "@/hooks/use-auth";
 import { toast } from "sonner";
 import {
   Form,
@@ -112,6 +113,8 @@ export function EditUserDetailModal({
   loading = false,
 }: EditUserDetailModalProps) {
   const axios = useAxios();
+  const { isAdmin, isStaff } = useAuth();
+  const restrictRoles = isStaff() && !isAdmin();
   const [showVerifyDialog, setShowVerifyDialog] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [pendingVerificationValue, setPendingVerificationValue] = useState(false);
@@ -227,7 +230,14 @@ export function EditUserDetailModal({
 
   const onSubmit = async (data: FormValues) => {
     if (!user) return;
-    await onSave(user.id, data);
+    const payload: Partial<User> = { ...data } as unknown as Partial<User>;
+    if (restrictRoles) {
+      // Staff users can only modify volunteer and member.
+      delete (payload as any).is_admin_account;
+      delete (payload as any).is_staff_account;
+      delete (payload as any).is_field_worker;
+    }
+    await onSave(user.id, payload);
   };
 
   return (
@@ -623,77 +633,83 @@ export function EditUserDetailModal({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="is_staff_account"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-900 p-4 hover:shadow-sm transition-shadow">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-medium">
-                            Staff
-                          </FormLabel>
-                          <FormDescription className="text-xs">
-                            Elevated privileges
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  {!restrictRoles && (
+                    <FormField
+                      control={form.control}
+                      name="is_staff_account"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-900 p-4 hover:shadow-sm transition-shadow">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-medium">
+                              Staff
+                            </FormLabel>
+                            <FormDescription className="text-xs">
+                              Elevated privileges
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
-                  <FormField
-                    control={form.control}
-                    name="is_field_worker"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-teal-200 bg-teal-50/50 dark:bg-teal-950/20 dark:border-teal-900 p-4 hover:shadow-sm transition-shadow">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-medium">
-                            Field Worker
-                          </FormLabel>
-                          <FormDescription className="text-xs">
-                            On-ground operations support
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  {!restrictRoles && (
+                    <FormField
+                      control={form.control}
+                      name="is_field_worker"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-teal-200 bg-teal-50/50 dark:bg-teal-950/20 dark:border-teal-900 p-4 hover:shadow-sm transition-shadow">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-medium">
+                              Field Worker
+                            </FormLabel>
+                            <FormDescription className="text-xs">
+                              On-ground operations support
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
-                  <FormField
-                    control={form.control}
-                    name="is_admin_account"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-orange-200 bg-orange-50/50 dark:bg-orange-950/20 dark:border-orange-900 p-4 hover:shadow-sm transition-shadow">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-medium">
-                            Administrator
-                          </FormLabel>
-                          <FormDescription className="text-xs">
-                            Full system access
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  {!restrictRoles && (
+                    <FormField
+                      control={form.control}
+                      name="is_admin_account"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-orange-200 bg-orange-50/50 dark:bg-orange-950/20 dark:border-orange-900 p-4 hover:shadow-sm transition-shadow">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-medium">
+                              Administrator
+                            </FormLabel>
+                            <FormDescription className="text-xs">
+                              Full system access
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
 
