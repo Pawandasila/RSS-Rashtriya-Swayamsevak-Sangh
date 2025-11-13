@@ -7,7 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 
 from dashboard.permissions import IsAdminOrIsStaff
-from .models import Volunteer, Wing, Level, Designation, Application
+from .models import Volunteer, Wing, Level, Designation, Application, VolunteerWorkingArea
 from .serializers import VolunteerSerializer, WingSerializer, LevelSerializer, DesignationSerializer, ApplicationSerializer, ApplicationDetailSerializer, Volunteer, VolunteerWorkingAreaSerializer
 from .filters import VolunteerFilter, LevelFilter, DesignationFilter
 from account.models import User
@@ -109,7 +109,7 @@ class VolunteerDetailView(RetrieveUpdateDestroyAPIView):
         return [AllowAny()]
     
 class VolunteerWorkingAreaListCreateView(ListCreateAPIView):
-    queryset = Volunteer.objects.all()
+    queryset = VolunteerWorkingArea.objects.all()
     serializer_class = VolunteerWorkingAreaSerializer
 
     def get_permissions(self):
