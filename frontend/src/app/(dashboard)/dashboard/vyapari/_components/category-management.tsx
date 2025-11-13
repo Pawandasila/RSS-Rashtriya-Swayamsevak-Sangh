@@ -217,53 +217,55 @@ export default function CategoryManagement() {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <CardTitle>Categories</CardTitle>
-            <CardDescription>Manage business categories</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Categories</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Manage business categories</CardDescription>
           </div>
           <Button
             title="Create Category"
             onClick={() => setIsCreateDialogOpen(true)}
+            className="h-9 sm:h-10 w-full sm:w-auto"
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Category
+            <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Add Category</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="h-9 sm:h-10 text-sm w-full sm:max-w-sm"
           />
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-xs sm:text-sm">Image</TableHead>
+                <TableHead className="text-xs sm:text-sm">Name</TableHead>
+                <TableHead className="hidden md:table-cell text-xs sm:text-sm">Description</TableHead>
+                <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">
+                  <TableCell colSpan={4} className="text-center text-xs sm:text-sm py-6">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : categories.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">
+                  <TableCell colSpan={4} className="text-center text-xs sm:text-sm py-6">
                     No categories found
                   </TableCell>
                 </TableRow>
@@ -272,7 +274,7 @@ export default function CategoryManagement() {
                   <TableRow key={category.id}>
                     <TableCell>
                       {category.image ? (
-                        <div className="relative h-12 w-12 overflow-hidden rounded">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 overflow-hidden rounded flex-shrink-0">
                           <Image
                             src={category.image}
                             alt={category.name}
@@ -283,16 +285,21 @@ export default function CategoryManagement() {
                           />
                         </div>
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded bg-muted">
-                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded bg-muted flex-shrink-0">
+                          <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {category.name}
-                    </TableCell>
                     <TableCell>
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
+                      <div>
+                        <p className="font-medium text-xs sm:text-sm">{category.name}</p>
+                        <p className="md:hidden line-clamp-1 text-xs text-muted-foreground mt-0.5">
+                          {category.description || "No description"}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <p className="line-clamp-2 text-xs sm:text-sm text-muted-foreground">
                         {category.description || "No description"}
                       </p>
                     </TableCell>

@@ -8,7 +8,7 @@ import {
   IntroductionSection,
   WhoWeAreSection,
   WhyDifferentSection,
-  WhyWeExistSection,
+  // WhyWeExistSection,
   TempleServiceSection,
   OurCallSection,
   // CommunityServiceSection,
@@ -32,7 +32,7 @@ const AboutUsPage = () => {
       
       <WhyDifferentSection whyDifferent={aboutPageData.sections.whyDifferent} />
       
-      <WhyWeExistSection whyWeExist={aboutPageData.sections.whyWeExist} />
+      {/* <WhyWeExistSection whyWeExist={aboutPageData.sections.whyWeExist} /> */}
       
       <TempleServiceSection />
       

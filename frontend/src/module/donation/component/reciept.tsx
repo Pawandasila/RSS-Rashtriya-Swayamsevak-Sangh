@@ -12,6 +12,7 @@ interface ReceiptProps {
   receiptNumber?: string;
   country?: string;
   state?: string;
+  district?: string;
   city?: string;
   postal_code?: string;
 }
@@ -26,9 +27,16 @@ const Receipt: React.FC<ReceiptProps> = ({
   receiptNumber = "DA000000023",
   country = "",
   state = "",
+  district = "",
   city = "",
   postal_code = "",
 }) => {
+  const clean = (v?: string) => (v && v.trim() && v.trim().toUpperCase() !== "N/A" ? v.trim() : "");
+  const left = [clean(state), clean(district)].filter(Boolean).join(", ");
+  const rightParts = [clean(city), clean(postal_code)].filter(Boolean);
+  const right = rightParts.length ? ` - ${rightParts.join(" - ")}` : "";
+  const countryClean = clean(country);
+  const locationLine = [left || null, countryClean || null].filter(Boolean).join(", ") + right;
   return (
     <div className="receipt-container relative w-full max-w-4xl mx-auto bg-white p-8 shadow-lg border-4 border-black">
       <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none overflow-hidden">
@@ -52,7 +60,7 @@ const Receipt: React.FC<ReceiptProps> = ({
               Rashtriya Seva Sangh
             </h1>
             <p className="text-base italic text-gray-700 mb-1">
-              {country}, {state}, {city} - {postal_code}
+              {locationLine || ""}
             </p>
             <p className="text-sm text-gray-700 mb-0.5">
               (Registered Public Charitable Trust, REG NO. 47/2024)

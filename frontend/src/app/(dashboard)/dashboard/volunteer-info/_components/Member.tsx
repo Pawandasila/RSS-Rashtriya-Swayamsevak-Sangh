@@ -95,9 +95,9 @@ const Member: React.FC = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">People / Volunteers</h2>
+      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">People / Volunteers</h2>
 
-      <div className="flex gap-3 items-center mb-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center mb-3">
         <Input placeholder="Search by name, email, phone, or user id..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full max-w-md" />
 
         <Select value={filterType} onValueChange={(v) => setFilterType(v as 'all' | 'volunteer' | 'member')}>

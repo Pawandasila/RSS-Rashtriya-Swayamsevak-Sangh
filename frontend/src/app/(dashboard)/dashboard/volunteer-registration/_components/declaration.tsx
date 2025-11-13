@@ -80,24 +80,24 @@ const DeclarationForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 max-w-4xl mx-auto p-6 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm"
+      className="space-y-4 sm:space-y-6"
     >
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+      <div className="text-center mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
           घोषणा / DECLARATION
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           कृपया निम्नलिखित घोषणा को ध्यान से पढ़ें और सहमति दें
         </p>
       </div>
 
-      <div className="bg-muted/30 p-6 rounded-lg border">
-        <div className="space-y-4 text-sm leading-relaxed">
-          <p className="font-semibold text-center">घोषणा / DECLARATION</p>
+      <div className="bg-muted/30 p-4 sm:p-6 rounded-lg border">
+        <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm leading-relaxed">
+          <p className="font-semibold text-center text-sm sm:text-base">घोषणा / DECLARATION</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4">
             <div>
-              <Label htmlFor="full_name" className="mb-2">
+              <Label htmlFor="full_name" className="mb-2 text-sm sm:text-base">
                 मैं / I, <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -105,14 +105,14 @@ const DeclarationForm = ({
                 value={formData.full_name}
                 onChange={(e) => handleInputChange("full_name", e.target.value)}
                 placeholder="पूरा नाम (हिंदी में)"
-                className="font-hindi"
+                className="font-hindi h-9 sm:h-10"
                 required
               />
               <p className="text-xs text-muted-foreground mt-1">(Full Name)</p>
             </div>
 
             <div>
-              <Label htmlFor="age" className="mb-2">
+              <Label htmlFor="age" className="mb-2 text-sm sm:text-base">
                 आयु / Age <span className="text-red-500">*</span>
               </Label>
               <div className="flex items-center gap-2">
@@ -124,10 +124,10 @@ const DeclarationForm = ({
                   value={formData.age}
                   onChange={(e) => handleInputChange("age", e.target.value)}
                   placeholder="18"
-                  className="w-20"
+                  className="w-16 sm:w-20 h-9 sm:h-10"
                   required
                 />
-                <span className="text-sm">वर्ष / years</span>
+                <span className="text-xs sm:text-sm">वर्ष / years</span>
               </div>
             </div>
           </div>
@@ -137,8 +137,8 @@ const DeclarationForm = ({
             hereby solemnly declare that —
           </p>
 
-          <ul className="space-y-3 ml-4">
-            <li>• मैं एक भारतीय नागरिक हूँ और मेरी आयु ___ वर्ष है।</li>
+          <ul className="space-y-2 sm:space-y-3 ml-2 sm:ml-4">
+            <li className="text-xs sm:text-sm">• मैं एक भारतीय नागरिक हूँ और मेरी आयु ___ वर्ष है।</li>
             <li className="text-xs text-muted-foreground">
               I am an Indian citizen and my age is ___ years.
             </li>
@@ -218,18 +218,18 @@ const DeclarationForm = ({
         </div>
       </div>
 
-      <div className="flex items-start space-x-3 p-4 bg-primary/5 rounded-lg border">
+      <div className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-primary/5 rounded-lg border">
         <Checkbox
           id="declaration-agreement"
           checked={formData.agreed_to_declaration}
           onCheckedChange={(checked) =>
             handleInputChange("agreed_to_declaration", checked as boolean)
           }
-          className="mt-1"
+          className="mt-0.5 sm:mt-1"
         />
         <Label
           htmlFor="declaration-agreement"
-          className="text-sm cursor-pointer leading-relaxed"
+          className="text-xs sm:text-sm cursor-pointer leading-relaxed"
         >
           <span className="font-medium">
             मैं उपरोक्त सभी घोषणाओं से सहमत हूँ / I agree to all the above
@@ -243,18 +243,19 @@ const DeclarationForm = ({
         </Label>
       </div>
 
-      <div className="flex justify-between pt-6">
+      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t">
         {onBack && (
-          <Button type="button" variant="outline" onClick={onBack}>
+          <Button type="button" variant="outline" onClick={onBack} className="h-9 sm:h-10 w-full sm:w-auto order-2 sm:order-1">
             Back
           </Button>
         )}
         <Button
           type="submit"
           disabled={!formData.agreed_to_declaration}
-          className="ml-auto"
+          className="h-9 sm:h-10 w-full sm:w-auto order-1 sm:order-2"
         >
-          Accept Declaration & Continue
+          <span className="hidden sm:inline">Accept Declaration & Continue</span>
+          <span className="sm:hidden">Accept & Continue</span>
         </Button>
       </div>
     </form>
