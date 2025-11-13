@@ -121,69 +121,73 @@ const Contact: React.FC = () => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-5 lg:space-y-6"
                   >
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
-                            <User className="w-4 h-4" />
-                            Full Name
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter your full name"
-                              className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
+                              <User className="w-4 h-4" />
+                              Full Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your full name"
+                                className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
-                            <Mail className="w-4 h-4" />
-                            Email Address
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="Enter your email address"
-                              className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
+                              <Mail className="w-4 h-4" />
+                              Email Address
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="Enter your email address"
+                                className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                    <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
-                            <MessageSquare className="w-4 h-4" />
-                            Subject
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="What's this about?"
-                              className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="subject"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2 text-foreground font-semibold text-sm lg:text-base">
+                              <MessageSquare className="w-4 h-4" />
+                              Subject
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="What's this about?"
+                                className="h-11 lg:h-12 bg-background border-border focus:border-primary focus:ring-primary text-sm lg:text-base"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
@@ -231,12 +235,13 @@ const Contact: React.FC = () => {
 
           {/* Contact Image */}
           <div className="order-1 lg:order-2">
-            <div className="relative w-full h-[400px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative w-full h-[370px] lg:h-[550px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="/hero/cont.webp"
                 alt="Contact Us"
                 height={100}
                 width={100}
+                quality={100}
                 className="w-full h-full object-cover"
               />
             </div>
