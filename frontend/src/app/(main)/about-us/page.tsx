@@ -32,7 +32,7 @@ const AboutUsPage = () => {
       
       <WhyDifferentSection whyDifferent={aboutPageData.sections.whyDifferent} />
       
-      <WhyWeExistSection whyWeExist={aboutPageData.sections.whyWeExist} />
+      {/* <WhyWeExistSection whyWeExist={aboutPageData.sections.whyWeExist} /> */}
       
       <TempleServiceSection />
       
