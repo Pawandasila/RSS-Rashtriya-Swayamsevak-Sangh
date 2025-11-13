@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import useAxios from "@/hooks/use-axios";
 import useAuth from "@/hooks/use-auth";
@@ -357,17 +357,18 @@ const CareersPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-3xl">
+    <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Volunteer Registration</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          {step === 1 && "Step 1: Application Details"}
+          {step === 2 && "Step 2: Address Information"}
+          {step === 3 && "Step 3: Declaration"}
+          {step === 4 && "Step 4: Payment & Submit"}
+        </p>
+      </div>
       <Card>
-        <CardHeader>
-          <CardTitle>
-            {step === 1 && "Step 1: Application Details"}
-            {step === 2 && "Step 2: Address Information"}
-            {step === 3 && "Step 3: Declaration"}
-            {step === 4 && "Step 4: Payment & Submit"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {step === 1 && (
             <ApplicationForm
               data={applicationData}

@@ -239,38 +239,39 @@ export default function VyapariManagement() {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <CardTitle>Businesses (Vyapari)</CardTitle>
-            <CardDescription>Manage registered businesses</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Businesses (Vyapari)</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Manage registered businesses</CardDescription>
           </div>
-          <Button onClick={() => setIsCreateModalOpen(true)} title="Add a new business">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Business
+          <Button onClick={() => setIsCreateModalOpen(true)} title="Add a new business" className="h-9 sm:h-10 w-full sm:w-auto">
+            <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Add Business</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder="Search businesses..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="h-9 sm:h-10 text-sm w-full sm:max-w-sm"
           />
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Business</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-xs sm:text-sm">Business</TableHead>
+                <TableHead className="hidden md:table-cell text-xs sm:text-sm">Category & Subcategory</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs sm:text-sm">Contact</TableHead>
+                <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -309,17 +310,17 @@ export default function VyapariManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-1">
-                          <Layers className="h-3.5 w-3.5 text-muted-foreground" />
-                          <Badge variant="outline" className="font-medium">
+                          <Layers className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
+                          <Badge variant="outline" className="font-medium text-xs">
                             {getCategoryName(vyapari.category)}
                           </Badge>
                         </div>
                         {vyapari.subcategory && (
-                          <div className="flex items-center gap-1 ml-5">
-                            <div className="w-3 h-px bg-border"></div>
-                            <FolderTree className="h-3 w-3 text-muted-foreground" />
+                          <div className="flex items-center gap-1 ml-4">
+                            <div className="w-2 h-px bg-border"></div>
+                            <FolderTree className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground" />
                             <Badge variant="secondary" className="text-xs">
                               {getSubCategoryName(vyapari.subcategory)}
                             </Badge>
@@ -327,11 +328,11 @@ export default function VyapariManagement() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="space-y-1 text-sm">
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="space-y-1 text-xs sm:text-sm">
                         <Link
                           href={`tel:${vyapari.phone}`}
-                          className="flex items-center gap-1  hover:text-blue-800 hover:underline transition-colors"
+                          className="flex items-center gap-1 hover:text-blue-800 hover:underline transition-colors"
                         >
                           <Phone className="h-3 w-3" />
                           <span>{vyapari.phone}</span>
@@ -342,7 +343,7 @@ export default function VyapariManagement() {
                             className="flex items-center gap-1 hover:text-blue-800 hover:underline transition-colors"
                           >
                             <Mail className="h-3 w-3" />
-                            <span className="line-clamp-1">
+                            <span className="line-clamp-1 truncate max-w-[150px]">
                               {vyapari.email}
                             </span>
                           </Link>
@@ -354,38 +355,41 @@ export default function VyapariManagement() {
                         {vyapari.is_verified && (
                           <Badge
                             variant="default"
-                            className="w-fit flex items-center gap-1"
+                            className="w-fit flex items-center gap-1 text-xs"
                           >
-                            <CheckCircle className="h-3 w-3" />
-                            Verified
+                            <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <span className="hidden sm:inline">Verified</span>
+                            <span className="sm:hidden">Ver</span>
                           </Badge>
                         )}
                         {vyapari.is_blocked && (
                           <Badge
                             variant="destructive"
-                            className="w-fit flex items-center gap-1"
+                            className="w-fit flex items-center gap-1 text-xs"
                           >
-                            <Ban className="h-3 w-3" />
-                            Blocked
+                            <Ban className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <span className="hidden sm:inline">Blocked</span>
+                            <span className="sm:hidden">Blk</span>
                           </Badge>
                         )}
                         {!vyapari.is_verified && !vyapari.is_blocked && (
                           <Badge
                             variant="secondary"
-                            className="w-fit flex items-center gap-1"
+                            className="w-fit flex items-center gap-1 text-xs"
                           >
-                            <Clock className="h-3 w-3" />
-                            Pending
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <span className="hidden sm:inline">Pending</span>
+                            <span className="sm:hidden">Pend</span>
                           </Badge>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
+                      <div className="flex justify-end gap-0.5 sm:gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-7 w-7 sm:h-8 sm:w-8"
                           onClick={() => openVerifyDialog(vyapari)}
                           title={
                             vyapari.is_verified
@@ -394,9 +398,9 @@ export default function VyapariManagement() {
                           }
                         >
                           {vyapari.is_verified ? (
-                            <XCircle className="h-4 w-4 text-orange-500" />
+                            <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
                           ) : (
-                            <ShieldCheck className="h-4 w-4 text-green-600" />
+                            <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                           )}
                         </Button>
                         <Button

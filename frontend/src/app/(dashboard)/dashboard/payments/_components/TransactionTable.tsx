@@ -511,26 +511,26 @@ export function TransactionTable({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+    <div className="space-y-4 p-4 sm:p-0">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder="Search by order ID, payment ID, name, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10"
+            className="pl-8 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 text-sm"
             autoComplete="off"
             type="text"
             disabled={loading}
           />
           {loading && (
-            <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
+            <Loader2 className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground animate-spin" />
           )}
         </div>
 
         <Select value={filterStatus} onValueChange={handleStatusFilterChange}>
-          <SelectTrigger className="w-full sm:w-[180px]">
+          <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -543,7 +543,7 @@ export function TransactionTable({
         </Select>
 
         <Select value={filterType} onValueChange={handleTypeFilterChange}>
-          <SelectTrigger className="w-full sm:w-[180px]">
+          <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
             <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
           <SelectContent>
@@ -557,12 +557,12 @@ export function TransactionTable({
 
         <Button
           variant="outline"
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto h-9 sm:h-10"
           onClick={exportToCSV}
           disabled={sortedPayments.length === 0}
         >
-          <Download className="h-4 w-4" />
-          Export CSV
+          <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="text-xs sm:text-sm">Export CSV</span>
         </Button>
       </div>
 
@@ -572,41 +572,41 @@ export function TransactionTable({
         </div>
       )}
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Transaction ID</TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Payment Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>
+              <TableHead className="text-xs sm:text-sm">Transaction ID</TableHead>
+              <TableHead className="text-xs sm:text-sm">User</TableHead>
+              <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+              <TableHead className="hidden md:table-cell text-xs sm:text-sm">Type</TableHead>
+              <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Payment Method</TableHead>
+              <TableHead className="hidden sm:table-cell text-xs sm:text-sm">Status</TableHead>
+              <TableHead className="hidden md:table-cell text-xs sm:text-sm">
                 <Button
                   variant="ghost"
                   onClick={toggleSortOrder}
-                  className="h-8 p-0 hover:bg-transparent"
+                  className="h-8 p-0 hover:bg-transparent text-xs sm:text-sm"
                 >
                   Date
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                  <ArrowUpDown className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                <TableCell colSpan={8} className="text-center py-6 sm:py-8">
+                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin mx-auto" />
                 </TableCell>
               </TableRow>
             ) : sortedPayments.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={8}
-                  className="text-center py-8 text-muted-foreground"
+                  className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm"
                 >
                   No payments found
                 </TableCell>
@@ -617,28 +617,32 @@ export function TransactionTable({
                   <TableCell className="font-medium font-mono text-xs">
                     {payment.order_id}
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
+                  <TableCell className="text-xs sm:text-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
                         <AvatarFallback>
                           {getInitials(payment.name)}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <div className="font-medium">{payment.name}</div>
-                        <div className="text-xs text-muted-foreground">
+                      <div className="min-w-0">
+                        <div className="font-medium truncate">{payment.name}</div>
+                        <div className="text-xs text-muted-foreground truncate">
                           {payment.email}
+                        </div>
+                        <div className="sm:hidden mt-1 space-y-1">
+                          <div className="sm:hidden">{getStatusBadge(payment.status)}</div>
+                          <div className="md:hidden">{getTypeBadge(payment.payment_for)}</div>
                         </div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold">
+                  <TableCell className="font-semibold text-xs sm:text-sm">
                     {formatCurrency(payment.amount / 100, "INR")}
                   </TableCell>
-                  <TableCell>{getTypeBadge(payment.payment_for)}</TableCell>
-                  <TableCell>{getPaymentMethodIcon(payment)}</TableCell>
-                  <TableCell>{getStatusBadge(payment.status)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="hidden md:table-cell">{getTypeBadge(payment.payment_for)}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{getPaymentMethodIcon(payment)}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{getStatusBadge(payment.status)}</TableCell>
+                  <TableCell className="hidden md:table-cell text-xs sm:text-sm text-muted-foreground">
                     {formatDate(payment.timestamp)}
                   </TableCell>
                   <TableCell className="text-right">
@@ -655,9 +659,9 @@ export function TransactionTable({
                             }
                           >
                             {loadingPaymentId === payment.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                             )}
                           </Button>
                         </TooltipTrigger>
@@ -674,8 +678,8 @@ export function TransactionTable({
         </Table>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground whitespace-nowrap">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-0">
+        <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
           {totalCount > 0
             ? `Showing ${startItem.toLocaleString()} - ${endItem.toLocaleString()} of ${totalCount.toLocaleString()} results`
             : "No results to display"}

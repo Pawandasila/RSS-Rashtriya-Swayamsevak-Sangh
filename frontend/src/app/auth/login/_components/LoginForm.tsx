@@ -75,32 +75,32 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm w-full max-w-md mx-auto my-4">
-      <CardHeader className="space-y-1 text-center py-4">
+    <Card className="shadow-lg border bg-card w-full max-w-md mx-auto">
+      <CardHeader className="space-y-2 text-center py-4 sm:py-6 px-4 sm:px-6">
         <div className="flex justify-center mb-2">
-          <div className="p-2 bg-primary/10 rounded-full">
-            <LogIn className="w-5 h-5 text-primary" />
+          <div className="p-2 sm:p-3 bg-primary/10 rounded-full">
+            <LogIn className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
           </div>
         </div>
-        <CardTitle className="text-xl font-bold text-gray-900">अपने खाते में लॉगिन करें</CardTitle>
-        <CardDescription className="text-sm text-gray-600">
+        <CardTitle className="text-lg sm:text-xl font-bold">अपने खाते में लॉगिन करें</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
           अपना ईमेल/फोन और पासवर्ड दर्ज करें
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 px-6 pb-4">
+      <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
         {submitStatus === 'success' && (
-          <Alert className="border-green-200 bg-green-50 py-2">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800 text-sm">
+          <Alert className="border-green-200 bg-green-50 py-2 sm:py-3">
+            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600" />
+            <AlertDescription className="text-green-800 text-xs sm:text-sm">
               {submitMessage}
             </AlertDescription>
           </Alert>
         )}
         
         {submitStatus === 'error' && (
-          <Alert className="border-red-200 bg-red-50 py-2">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800 text-sm">
+          <Alert className="border-red-200 bg-red-50 py-2 sm:py-3">
+            <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600" />
+            <AlertDescription className="text-red-800 text-xs sm:text-sm">
               {submitMessage}
             </AlertDescription>
           </Alert>
@@ -119,14 +119,14 @@ const LoginForm = () => {
               name="emailOrPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1.5 text-sm font-medium">
-                    <Mail className="w-3.5 h-3.5" />
+                  <FormLabel className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+                    <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     ईमेल या फोन नंबर
                   </FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="example@domain.com या 9876543210" 
-                      className="h-8 text-sm"
+                      className="h-9 sm:h-10 text-sm"
                       {...field} 
                     />
                   </FormControl>
@@ -140,8 +140,8 @@ const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1.5 text-sm font-medium">
-                    <Lock className="w-3.5 h-3.5" />
+                  <FormLabel className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+                    <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     पासवर्ड
                   </FormLabel>
                   <FormControl>
@@ -149,20 +149,20 @@ const LoginForm = () => {
                       <Input 
                         type={showPassword ? "text" : "password"}
                         placeholder="अपना पासवर्ड दर्ज करें" 
-                        className="h-8 text-sm pr-10"
+                        className="h-9 sm:h-10 text-sm pr-10"
                         {...field} 
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-8 w-10 px-2 hover:bg-transparent"
+                        className="absolute right-0 top-0 h-9 sm:h-10 w-9 sm:w-10 px-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-3.5 w-3.5 text-gray-500" />
+                          <EyeOff className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-500" />
                         ) : (
-                          <Eye className="h-3.5 w-3.5 text-gray-500" />
+                          <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-500" />
                         )}
                       </Button>
                     </div>
@@ -177,12 +177,12 @@ const LoginForm = () => {
                 control={form.control}
                 name="rememberMe"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-2 space-y-0">
+                  <FormItem className="flex flex-row items-start space-x-1.5 sm:space-x-2 space-y-0">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="mt-0.5"
+                        className="mt-0.5 h-4 w-4"
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
@@ -196,7 +196,7 @@ const LoginForm = () => {
               
               <Link 
                 href="/auth/forgot-password" 
-                className="text-xs text-primary hover:underline"
+                className="text-xs text-primary hover:underline whitespace-nowrap"
               >
                 पासवर्ड भूल गए?
               </Link>
@@ -204,17 +204,17 @@ const LoginForm = () => {
 
             <Button 
               type="submit" 
-              className="w-full h-9 text-sm font-medium" 
+              className="w-full h-9 sm:h-10 text-sm font-medium" 
               disabled={isLoading}
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   लॉगिन हो रहा है...
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   लॉगिन करें
                 </div>
               )}

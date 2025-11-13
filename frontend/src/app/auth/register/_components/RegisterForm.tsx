@@ -188,15 +188,19 @@ const RegisterFormContent = () => {
 
   return (
     <div className="w-full max-w-xl mx-auto">
-      <Card className="shadow-sm border border-border bg-card">
-        <CardHeader className="space-y-3 text-center py-6">
-          
-          <CardTitle className="text-2xl font-semibold text-foreground">
+      <Card className="shadow-lg border bg-card">
+        <CardHeader className="space-y-2 sm:space-y-3 text-center py-4 sm:py-6 px-4 sm:px-6">
+          <div className="flex justify-center mb-2">
+            <div className="p-2 sm:p-3 bg-primary/10 rounded-full">
+              <UserPlus className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-lg sm:text-2xl font-semibold">
             नया खाता बनाएं
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-5 px-6 pb-6">
+        <CardContent className="space-y-4 sm:space-y-5 px-4 sm:px-6 pb-4 sm:pb-6">
           {submitStatus === "success" && (
             <Alert className="border-green-200 bg-green-50 dark:bg-green-950/50 dark:border-green-800">
               <CheckCircle className="h-4 w-4 text-green-600" />
@@ -257,21 +261,21 @@ const RegisterFormContent = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-foreground">
-                        <Mail className="w-3 h-3 text-primary" />
+                      <FormLabel className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
+                        <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
                         ईमेल पता
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="example@domain.com"
-                          className="h-9 text-sm placeholder:text-foreground/60"
+                          className="h-9 sm:h-10 text-sm"
                           onKeyPress={handleEnglishOnlyInput}
                           onPaste={handleEnglishOnlyPaste}
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage className="text-xs text-destructive" />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -281,14 +285,14 @@ const RegisterFormContent = () => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-foreground">
-                        <Phone className="w-3 h-3 text-primary" />
+                      <FormLabel className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
+                        <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
                         मोबाइल नंबर
                       </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="9876543210"
-                          className="h-9 text-sm placeholder:text-foreground/60"
+                          className="h-9 sm:h-10 text-sm"
                           type="tel"
                           maxLength={10}
                           {...field}
@@ -298,7 +302,7 @@ const RegisterFormContent = () => {
                           }}
                         />
                       </FormControl>
-                      <FormMessage className="text-xs text-destructive" />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -308,8 +312,8 @@ const RegisterFormContent = () => {
                   name="dateOfBirth"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-foreground">
-                        <CalendarIcon className="w-3 h-3 text-primary" />
+                      <FormLabel className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
+                        <CalendarIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
                         जन्म तिथि
                       </FormLabel>
                       <Popover>
@@ -318,11 +322,11 @@ const RegisterFormContent = () => {
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "h-9 justify-start text-left font-normal text-sm",
+                                "h-9 sm:h-10 justify-start text-left font-normal text-sm w-full",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              <CalendarIcon className="mr-2 h-3 w-3 text-primary" />
+                              <CalendarIcon className="mr-2 h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
                               {field.value ? (
                                 format(field.value, "PPP", { locale: hi })
                               ) : (
@@ -363,10 +367,10 @@ const RegisterFormContent = () => {
                 />
               </div>
 
-              <div className="rounded-md border border-border/60 bg-muted p-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Lock className="h-3 w-3 text-primary" />
-                  <p className="text-sm font-medium text-foreground">
+              <div className="rounded-md border border-border/60 bg-muted p-2.5 sm:p-3 space-y-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Lock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary flex-shrink-0" />
+                  <p className="text-xs sm:text-sm font-medium">
                     पासवर्ड की जानकारी
                   </p>
                 </div>
@@ -374,25 +378,25 @@ const RegisterFormContent = () => {
                   पंजीकरण के बाद आपका पासवर्ड आपकी जन्म तिथि होगी (DDMMYYYY
                   format में)।
                 </p>
-                <div className="rounded bg-card px-2 py-1">
+                <div className="rounded bg-card px-2 py-1.5">
                   <p className="text-xs text-muted-foreground">
                     <strong>उदाहरण:</strong> जन्म तिथि 15/01/1990 = पासवर्ड:
-                    <code className="ml-1 rounded bg-muted px-1 py-0.5 text-xs font-mono text-foreground/80">
+                    <code className="ml-1 rounded bg-muted px-1 py-0.5 text-xs font-mono">
                       15011990
                     </code>
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 sm:space-y-4">
                 <Button
                   type="button"
                   variant="link"
-                  className="p-0 h-auto text-primary hover:text-primary/80 text-sm"
+                  className="p-0 h-auto text-primary hover:text-primary/80 text-xs sm:text-sm"
                   onClick={() => setShowReferralCode(!showReferralCode)}
                 >
-                  <div className="flex items-center gap-2">
-                    <Key className="w-3 h-3" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Key className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     {showReferralCode ? "रेफरल कोड छुपाएं" : "रेफरल कोड है?"}
                   </div>
                 </Button>

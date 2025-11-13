@@ -425,18 +425,28 @@ const StatCard: React.FC<StatCardProps> = ({
 
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {user?.is_verified && (
-                <Badge variant="outline" className="text-green-600 text-[10px] sm:text-xs">
+                <Badge variant="outline" className="text-green-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
                   Verified
                 </Badge>
               )}
               {user?.is_member_account && (
-                <Badge variant="outline" className="text-blue-600 text-[10px] sm:text-xs">
+                <Badge variant="outline" className="text-blue-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
                   Member
                 </Badge>
               )}
               {user?.is_admin_account && (
-                <Badge variant="outline" className="text-red-600 text-[10px] sm:text-xs">
+                <Badge variant="outline" className="text-red-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
                   Admin
+                </Badge>
+              )}
+              {user?.is_volunteer && (
+                <Badge variant="outline" className="text-emerald-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                  Volunteer
+                </Badge>
+              )}
+              {user?.is_staff_account && (
+                <Badge variant="outline" className="text-purple-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                  Staff
                 </Badge>
               )}
             </div>
@@ -535,8 +545,11 @@ const StatCard: React.FC<StatCardProps> = ({
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-muted-foreground">Account Type:</span>
                   <span className="font-medium text-right">
-                    {user?.is_admin_account ? "Admin" : 
-                     user?.is_member_account ? "Member" : "Volunteer"}
+                    {user?.is_admin_account ? "Admin": "" }
+                     {user?.is_member_account ? "Member" : "" }
+                     {user?.is_staff_account ? " (Staff)" : ""}
+                     {user?.is_volunteer ? "Volunteer" : ""}
+                     {user?.is_admin_account || user?.is_member_account || user?.is_staff_account || user?.is_volunteer ? "" : "User"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center gap-2">

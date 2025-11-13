@@ -227,25 +227,25 @@ const VolunteerAssignment = () => {
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
             Volunteer Applications
           </CardTitle>
 
-          <div className="flex flex-wrap items-center gap-4 pt-4">
-            <div className="relative min-w-[250px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3 sm:pt-4">
+            <div className="relative w-full sm:min-w-[250px]">
+              <Search className="absolute left-2 sm:left-3 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search applications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-8 sm:pl-10 h-9 sm:h-10 text-sm"
               />
             </div>
 
             <Select value={wingFilter} onValueChange={setWingFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
                 <SelectValue placeholder="All Wings" />
               </SelectTrigger>
               <SelectContent>
@@ -259,7 +259,7 @@ const VolunteerAssignment = () => {
             </Select>
 
             <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
                 <SelectValue placeholder="All Levels" />
               </SelectTrigger>
               <SelectContent>
@@ -276,7 +276,7 @@ const VolunteerAssignment = () => {
               value={designationFilter}
               onValueChange={setDesignationFilter}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
                 <SelectValue placeholder="All Designations" />
               </SelectTrigger>
               <SelectContent>
@@ -296,31 +296,31 @@ const VolunteerAssignment = () => {
               levelFilter !== "all" ||
               designationFilter !== "all" ||
               searchTerm) && (
-              <Button variant="outline" size="sm" onClick={clearFilters}>
-                <Filter className="mr-2 h-4 w-4" />
-                Clear Filters
+              <Button variant="outline" size="sm" onClick={clearFilters} className="w-full sm:w-auto">
+                <Filter className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">Clear Filters</span>
               </Button>
             )}
 
-            <div className="text-sm text-muted-foreground ml-auto">
+            <div className="text-xs sm:text-sm text-muted-foreground w-full sm:w-auto sm:ml-auto text-center sm:text-left">
               Showing {filteredApplications.length} applications
             </div>
           </div>
         </CardHeader>
 
-        <CardContent>
-          <div className="rounded-md border">
+        <CardContent className="p-0 sm:p-6">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[180px]">Applicant Info</TableHead>
-                  <TableHead className="w-[150px]">Wing</TableHead>
-                  <TableHead className="w-[120px]">Level</TableHead>
-                  <TableHead className="w-[150px]">Designation</TableHead>
-                  <TableHead className="w-[120px]">Documents</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="w-[120px]">Applied Date</TableHead>
-                  <TableHead className="w-[200px] text-right">
+                  <TableHead className="text-xs sm:text-sm">Applicant Info</TableHead>
+                  <TableHead className="hidden md:table-cell text-xs sm:text-sm">Wing</TableHead>
+                  <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Level</TableHead>
+                  <TableHead className="hidden sm:table-cell text-xs sm:text-sm">Designation</TableHead>
+                  <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Documents</TableHead>
+                  <TableHead className="hidden sm:table-cell text-xs sm:text-sm">Status</TableHead>
+                  <TableHead className="hidden md:table-cell text-xs sm:text-sm">Applied Date</TableHead>
+                  <TableHead className="text-right text-xs sm:text-sm">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -328,19 +328,19 @@ const VolunteerAssignment = () => {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-8 sm:py-12">
                       <div className="flex flex-col items-center justify-center text-muted-foreground">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-                        <p>Loading applications...</p>
+                        <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary mb-3 sm:mb-4"></div>
+                        <p className="text-xs sm:text-sm">Loading applications...</p>
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : error ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-8 sm:py-12">
                       <div className="flex flex-col items-center justify-center text-destructive">
-                        <Users className="h-12 w-12 mb-4 opacity-50" />
-                        <h3 className="font-semibold text-lg mb-1">
+                        <Users className="h-8 w-8 sm:h-12 sm:w-12 mb-3 sm:mb-4 opacity-50" />
+                        <h3 className="font-semibold text-sm sm:text-lg mb-1">
                           Error Loading Data
                         </h3>
                         <p className="text-sm mb-4">{error}</p>
@@ -356,10 +356,10 @@ const VolunteerAssignment = () => {
                   </TableRow>
                 ) : filteredApplications.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-8 sm:py-12">
                       <div className="flex flex-col items-center justify-center text-muted-foreground">
-                        <Users className="h-12 w-12 mb-4 opacity-50" />
-                        <h3 className="font-semibold text-lg mb-1">
+                        <Users className="h-8 w-8 sm:h-12 sm:w-12 mb-3 sm:mb-4 opacity-50" />
+                        <h3 className="font-semibold text-sm sm:text-lg mb-1">
                           No applications found
                         </h3>
                         <p className="text-sm mb-4">
@@ -399,10 +399,10 @@ const VolunteerAssignment = () => {
 
                       return (
                         <TableRow key={application.id}>
-                          <TableCell>
-                            <div className="flex items-center space-x-3">
+                          <TableCell className="text-xs sm:text-sm">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                               {application.image ? (
-                                <div className="relative w-10 h-10">
+                                <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                                   <Image
                                     src={application.image}
                                     alt="Profile"
@@ -411,38 +411,60 @@ const VolunteerAssignment = () => {
                                   />
                                 </div>
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                                  <Users className="h-5 w-5 text-muted-foreground" />
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full bg-muted flex items-center justify-center">
+                                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                                 </div>
                               )}
-                              <div>
-                                <div className="font-medium text-sm">
+                              <div className="min-w-0">
+                                <div className="font-medium text-xs sm:text-sm truncate">
                                   {application.user_name ||
                                     `User ${application.user}`}
                                 </div>
                                 <div className="flex items-center text-xs text-muted-foreground">
-                                  <Phone className="h-3 w-3 mr-1" />
-                                  {application.phone_number || "No phone"}
+                                  <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
+                                  <span className="truncate">{application.phone_number || "No phone"}</span>
+                                </div>
+                                <div className="sm:hidden mt-1 space-y-0.5">
+                                  <div className="text-xs text-muted-foreground">{application.designation_title || "N/A"}</div>
+                                  <div className="md:hidden text-xs text-muted-foreground">{application.wing_name || "N/A"}</div>
+                                  <div className="lg:hidden text-xs text-muted-foreground">{application.level_name || "N/A"}</div>
+                                  <div className="flex items-center gap-2 sm:hidden">
+                                    <Badge
+                                      variant={
+                                        application.status === "approved"
+                                          ? "default"
+                                          : application.status === "pending"
+                                          ? "secondary"
+                                          : "destructive"
+                                      }
+                                      className="text-xs"
+                                    >
+                                      {application.status}
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs lg:hidden">
+                                      {documentsCount}/3
+                                    </Badge>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <div className="text-sm font-medium">
+                          <TableCell className="hidden md:table-cell text-xs sm:text-sm">
+                            <div className="font-medium">
                               {application.wing_name || "N/A"}
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <div className="text-sm">
+                          <TableCell className="hidden lg:table-cell text-xs sm:text-sm">
+                            <div>
                               {application.level_name || "N/A"}
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <div className="text-sm font-medium">
+                          <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
+                            <div className="font-medium">
                               {application.designation_title || "N/A"}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden lg:table-cell">
                             <div className="flex items-center space-x-1">
                               <Badge variant="outline" className="text-xs">
                                 {documentsCount}/3 docs
@@ -469,7 +491,7 @@ const VolunteerAssignment = () => {
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden sm:table-cell">
                             <Badge
                               variant={
                                 application.status === "approved"
@@ -478,11 +500,12 @@ const VolunteerAssignment = () => {
                                   ? "secondary"
                                   : "destructive"
                               }
+                              className="text-xs"
                             >
                               {application.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
+                          <TableCell className="hidden md:table-cell text-xs sm:text-sm text-muted-foreground">
                             <div className="flex items-center">
                               <Calendar className="h-3 w-3 mr-1" />
                               {new Date(
@@ -491,7 +514,7 @@ const VolunteerAssignment = () => {
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex justify-end space-x-2">
+                            <div className="flex justify-end gap-1">
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -499,9 +522,10 @@ const VolunteerAssignment = () => {
                                   setSelectedApplication(application);
                                   setDetailsDialog(true);
                                 }}
+                                className="h-8 sm:h-9 px-2 sm:px-3"
                               >
-                                <Eye className="h-4 w-4 mr-1" />
-                                Details
+                                <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                                <span className="hidden sm:inline text-xs">Details</span>
                               </Button>
                               <Button
                                 variant="ghost"
@@ -514,9 +538,10 @@ const VolunteerAssignment = () => {
                                   setSelectedApplicationId(application.id);
                                   setSelectedApplication(application);
                                 }}
+                                className="h-8 sm:h-9 px-2 sm:px-3"
                               >
-                                <UserCheck className="h-4 w-4 mr-1" />
-                                Assign
+                                <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                                <span className="hidden sm:inline text-xs">Assign</span>
                               </Button>
                             </div>
                           </TableCell>

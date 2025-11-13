@@ -157,7 +157,7 @@ export function useDonationPayment() {
 
         if (
           responseMessage.includes("already a member") ||
-          responseMessage.includes("user already a member") ||
+        // Keep isProcessing true while waiting for payment
           responseError.includes("already a member") ||
           responseError.includes("user already a member")
         ) {
@@ -329,7 +329,6 @@ export function useDonationPayment() {
 
         setOrderData(orderResponse);
         setCurrentStep("waiting-payment");
-        setIsProcessing(false);
 
         const options: RazorpayOptions = {
           key:
@@ -362,7 +361,13 @@ export function useDonationPayment() {
                 setCurrentStep("completed");
 
                 const userCountry = user?.country || "N/A";
-                const userState = user?.state || "N/A";
+                const resolvedState = formData.state || user?.state || "N/A";
+                const userDistrict = (() => {
+                  if (!user) return undefined;
+                  const maybe = (user as unknown as Record<string, unknown>)["district"];
+                  return typeof maybe === "string" ? maybe : undefined;
+                })();
+                const resolvedDistrict = formData.district || userDistrict || "N/A";
                 const userCity = user?.city || "N/A";
                 const userPostalCode = user?.postal_code || "N/A";
 
@@ -379,7 +384,8 @@ export function useDonationPayment() {
                       verificationResponse.order_id ||
                       "N/A",
                     country: userCountry,
-                    state: userState,
+                    state: resolvedState,
+                    district: resolvedDistrict,
                     city: userCity,
                     postal_code: userPostalCode,
                   });
@@ -427,6 +433,8 @@ export function useDonationPayment() {
             donor_name: formData.name,
             donor_email: formData.email,
             donor_phone: formData.phone,
+            state: formData.state || "",
+            district: formData.district || "",
           },
           theme: {
             color: "#FF9933",
@@ -460,7 +468,13 @@ export function useDonationPayment() {
         };
 
         if (typeof window.Razorpay === "undefined") {
-          await loadRazorpayScript();
+          const loaded = await loadRazorpayScript();
+          if (!loaded || typeof window.Razorpay === "undefined") {
+            setError("Unable to load payment gateway. Please retry.");
+            setIsProcessing(false);
+            setCurrentStep("idle");
+            return;
+          }
         }
 
         const rzp = new window.Razorpay(options);
@@ -478,7 +492,7 @@ export function useDonationPayment() {
         setCurrentStep("idle");
       }
     },
-    [createOrder, verifyPayment, user?.country, user?.state, user?.city, user?.postal_code]
+    [createOrder, verifyPayment, user]
   );
 
   const mannualPayment = useCallback(
