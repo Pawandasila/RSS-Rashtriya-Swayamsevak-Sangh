@@ -66,6 +66,7 @@ class Command(BaseCommand):
                     'district': district,
                     'state': state,
                     'postal_code': pin,
+                    'is_member_account': True,
                     'is_verified': status.lower() in ['approved', 'active', 'verified'],
                 }
             )

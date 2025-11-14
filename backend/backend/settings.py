@@ -30,7 +30,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "72.60.223.136"
+    "72.60.223.136",
+    "joinrss.org.in",
+    "www.joinrss.org.in",
+    "api.joinrss.org.in"
 ]
 
 
@@ -56,9 +59,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -130,7 +133,23 @@ DEFAULT_CHARSET = 'utf-8'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://72.60.223.136"
+    "http://72.60.223.136",
+    "http://joinrss.org.in",
+    "http://www.joinrss.org.in",
+    "https://joinrss.org.in",
+    "https://www.joinrss.org.in",
+    "https://api.joinrss.org.in"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://72.60.223.136",
+    "http://joinrss.org.in",
+    "http://www.joinrss.org.in",
+    "https://joinrss.org.in",
+    "https://www.joinrss.org.in",
+    "https://api.joinrss.org.in"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
