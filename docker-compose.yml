@@ -107,7 +107,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - certs:/etc/nginx/certs
+      - certs:/etc/nginx/certs:rw
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -116,8 +116,6 @@ services:
     labels:
       - com.github.nginx-proxy.nginx
 
-
-  ### ─── ACME (LETSENCRYPT AUTO SSL) ───────────────────────────────────────────
   acme-companion:
     image: nginxproxy/acme-companion
     container_name: nginx_acme
@@ -126,9 +124,10 @@ services:
       - DEFAULT_EMAIL=admin@joinrss.org.in
       - NGINX_PROXY_CONTAINER=nginx_proxy
     volumes:
-      - certs:/etc/acme.sh
+      - certs:/etc/nginx/certs:rw
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
+      - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - app_network
@@ -140,6 +139,8 @@ volumes:
   certs:
   vhost:
   html:
+  acme:
+
 
 networks:
   app_network:
