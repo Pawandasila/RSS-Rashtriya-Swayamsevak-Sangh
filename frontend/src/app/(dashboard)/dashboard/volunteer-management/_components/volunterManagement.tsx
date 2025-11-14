@@ -27,10 +27,14 @@ import { EditUserDetailModal } from "@/module/dashboard/users/components/edit-us
 import useAxios from "@/hooks/use-axios";
 import { useAuth } from "@/hooks/use-auth";
 import { VolunteerWithUser } from "@/module/dashboard/volunteer/types";
+import { useVolunteersList } from "@/module/dashboard/volunteer/hooks";
 import { useCountryApi } from "@/module/country/hooks";
 import { toast } from "sonner";
-import { StateSelect } from "@/module/country/components/country-select"; // retained for other usages if needed
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 interface EditingVolunteer extends VolunteerWithUser {
   can_view_member_data: boolean;
@@ -43,6 +47,7 @@ interface UpdateVolunteerData {
 export default function VolunteerTable() {
   const axios = useAxios();
   const { isAdmin, isStaff } = useAuth();
+  const { volunteers, loading, error, refetch } = useVolunteersList();
   const { states, isLoadingStates, statesError, fetchStates } = useCountryApi();
 
   const canCreateStateDistrict = isAdmin() || isStaff();
@@ -58,40 +63,20 @@ export default function VolunteerTable() {
     useState<VolunteerWithUser | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [isSavingAccess, setIsSavingAccess] = useState(false);
-  // Working Areas modal state
+
   const [waOpen, setWaOpen] = useState(false);
-  const [waVolunteer, setWaVolunteer] = useState<VolunteerWithUser | null>(null);
+  const [waVolunteer, setWaVolunteer] = useState<VolunteerWithUser | null>(
+    null
+  );
   const [waStates, setWaStates] = useState<string[]>([]);
   const [waLoading, setWaLoading] = useState(false);
   const [waSaving, setWaSaving] = useState(false);
   const [waSelectOpen, setWaSelectOpen] = useState(false);
 
-  const [volunteers, setVolunteers] = useState<VolunteerWithUser[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch states once; dependency on fetchStates can cause repeated calls if identity changes
   useEffect(() => {
     fetchStates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Helpers for Working Areas payloads (dedupe any duplicates by name)
-  const parseWorkingAreas = (data: any): string[] => {
-    const raw: string[] = (() => {
-      if (!data) return [];
-      if (Array.isArray(data)) {
-        return data.map((d) => (typeof d === "string" ? d : d?.name)).filter(Boolean);
-      }
-      if (Array.isArray(data.states)) {
-        return data.states.map((d: any) => (typeof d === "string" ? d : d?.name)).filter(Boolean);
-      }
-      return [];
-    })();
-    return Array.from(new Set(raw));
-  };
-  
-  // Unique states list for selection (dedupe by name)
   const uniqueStates = useMemo(() => {
     const seen = new Set<string>();
     return states.filter((s) => {
@@ -113,87 +98,41 @@ export default function VolunteerTable() {
     });
   }, []);
 
-  const openWorkingAreas = useCallback(
-    async (v: VolunteerWithUser) => {
-      if (waVolunteer?.id === v.id && waStates.length > 0) {
-        setWaVolunteer(v);
-        setWaOpen(true);
-        return;
-      }
-      setWaVolunteer(v);
-      setWaOpen(true);
-      setWaLoading(true);
-      try {
-        const res = await axios.get("/volunteer/working-areas/", {
-          params: { volunteer: v.id },
-        });
-        const current = parseWorkingAreas(res.data);
-        setWaStates(current);
-      } catch (err) {
-        console.error("Failed to load working areas:", err);
-        toast.error("Failed to load working areas");
-        setWaStates([]);
-      } finally {
-        setWaLoading(false);
-      }
-    },
-    [axios, waVolunteer, waStates.length]
-  );
-
-  // Refetch volunteers list
-  const refetch = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.get("/volunteer/volunteers/");
-      const list = res.data?.results ?? res.data ?? [];
-      setVolunteers(list);
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error("Failed to fetch volunteers:", err);
-      }
-      setError("Failed to load volunteers");
-    } finally {
-      setLoading(false);
-    }
-  }, [axios]);
+  const openWorkingAreas = useCallback((v: VolunteerWithUser) => {
+    setWaVolunteer(v);
+    setWaOpen(true);
+    const initial = Array.from(
+      new Set(
+        ((v as any).working_areas || [])
+          .map((wa: any) => String(wa?.area_name))
+          .filter((name: string) => !!name)
+      )
+    );
+    setWaStates(initial as string[]);
+  }, []);
 
   const saveWorkingAreas = useCallback(async () => {
-    if (!waVolunteer) return;
+    if (!waVolunteer || waStates.length === 0) return;
     setWaSaving(true);
     try {
-      // Map selected state names to IDs if available
-      const stateIds = waStates
-        .map((name) => states.find((s) => s.name === name)?.id)
-        .filter((id): id is number => typeof id === "number");
-      const payload = {
+      const payload = waStates.map((stateName) => ({
         volunteer: waVolunteer.id,
-        states: stateIds, // primary expected format (IDs)
-        state_names: waStates, // include names for backend flexibility
-      };
-      let res;
-      try {
-        res = await axios.post("/volunteer/working-areas/", payload);
-      } catch (postErr: any) {
-        // Fallback to PUT if POST not allowed
-        if (postErr?.response?.status === 405) {
-          res = await axios.put("/volunteer/working-areas/", payload);
-        } else {
-          throw postErr;
-        }
-      }
+        area_name: stateName,
+      }));
+      const res = await axios.post("/volunteer/working-areas/", payload);
       if (res?.status && res.status >= 400) {
         throw new Error(`Server responded ${res.status}`);
       }
       toast.success("Working areas updated");
       setWaOpen(false);
       setWaVolunteer(null);
+      setWaStates([]);
       await refetch();
     } catch (err: any) {
       if (err?.response) {
         console.error("Failed to save working areas:", {
           status: err.response.status,
-            data: err.response.data,
+          data: err.response.data,
         });
       } else {
         console.error("Failed to save working areas:", err);
@@ -202,7 +141,7 @@ export default function VolunteerTable() {
     } finally {
       setWaSaving(false);
     }
-  }, [axios, waVolunteer, waStates, states, refetch]);
+  }, [axios, waVolunteer, waStates, refetch]);
 
   const handleDeleteClick = useCallback((volunteer: VolunteerWithUser) => {
     setVolunteerToDelete(volunteer);
@@ -215,7 +154,6 @@ export default function VolunteerTable() {
     },
     [axios]
   );
-
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!volunteerToDelete) return;
@@ -235,10 +173,11 @@ export default function VolunteerTable() {
     }
   }, [volunteerToDelete, axios, refetch]);
 
-
   const accessChanged = useMemo(() => {
     if (!editing || !editingOriginal) return false;
-    return editing.can_view_member_data !== editingOriginal.can_view_member_data;
+    return (
+      editing.can_view_member_data !== editingOriginal.can_view_member_data
+    );
   }, [editing, editingOriginal]);
 
   const saveAccess = useCallback(async () => {
@@ -278,8 +217,6 @@ export default function VolunteerTable() {
     [axios, refetch]
   );
 
-  // removeSelectedLocation removed; handled via Working Areas modal
-
   const rows = useMemo(() => volunteers || [], [volunteers]);
 
   useEffect(() => {
@@ -313,11 +250,21 @@ export default function VolunteerTable() {
             <TableRow>
               <TableHead className="text-xs sm:text-sm">ID</TableHead>
               <TableHead className="text-xs sm:text-sm">Name</TableHead>
-              <TableHead className="hidden md:table-cell text-xs sm:text-sm">Email</TableHead>
-              <TableHead className="hidden sm:table-cell text-xs sm:text-sm">Phone</TableHead>
-              <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Wing</TableHead>
-              <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Level</TableHead>
-              <TableHead className="hidden md:table-cell text-xs sm:text-sm">Designation</TableHead>
+              <TableHead className="hidden md:table-cell text-xs sm:text-sm">
+                Email
+              </TableHead>
+              <TableHead className="hidden sm:table-cell text-xs sm:text-sm">
+                Phone
+              </TableHead>
+              <TableHead className="hidden lg:table-cell text-xs sm:text-sm">
+                Wing
+              </TableHead>
+              <TableHead className="hidden lg:table-cell text-xs sm:text-sm">
+                Level
+              </TableHead>
+              <TableHead className="hidden md:table-cell text-xs sm:text-sm">
+                Designation
+              </TableHead>
               <TableHead className="text-xs sm:text-sm">States</TableHead>
               <TableHead className="text-xs sm:text-sm">Actions</TableHead>
             </TableRow>
@@ -328,42 +275,64 @@ export default function VolunteerTable() {
                 <TableCell className="text-xs sm:text-sm">{r.id}</TableCell>
                 <TableCell className="text-xs sm:text-sm">
                   <div className="flex items-center gap-2 sm:gap-3">
-                  <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                    {r.user?.image ? (
-                      <AvatarImage src={r.user.image} alt={r.user?.name} />
-                    ) : (
-                      <AvatarFallback>
-                        {(r.user?.name || r.user?.username || "U")
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-medium truncate">
-                      {r.user?.name || r.user?.username}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {r.user?.profession}
-                    </span>
-                    <div className="sm:hidden mt-1 space-y-0.5 text-xs text-muted-foreground">
-                      <div className="md:hidden">{r.user?.email}</div>
-                      <div className="sm:hidden">{r.phone_number || r.user?.phone}</div>
-                      <div className="lg:hidden">{r.wing_name || "—"} • {r.level_name || "—"}</div>
-                      <div className="md:hidden">{r.designation_title || "—"}</div>
+                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
+                      {r.user?.image ? (
+                        <AvatarImage src={r.user.image} alt={r.user?.name} />
+                      ) : (
+                        <AvatarFallback>
+                          {(r.user?.name || r.user?.username || "U")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-medium truncate">
+                        {r.user?.name || r.user?.username}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {r.user?.profession}
+                      </span>
+                      <div className="sm:hidden mt-1 space-y-0.5 text-xs text-muted-foreground">
+                        <div className="md:hidden">{r.user?.email}</div>
+                        <div className="sm:hidden">
+                          {r.phone_number || r.user?.phone}
+                        </div>
+                        <div className="lg:hidden">
+                          {r.wing_name || "—"} • {r.level_name || "—"}
+                        </div>
+                        <div className="md:hidden">
+                          {r.designation_title || "—"}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  </div>
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-xs sm:text-sm">{r.user?.email}</TableCell>
-                <TableCell className="hidden sm:table-cell text-xs sm:text-sm">{r.phone_number || r.user?.phone}</TableCell>
-                <TableCell className="hidden lg:table-cell text-xs sm:text-sm">{r.wing_name || "—"}</TableCell>
-                <TableCell className="hidden lg:table-cell text-xs sm:text-sm">{r.level_name || "—"}</TableCell>
-                <TableCell className="hidden md:table-cell text-xs sm:text-sm">{r.designation_title || "—"}</TableCell>
+                <TableCell className="hidden md:table-cell text-xs sm:text-sm">
+                  {r.user?.email}
+                </TableCell>
+                <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
+                  {r.phone_number || r.user?.phone}
+                </TableCell>
+                <TableCell className="hidden lg:table-cell text-xs sm:text-sm">
+                  {r.wing_name || "—"}
+                </TableCell>
+                <TableCell className="hidden lg:table-cell text-xs sm:text-sm">
+                  {r.level_name || "—"}
+                </TableCell>
+                <TableCell className="hidden md:table-cell text-xs sm:text-sm">
+                  {r.designation_title || "—"}
+                </TableCell>
                 <TableCell className="text-xs sm:text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">{(r as any).states?.length || 0}</span>
-                    <Button size="sm" variant="outline" onClick={() => openWorkingAreas(r)}>
+                    <span className="text-muted-foreground">
+                      {r.working_areas.length}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openWorkingAreas(r)}
+                    >
                       Manage
                     </Button>
                   </div>
@@ -437,7 +406,9 @@ export default function VolunteerTable() {
               {/* Section 1: Access Privileges */}
               <div className="space-y-3 rounded-lg border p-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Access Privileges</label>
+                  <label className="text-sm font-medium">
+                    Access Privileges
+                  </label>
                   <Button
                     size="sm"
                     onClick={saveAccess}
@@ -485,7 +456,15 @@ export default function VolunteerTable() {
       </Dialog>
 
       {/* Working Areas Modal */}
-      <Dialog open={waOpen} onOpenChange={(v) => { setWaOpen(v); if (!v) { setWaVolunteer(null); } }}>
+      <Dialog
+        open={waOpen}
+        onOpenChange={(v) => {
+          setWaOpen(v);
+          if (!v) {
+            setWaVolunteer(null);
+          }
+        }}
+      >
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>Manage Working Areas</DialogTitle>
@@ -499,32 +478,52 @@ export default function VolunteerTable() {
               <div className="flex items-center gap-3">
                 <Avatar className="h-12 w-12">
                   {waVolunteer.user?.image ? (
-                    <AvatarImage src={waVolunteer.user.image} alt={waVolunteer.user?.name} />
+                    <AvatarImage
+                      src={waVolunteer.user.image}
+                      alt={waVolunteer.user?.name}
+                    />
                   ) : (
                     <AvatarFallback>
-                      {(waVolunteer.user?.name || waVolunteer.user?.username || "U").slice(0,2).toUpperCase()}
+                      {(
+                        waVolunteer.user?.name ||
+                        waVolunteer.user?.username ||
+                        "U"
+                      )
+                        .slice(0, 2)
+                        .toUpperCase()}
                     </AvatarFallback>
                   )}
                 </Avatar>
                 <div>
-                  <div className="font-semibold">{waVolunteer.user?.name || waVolunteer.user?.username}</div>
-                  <div className="text-sm text-muted-foreground">{waVolunteer.user?.email}</div>
+                  <div className="font-semibold">
+                    {waVolunteer.user?.name || waVolunteer.user?.username}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {waVolunteer.user?.email}
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <Popover open={waSelectOpen} onOpenChange={setWaSelectOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                    >
                       <span>Select States</span>
-                      <span className="text-xs text-muted-foreground">{waStates.length} selected</span>
+                      <span className="text-xs text-muted-foreground">
+                        {waStates.length} selected
+                      </span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="start">
                     <div className="text-xs font-medium mb-2">States</div>
                     <div className="max-h-56 overflow-y-auto space-y-1">
                       {isLoadingStates ? (
-                        <div className="text-xs text-muted-foreground p-2">Loading...</div>
+                        <div className="text-xs text-muted-foreground p-2">
+                          Loading...
+                        </div>
                       ) : (
                         uniqueStates.map((s, idx) => {
                           const checked = waStates.includes(s.name);
@@ -535,7 +534,9 @@ export default function VolunteerTable() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 setWaStates((prev) =>
-                                  checked ? prev.filter((v) => v !== s.name) : [...prev, s.name]
+                                  checked
+                                    ? prev.filter((v) => v !== s.name)
+                                    : [...prev, s.name]
                                 );
                               }}
                             >
@@ -543,7 +544,9 @@ export default function VolunteerTable() {
                                 checked={checked}
                                 onCheckedChange={(val) => {
                                   setWaStates((prev) =>
-                                    val ? [...prev, s.name] : prev.filter((v) => v !== s.name)
+                                    val
+                                      ? [...prev, s.name]
+                                      : prev.filter((v) => v !== s.name)
                                   );
                                 }}
                               />
@@ -554,20 +557,30 @@ export default function VolunteerTable() {
                       )}
                     </div>
                     <div className="pt-2 flex justify-end">
-                      <Button size="sm" onClick={() => setWaSelectOpen(false)}>Done</Button>
+                      <Button size="sm" onClick={() => setWaSelectOpen(false)}>
+                        Done
+                      </Button>
                     </div>
                   </PopoverContent>
                 </Popover>
 
                 <div className="border rounded-lg p-3 bg-muted/50">
-                  <div className="text-xs text-muted-foreground mb-2">Selected states ({waStates.length})</div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    Selected states ({waStates.length})
+                  </div>
                   <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                     {waStates.map((st) => (
-                      <Badge key={st} variant="secondary" className="flex items-center gap-1 pr-1">
+                      <Badge
+                        key={st}
+                        variant="secondary"
+                        className="flex items-center gap-1 pr-1"
+                      >
                         <span className="text-xs">{st}</span>
                         <button
                           type="button"
-                          onClick={() => setWaStates((prev) => prev.filter((s) => s !== st))}
+                          onClick={() =>
+                            setWaStates((prev) => prev.filter((s) => s !== st))
+                          }
                           className="ml-1 rounded-full hover:bg-destructive/40 p-0.5"
                           aria-label={`Remove ${st}`}
                         >
@@ -576,17 +589,29 @@ export default function VolunteerTable() {
                       </Badge>
                     ))}
                     {waStates.length === 0 && (
-                      <div className="text-xs text-muted-foreground">No states selected.</div>
+                      <div className="text-xs text-muted-foreground">
+                        No states selected.
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => { setWaOpen(false); setWaVolunteer(null); }} disabled={waSaving}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setWaOpen(false);
+                    setWaVolunteer(null);
+                  }}
+                  disabled={waSaving}
+                >
                   Close
                 </Button>
-                <Button onClick={saveWorkingAreas} disabled={waSaving || waLoading}>
+                <Button
+                  onClick={saveWorkingAreas}
+                  disabled={waSaving || waLoading}
+                >
                   {waSaving ? "Saving..." : "Save changes"}
                 </Button>
               </div>
