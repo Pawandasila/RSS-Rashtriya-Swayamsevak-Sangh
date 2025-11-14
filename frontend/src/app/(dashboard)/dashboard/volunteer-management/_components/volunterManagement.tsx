@@ -46,11 +46,8 @@ interface UpdateVolunteerData {
 
 export default function VolunteerTable() {
   const axios = useAxios();
-  const { isAdmin, isStaff } = useAuth();
   const { volunteers, loading, error, refetch } = useVolunteersList();
-  const { states, isLoadingStates, statesError, fetchStates } = useCountryApi();
-
-  const canCreateStateDistrict = isAdmin() || isStaff();
+  const { states, isLoadingStates, fetchStates } = useCountryApi();
 
   const [editing, setEditing] = useState<EditingVolunteer | null>(null);
   const [editingOriginal, setEditingOriginal] = useState<{
@@ -69,13 +66,12 @@ export default function VolunteerTable() {
     null
   );
   const [waStates, setWaStates] = useState<string[]>([]);
-  const [waLoading, setWaLoading] = useState(false);
   const [waSaving, setWaSaving] = useState(false);
   const [waSelectOpen, setWaSelectOpen] = useState(false);
 
   useEffect(() => {
     fetchStates();
-  }, []);
+  }, [fetchStates]);
 
   const uniqueStates = useMemo(() => {
     const seen = new Set<string>();
@@ -93,7 +89,7 @@ export default function VolunteerTable() {
       can_view_member_data: !!v.can_view_member_data,
     } as EditingVolunteer);
     setEditingOriginal({
-      states: (v as any).states || [],
+      states: v.working_areas || [],
       can_view_member_data: !!v.can_view_member_data,
     });
   }, []);
@@ -103,9 +99,7 @@ export default function VolunteerTable() {
     setWaOpen(true);
     const initial = Array.from(
       new Set(
-        ((v as any).working_areas || [])
-          .map((wa: any) => String(wa?.area_name))
-          .filter((name: string) => !!name)
+        (v.working_areas || []).map((name) => String(name)).filter(Boolean)
       )
     );
     setWaStates(initial as string[]);
@@ -128,15 +122,8 @@ export default function VolunteerTable() {
       setWaVolunteer(null);
       setWaStates([]);
       await refetch();
-    } catch (err: any) {
-      if (err?.response) {
-        console.error("Failed to save working areas:", {
-          status: err.response.status,
-          data: err.response.data,
-        });
-      } else {
-        console.error("Failed to save working areas:", err);
-      }
+    } catch (err: unknown) {
+      console.error("Failed to save working areas:", err);
       toast.error("Failed to save working areas");
     } finally {
       setWaSaving(false);
@@ -610,7 +597,7 @@ export default function VolunteerTable() {
                 </Button>
                 <Button
                   onClick={saveWorkingAreas}
-                  disabled={waSaving || waLoading}
+                  disabled={waSaving}
                 >
                   {waSaving ? "Saving..." : "Save changes"}
                 </Button>
