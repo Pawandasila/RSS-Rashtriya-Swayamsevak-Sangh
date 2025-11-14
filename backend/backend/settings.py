@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
     "72.60.223.136",
     "joinrss.org.in",
     "www.joinrss.org.in",
+    "api.joinrss.org.in"
 ]
 
 
