@@ -21,7 +21,7 @@ const AboutUsPage = () => {
     <div className="min-h-screen bg-background pt-3">
       <HeroSection 
         mainTitle={aboutPageData.mainTitle} 
-        subtitle="सव, समरपण और रषटर क परत हमर अटट परतबदधत क परचय" 
+        subtitle="जब धर्म संकट में होता है, तब संकल्पों से संगठित होती है चेतना; और जब समाज दिशाहीन हो जाता है, तब सेवा बनती है शक्ति।" 
       />
       
       <PrimaryImageSection image={aboutPageData.primaryImage} />
