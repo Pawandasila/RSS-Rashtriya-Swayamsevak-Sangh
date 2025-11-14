@@ -1,6 +1,8 @@
 version: '3.9'
 
 services:
+
+  ### ─── DATABASE ──────────────────────────────────────────────────────────────
   db:
     image: postgres:15-alpine
     container_name: postgres_db
@@ -14,6 +16,7 @@ services:
     networks:
       - app_network
 
+  ### ─── REDIS ────────────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: redis_broker
@@ -21,6 +24,7 @@ services:
     networks:
       - app_network
 
+  ### ─── BACKEND (DJANGO + GUNICORN) ───────────────────────────────────────────
   backend:
     build: ./backend
     container_name: django_app
@@ -34,14 +38,17 @@ services:
       - ./backend:/app
       - ./backend/mediafiles:/app/mediafiles
       - static_volume:/app/staticfiles
-    networks:
-      - app_network
     expose:
       - "8000"
-    ports:
-      - "8000:8000"
+    networks:
+      - app_network
     command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      - VIRTUAL_HOST=api.joinrss.org.in
+      - LETSENCRYPT_HOST=api.joinrss.org.in
+      - LETSENCRYPT_EMAIL=admin@joinrss.org.in
 
+  ### ─── CELERY WORKERS ────────────────────────────────────────────────────────
   celery:
     build: ./backend
     container_name: celery_worker
@@ -72,6 +79,7 @@ services:
     networks:
       - app_network
 
+  ### ─── FRONTEND (NEXTJS) ─────────────────────────────────────────────────────
   frontend:
     build: ./frontend
     container_name: nextjs_app
@@ -81,34 +89,52 @@ services:
       - ./frontend/.env.prod
     depends_on:
       - backend
-    networks:
-      - app_network
     expose:
       - "3000"
-    ports:
-      - "3000:3000"
+    networks:
+      - app_network
+    environment:
+      - VIRTUAL_HOST=joinrss.org.in,www.joinrss.org.in
+      - LETSENCRYPT_HOST=joinrss.org.in,www.joinrss.org.in
+      - LETSENCRYPT_EMAIL=admin@joinrss.org.in
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx_reverse_proxy
+  ### ─── NGINX-PROXY (EXPOSES 80/443) ──────────────────────────────────────────
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx_proxy
     restart: always
-    depends_on:
-      - backend
-      - frontend
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./backend/mediafiles:/media
-      - static_volume:/staticfiles
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - app_network
+
+  ### ─── ACME (LETSENCRYPT AUTO SSL) ───────────────────────────────────────────
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: nginx_acme
+    restart: always
+    environment:
+      - DEFAULT_EMAIL=admin@joinrss.org.in
+    volumes:
+      - certs:/etc/acme.sh
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - app_network
 
 volumes:
   pg_data:
   static_volume:
-  media_volume:
+  certs:
+  vhost:
+  html:
 
 networks:
   app_network:
