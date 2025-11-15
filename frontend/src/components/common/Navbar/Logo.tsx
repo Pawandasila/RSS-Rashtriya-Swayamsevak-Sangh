@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholder";
+
 
 const Logo = () => {
   const [currentLanguage, setCurrentLanguage] = useState(0);
@@ -39,25 +39,24 @@ const Logo = () => {
       <Link
         href="/"
         className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
-        aria-label="राष्ट्रीय स्वयंसेवक संघ - Home"
+        aria-label="राष्ट्रीय सेवा संघ - Home"
       >
         <div className="relative h-14 w-14 flex-shrink-0">
           <Image
             src="/logo/logo.png"
-            alt="राष्ट्रीय स्वयंसेवक संघ Logo"
+            alt="राष्ट्रीय सेवा संघ Logo"
             fill
             className="object-contain"
             priority
-            placeholder="blur"
-            blurDataURL={IMAGE_BLUR_DATA_URL}
           />
         </div>
         <div className="block">
           <h1 className="font-lato font-bold text-sm sm:text-base lg:text-lg xl:text-lg leading-tight">
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-green-500 via-gray-300 to-orange-600 font-extrabold  bg-clip-text text-transparent whitespace-nowrap animate-tricolor-flow bg-[length:200%_100%]">
+              <span className="bg-gradient-to-r from-green-500 via-white to-orange-500 font-extrabold bg-clip-text text-transparent whitespace-nowrap animate-tricolor-flow bg-[length:300%_100%] drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
                 RASHTRIYA SEVA SANGH
               </span>
+              <span className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-blue-800/30 to-orange-400/20 blur-sm animate-tricolor-flow bg-[length:300%_100%] -z-10" aria-hidden="true"></span>
             </span>
           </h1>
           <div className="relative h-4 sm:h-5 overflow-hidden mt-0.5">

@@ -12,8 +12,16 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { NotProvided } from "./NotProvided";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X, Loader2, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface EditableFieldProps {
   label: string;
@@ -72,6 +80,42 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       );
     }
 
+    if (type === "date") {
+      const date = value ? new Date(value) : undefined;
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal h-10 sm:h-11 text-xs sm:text-sm",
+                !date && "text-muted-foreground"
+              )}
+              disabled={disabled}
+            >
+              <CalendarIcon className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              {date ? format(date, "PPP") : <span>{placeholder || "Pick a date"}</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(selectedDate) => {
+                if (selectedDate) {
+                  onChange(format(selectedDate, "yyyy-MM-dd"));
+                }
+              }}
+              disabled={(date) =>
+                date > new Date() || date < new Date("1900-01-01")
+              }
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
     if (type === "textarea") {
       return (
         <Textarea
@@ -92,14 +136,13 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         placeholder={placeholder || `Enter ${label.toLowerCase()}`}
         disabled={disabled}
         maxLength={maxLength}
-        max={type === "date" ? new Date().toISOString().split("T")[0] : undefined}
       />
     );
   };
 
   return (
-    <div className={`space-y-2 ${className}`}>
-      <Label htmlFor={name}>
+    <div className={`space-y-1.5 sm:space-y-2 ${className}`}>
+      <Label htmlFor={name} className="text-xs sm:text-sm">
         {label} {required && <span className="text-red-500">*</span>}
       </Label>
 
@@ -112,16 +155,17 @@ export const EditableField: React.FC<EditableFieldProps> = ({
               size="sm"
               onClick={onSave}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 h-9 text-xs sm:text-sm"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                  Saving...
+                  <Loader2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 animate-spin" />
+                  <span className="hidden sm:inline">Saving...</span>
+                  <span className="sm:hidden">Save</span>
                 </>
               ) : (
                 <>
-                  <Check className="w-3 h-3 mr-1" />
+                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
                   Save
                 </>
               )}
@@ -132,20 +176,24 @@ export const EditableField: React.FC<EditableFieldProps> = ({
               variant="outline"
               onClick={onCancel}
               disabled={isLoading}
+              className="h-9 text-xs sm:text-sm px-3"
             >
-              <X className="w-3 h-3 mr-1" />
-              Cancel
+              <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
+              <span className="hidden sm:inline">Cancel</span>
+              <span className="sm:hidden">No</span>
             </Button>
           </div>
         </div>
       ) : hasValue ? (
         <div
           onClick={disabled ? undefined : onEdit}
-          className={`px-4 py-3 border rounded-lg bg-background ${
-            disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted/50 hover:border-primary/50"
-          } transition-all group`}
+          className={`px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg bg-background ${
+            disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted/50 hover:border-primary/50 active:bg-muted"
+          } transition-all group min-h-[44px] flex items-center`}
         >
-          <p className="text-sm font-medium break-all">{value}</p>
+          <p className="text-xs sm:text-sm font-medium break-all">
+            {type === "date" && value ? format(new Date(value), "PPP") : value}
+          </p>
         </div>
       ) : (
         <NotProvided 

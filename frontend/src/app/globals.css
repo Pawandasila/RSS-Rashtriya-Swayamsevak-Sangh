@@ -724,16 +724,23 @@ h1, h2, h3, h4, h5, h6 {
 
 
 @keyframes tricolor-diagonal {
-  0% {
-    background-position: -200% -200%;
+  0%, 100% {
+    background-position: 0% 50%;
   }
-  100% {
-    background-position: 200% 200%;
+  25% {
+    background-position: 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 50%;
   }
 }
 
 .animate-tricolor-flow {
-  animation: tricolor-diagonal 30s ease-in-out infinite;
+  animation: tricolor-diagonal 8s ease-in-out infinite;
+  filter: brightness(1.1) contrast(1.1);
 }
 
 

@@ -25,6 +25,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { EditUserDetailModal } from "@/module/dashboard/users/components/edit-user-detail-model";
 import useAxios from "@/hooks/use-axios";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 import { VolunteerWithUser } from "@/module/dashboard/volunteer/types";
 import { useVolunteersList } from "@/module/dashboard/volunteer/hooks";
 import { useCountryApi } from "@/module/country/hooks";
@@ -67,6 +76,9 @@ export default function VolunteerTable() {
   const [waStates, setWaStates] = useState<string[]>([]);
   const [waSaving, setWaSaving] = useState(false);
   const [waSelectOpen, setWaSelectOpen] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchStates();
@@ -205,9 +217,21 @@ export default function VolunteerTable() {
 
   const rows = useMemo(() => volunteers || [], [volunteers]);
 
+  const totalPages = Math.ceil(rows.length / itemsPerPage);
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return rows.slice(startIndex, startIndex + itemsPerPage);
+  }, [rows, currentPage, itemsPerPage]);
+
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   if (loading) {
     return (
@@ -256,7 +280,7 @@ export default function VolunteerTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((r: VolunteerWithUser) => (
+            {paginatedRows.map((r: VolunteerWithUser) => (
               <TableRow key={r.id}>
                 <TableCell className="text-xs sm:text-sm">{r.id}</TableCell>
                 <TableCell className="text-xs sm:text-sm">
@@ -350,6 +374,56 @@ export default function VolunteerTable() {
           </TableBody>
         </Table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, rows.length)} of {rows.length} volunteers
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                } else if (page === currentPage - 2 || page === currentPage + 2) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <Dialog
         open={!!editing}

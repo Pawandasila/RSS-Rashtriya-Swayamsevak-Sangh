@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, type ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle2,
   Loader2,
@@ -108,6 +108,9 @@ const BecomeMemberPage = () => {
   const [userDataLoaded, setUserDataLoaded] = useState(false);
   const [formState, setFormState] = useState<FormState>(defaultFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [referralUserId, setReferralUserId] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
 
   const router = useRouter();
 
@@ -126,6 +129,17 @@ const BecomeMemberPage = () => {
   });
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    const refParam = searchParams.get("ref");
+    if (refParam) {
+      setReferralUserId(refParam);
+      setFormState((prev) => ({
+        ...prev,
+        referred_by: refParam,
+      }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (userDataLoaded || !user) {
@@ -490,6 +504,9 @@ const BecomeMemberPage = () => {
           formData={formState}
           errors={errors}
           onChange={handleChange}
+          readOnlyFields={{
+            referred_by: !!referralUserId,
+          }}
         />
       );
     }

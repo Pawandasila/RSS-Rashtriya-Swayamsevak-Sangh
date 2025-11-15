@@ -165,21 +165,21 @@ const AddressForm = ({ data, setData, onNext, onBack }: AddressFormProps) => {
           कृपया केवल हिंदी (देवनागरी) में लिखें
         </p>
       </div>
-      {renderInput('Street', 'street', true, 'House No., Street name')}
+      {renderInput('Street (सड़क)', 'street', true, 'House No., Street name')}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        {renderInput('Sub-District', 'sub_district', false, 'Sub-district or Block')}
-        {renderInput('District', 'district', false, 'District')}
+        {renderInput('Sub-District (उप-जिला)', 'sub_district', false, 'Sub-district or Block')}
+        {renderInput('District (जिला)', 'district', false, 'District')}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        {renderInput('City', 'city', true, 'City or Town')}
-        {renderInput('State', 'state', false, 'State')}
+        {renderInput('City (शहर)', 'city', true, 'City or Town')}
+        {renderInput('State (राज्य)', 'state', false, 'State')}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        {renderInput('Country', 'country', true, 'Country')}
-        {renderInput('Postal Code', 'postal_code', true, 'e.g. 110001', '^\\d{5,6}$', 'Enter a valid 5 or 6-digit postal code', 6)}
+        {renderInput('Country (देश)', 'country', true, 'Country')}
+        {renderInput('Postal Code (पिन कोड)', 'postal_code', true, 'e.g. 110001', '^\\d{5,6}$', 'Enter a valid 5 or 6-digit postal code', 6)}
       </div>
       <div>
-        {renderInput('Mandal', 'mandal', true, 'Enter your mandal')}
+        {renderInput('Mandal (मंडल)', 'mandal', true, 'Enter your mandal')}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t">

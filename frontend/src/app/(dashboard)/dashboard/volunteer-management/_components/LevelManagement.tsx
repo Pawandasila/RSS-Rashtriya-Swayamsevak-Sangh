@@ -28,14 +28,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Search, Layers } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Layers, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useWings, useLevels } from "@/module/dashboard/volunteer";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 import ErrorState from "@/components/status/ErrorState";
 import type { Level, LevelFormData } from "@/module/dashboard/volunteer";
 import { toast } from "sonner";
+import useAuth from "@/hooks/use-auth";
 
 const LevelManagement = () => {
+  const { isAdmin } = useAuth();
   const { wings, error: wingsError, refetch: refetchWings } = useWings();
   const { levels, loading, error: levelsError, createLevel, updateLevel, deleteLevel, refetch: refetchLevels } =
     useLevels();
@@ -49,6 +60,8 @@ const LevelManagement = () => {
     wing: 0,
   });
   const [submitting, setSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +147,22 @@ const LevelManagement = () => {
     return nameVal.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  const totalPages = Math.ceil(filteredLevels.length / itemsPerPage);
+  const paginatedLevels = filteredLevels.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  React.useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const combinedError = wingsError || levelsError;
   if (combinedError) {
     return (
@@ -150,6 +179,25 @@ const LevelManagement = () => {
               refetchLevels();
             }}
           />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isAdmin()) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Level Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Lock className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+            <h3 className="font-semibold text-lg mb-2">Admin Only</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              Level management is restricted to administrators only. Please contact your administrator if you need access to this feature.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -196,7 +244,7 @@ const LevelManagement = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : filteredLevels.length === 0 ? (
+              ) : paginatedLevels.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center py-8 sm:py-12">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -224,7 +272,7 @@ const LevelManagement = () => {
                 </TableRow>
               ) : (
                 <>
-                  {filteredLevels.map((level, index) => (
+                  {paginatedLevels.map((level, index) => (
                     <TableRow key={`${level.id}-${index}`}>
                       <TableCell className="font-medium text-xs sm:text-sm">
                         <div>
@@ -271,6 +319,56 @@ const LevelManagement = () => {
             </TableBody>
           </Table>
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-4 flex items-center justify-between px-2">
+              <p className="text-sm text-muted-foreground">
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredLevels.length)} of {filteredLevels.length} levels
+              </p>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
 

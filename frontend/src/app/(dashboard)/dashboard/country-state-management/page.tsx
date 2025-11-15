@@ -35,6 +35,15 @@ import {
 import { Globe, MapPin, Plus, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import { useCountryApi } from "@/module/country/hooks";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 export default function CountryStateManagementPage() {
   const {
@@ -59,6 +68,10 @@ export default function CountryStateManagementPage() {
   const [selectedStateForDistrict, setSelectedStateForDistrict] = useState<number | null>(null);
   const [isStateDialogOpen, setIsStateDialogOpen] = useState(false);
   const [isDistrictDialogOpen, setIsDistrictDialogOpen] = useState(false);
+  
+  const [statesCurrentPage, setStatesCurrentPage] = useState(1);
+  const [districtsCurrentPage, setDistrictsCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleCreateState = async () => {
     if (!newStateName.trim()) {
@@ -231,6 +244,7 @@ export default function CountryStateManagementPage() {
                   <p>No states found. Add your first state to get started.</p>
                 </div>
               ) : (
+                <>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -241,7 +255,7 @@ export default function CountryStateManagementPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {states.map((state) => (
+                      {states.slice((statesCurrentPage - 1) * itemsPerPage, statesCurrentPage * itemsPerPage).map((state) => (
                         <TableRow key={state.id}>
                           <TableCell className="font-medium">{state.id}</TableCell>
                           <TableCell>{state.name}</TableCell>
@@ -262,11 +276,58 @@ export default function CountryStateManagementPage() {
                     </TableBody>
                   </Table>
                 </div>
+                {Math.ceil(states.length / itemsPerPage) > 1 && (
+                  <div className="mt-4 flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {((statesCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(statesCurrentPage * itemsPerPage, states.length)} of {states.length} states
+                    </p>
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setStatesCurrentPage(p => Math.max(1, p - 1))}
+                            className={statesCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        {Array.from({ length: Math.ceil(states.length / itemsPerPage) }, (_, i) => i + 1).map((page) => {
+                          const totalPages = Math.ceil(states.length / itemsPerPage);
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= statesCurrentPage - 1 && page <= statesCurrentPage + 1)
+                          ) {
+                            return (
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => setStatesCurrentPage(page)}
+                                  isActive={statesCurrentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            );
+                          } else if (page === statesCurrentPage - 2 || page === statesCurrentPage + 2) {
+                            return (
+                              <PaginationItem key={page}>
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            );
+                          }
+                          return null;
+                        })}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setStatesCurrentPage(p => Math.min(Math.ceil(states.length / itemsPerPage), p + 1))}
+                            className={statesCurrentPage === Math.ceil(states.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+                </>
               )}
-
-              <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-                <span>Total: {states.length} state(s)</span>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -412,6 +473,7 @@ export default function CountryStateManagementPage() {
                   <p>No districts found for this state. Add your first district.</p>
                 </div>
               ) : (
+                <>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -422,7 +484,7 @@ export default function CountryStateManagementPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {districts.map((district) => {
+                      {districts.slice((districtsCurrentPage - 1) * itemsPerPage, districtsCurrentPage * itemsPerPage).map((district) => {
                         const stateName = states.find(
                           (s) => s.id === (district.state || district.state_id)
                         )?.name;
@@ -439,12 +501,57 @@ export default function CountryStateManagementPage() {
                     </TableBody>
                   </Table>
                 </div>
-              )}
-
-              {selectedStateForDistrict && (
-                <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Total: {districts.length} district(s)</span>
-                </div>
+                {Math.ceil(districts.length / itemsPerPage) > 1 && (
+                  <div className="mt-4 flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {((districtsCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(districtsCurrentPage * itemsPerPage, districts.length)} of {districts.length} districts
+                    </p>
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setDistrictsCurrentPage(p => Math.max(1, p - 1))}
+                            className={districtsCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        {Array.from({ length: Math.ceil(districts.length / itemsPerPage) }, (_, i) => i + 1).map((page) => {
+                          const totalPages = Math.ceil(districts.length / itemsPerPage);
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= districtsCurrentPage - 1 && page <= districtsCurrentPage + 1)
+                          ) {
+                            return (
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => setDistrictsCurrentPage(page)}
+                                  isActive={districtsCurrentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            );
+                          } else if (page === districtsCurrentPage - 2 || page === districtsCurrentPage + 2) {
+                            return (
+                              <PaginationItem key={page}>
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            );
+                          }
+                          return null;
+                        })}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setDistrictsCurrentPage(p => Math.min(Math.ceil(districts.length / itemsPerPage), p + 1))}
+                            className={districtsCurrentPage === Math.ceil(districts.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+                </>
               )}
             </CardContent>
           </Card>

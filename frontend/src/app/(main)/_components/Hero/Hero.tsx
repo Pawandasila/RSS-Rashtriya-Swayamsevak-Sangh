@@ -164,7 +164,7 @@ const Hero = () => {
                   asChild
                 >
                   <Link
-                    href="/auth/login"
+                    href="/become-member"
                     className="flex items-center justify-center"
                   >
                     Join Now

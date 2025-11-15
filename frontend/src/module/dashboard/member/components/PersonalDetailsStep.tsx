@@ -222,7 +222,14 @@ export const PersonalDetailsStep = ({
           Referral Code <span className="text-muted-foreground">(Optional)</span>
         </Label>
         {readOnlyFields?.referred_by ? (
-          <div className="px-3 py-1 h-9 rounded-md border bg-transparent">{formData.referred_by || ''}</div>
+          <div className="relative">
+            <div className="px-3 py-2 h-10 rounded-md border bg-muted/50 text-foreground font-medium">
+              {formData.referred_by || ''}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Referral code from invitation link (cannot be changed)
+            </p>
+          </div>
         ) : (
           <Input
             id="referred_by"

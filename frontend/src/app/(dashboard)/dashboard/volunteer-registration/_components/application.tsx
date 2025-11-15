@@ -224,7 +224,7 @@ const ApplicationForm = ({
       <div className="space-y-4 sm:space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="wing" className="text-sm sm:text-base">Wing</Label>
+              <Label htmlFor="wing" className="text-sm sm:text-base">Wing (शाखा)</Label>
               <Select
                 value={selectedWingName || ""}
                 onValueChange={(value) => {
@@ -248,7 +248,7 @@ const ApplicationForm = ({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="level" className="text-sm sm:text-base">Level</Label>
+              <Label htmlFor="level" className="text-sm sm:text-base">Level (स्तर)</Label>
               <Select
                 value={
                   selectedLevelName && selectedLevel
@@ -281,7 +281,7 @@ const ApplicationForm = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="designation" className="text-sm sm:text-base">Designation</Label>
+              <Label htmlFor="designation" className="text-sm sm:text-base">Designation (पद)</Label>
               <Select
                 value={selectedDesignation?.toString() || ""}
                 onValueChange={(value) => setSelectedDesignation(Number(value))}
@@ -304,7 +304,7 @@ const ApplicationForm = ({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="phone_number" className="text-sm sm:text-base">Phone Number</Label>
+              <Label htmlFor="phone_number" className="text-sm sm:text-base">Phone Number (फोन नंबर)</Label>
               <Input
                 id="phone_number"
                 type="tel"
@@ -320,13 +320,13 @@ const ApplicationForm = ({
 
           <div className="grid gap-2">
             <Label htmlFor="referred_by_volunteer" className="flex items-center gap-1 text-sm sm:text-base">
-              Referred By <span className="text-destructive">*</span>
+              Referred By (रेफर किया गया) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="referred_by_volunteer"
               type="text"
               required
-              placeholder="Enter name or User ID"
+              placeholder="Enter User ID"
               value={data.referred_by_volunteer || ""}
               onChange={(e) => handleChange("referred_by_volunteer", e.target.value)}
               className="h-9 sm:h-10"
@@ -337,11 +337,11 @@ const ApplicationForm = ({
           </div>
 
           <div className="grid gap-3 sm:gap-4">
-            <Label className="text-base sm:text-lg font-semibold">Document Uploads</Label>
+            <Label className="text-base sm:text-lg font-semibold">Document Uploads (दस्तावेज अपलोड करें)</Label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="grid gap-2">
-                <Label className="text-sm sm:text-base font-medium">Aadhar Front *</Label>
+                <Label className="text-sm sm:text-base font-medium">Aadhar Front (आधार सामने) *</Label>
                 <Input
                   id="aadharFront"
                   type="file"
@@ -361,7 +361,7 @@ const ApplicationForm = ({
               </div>
 
               <div className="grid gap-2">
-                <Label className="text-sm sm:text-base font-medium">Aadhar Back *</Label>
+                <Label className="text-sm sm:text-base font-medium">Aadhar Back (आधार पीछे) *</Label>
                 <Input
                   id="aadharBack"
                   type="file"
@@ -381,7 +381,7 @@ const ApplicationForm = ({
               </div>
 
               <div className="grid gap-2 sm:col-span-2">
-                <Label htmlFor="image" className="text-sm sm:text-base font-medium">Profile Photo *</Label>
+                <Label htmlFor="image" className="text-sm sm:text-base font-medium">Profile Photo (प्रोफाइल फोटो) *</Label>
                 <Input
                   id="image"
                   type="file"

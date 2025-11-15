@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, LogOut, User } from "lucide-react";
 import { getUserImageUrl } from "@/lib/media";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,10 +62,10 @@ const Navbar = () => {
 
   return (
     <header
-      className="fixed top-0 left-0 w-full z-50 h-[80px] pointer-events-auto"
+      className="fixed top-0 left-0 w-full z-50 h-[80px] pointer-events-auto "
       role="banner"
     >
-      <div className="absolute inset-0 bg-background/95 backdrop-blur-md"></div>
+      <div className="absolute inset-0 bg-background/85 backdrop-blur-md"></div>
 
       <div className="relative max-w-7xl mx-auto w-full h-20 px-1 sm:px-1 lg:px-4">
         <div className="flex items-stretch justify-between h-full">
@@ -133,15 +134,29 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <ButtonRSS
-                href="/auth/register"
+              <>
+              <div className="flex items-center justify-center gap-2">
+              {/* <ButtonRSS
+                href="/become-member"
                 variant="primary"
                 size="md"
                 rounded="left-br"
                 className="hidden lg:flex items-center gap-2 text-sm whitespace-nowrap font-medium transition-all duration-200 px-6"
               >
                 <span>Join Now</span>
-              </ButtonRSS>
+              </ButtonRSS> */}
+              <Button
+                // href="/auth/login"
+                variant="default"
+                // size="md"
+                // rounded="left-br"
+                className="hidden lg:flex items-center gap-2  text-sm whitespace-nowrap font-medium transition-all duration-200 px-6"
+                onClick={() => window.location.href = "/auth/login"}
+              >
+                <span>Login / Signup</span>
+              </Button>
+              </div>
+              </>
             )}
             <MobileMenuButton
               isOpen={isMobileMenuOpen}

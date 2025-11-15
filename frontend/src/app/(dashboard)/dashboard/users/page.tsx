@@ -19,6 +19,20 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { RoleGuard } from "@/components/auth/RoleGuard";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import useAxios from "@/hooks/use-axios";
+import { Loader2 } from "lucide-react";
+import useAuth from "@/hooks/use-auth";
 
 function UsersPageContent() {
   const router = useRouter();
@@ -28,6 +42,7 @@ function UsersPageContent() {
 
   const [currentPage, setCurrentPage] = useState(pageFromUrl);
   const [pageSize, setPageSize] = useState(pageSizeFromUrl);
+  const {isAdmin, isStaff} = useAuth()
 
   const { users, loading, error, pagination, updateUser } =
     useUsers(currentPage, pageSize);
@@ -36,6 +51,22 @@ function UsersPageContent() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [resetPasswordUser, setResetPasswordUser] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const axios = useAxios();
+
+  if(!isStaff() && !isAdmin()){
+    return (
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">You do not have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const currentParams = new URLSearchParams(searchParams.toString());
@@ -107,6 +138,53 @@ function UsersPageContent() {
     setIsViewModalOpen(true);
   };
 
+  const handleResetPassword = (user: User) => {
+    setResetPasswordUser(user);
+    setNewPassword("");
+    setIsResetPasswordOpen(true);
+  };
+
+  const handleResetPasswordSubmit = async () => {
+    if (!resetPasswordUser || !newPassword) {
+      toast.error("Please enter a new password");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      await axios.post(`/account/change-password/${resetPasswordUser.id}/`, {
+        new_password: newPassword,
+      });
+
+      toast.success("Password reset successfully", {
+        description: `Password for ${resetPasswordUser.name} has been updated`,
+      });
+
+      setIsResetPasswordOpen(false);
+      setResetPasswordUser(null);
+      setNewPassword("");
+    } catch (error: unknown) {
+      console.error("Error resetting password:", error);
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+      };
+      const errorMessage =
+        axiosError?.response?.data?.error ||
+        axiosError?.response?.data?.message ||
+        "Failed to reset password";
+      toast.error("Password reset failed", {
+        description: errorMessage,
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -148,7 +226,10 @@ function UsersPageContent() {
     );
   }
 
+  
+
   const safeUsers = Array.isArray(users) ? users : [];
+
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -165,6 +246,7 @@ function UsersPageContent() {
         users={safeUsers}
         onEdit={handleEdit}
         onView={handleView}
+        onResetPassword={handleResetPassword}
         page={currentPage}
         pageSize={pageSize}
       />
@@ -321,6 +403,65 @@ function UsersPageContent() {
         onSave={handleSaveEdit}
         loading={isSaving}
       />
+
+      <Dialog open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset User Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetPasswordUser?.name}. The user will be able to log in with this new password.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                placeholder="Enter new password (min 8 characters)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newPassword.length >= 8) {
+                    handleResetPasswordSubmit();
+                  }
+                }}
+                disabled={isResettingPassword}
+              />
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 8 characters long
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsResetPasswordOpen(false);
+                setNewPassword("");
+              }}
+              disabled={isResettingPassword}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleResetPasswordSubmit}
+              disabled={isResettingPassword || newPassword.length < 8}
+            >
+              {isResettingPassword ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                "Reset Password"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

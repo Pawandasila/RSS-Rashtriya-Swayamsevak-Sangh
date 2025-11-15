@@ -7,16 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { AddressFormData } from "@/module/dashboard/volunteer";
+import useAuth from "@/hooks/use-auth";
 
 interface DeclarationFormData {
   full_name: string;
   age: string;
+  dob: string;
   agreed_to_declaration: boolean;
 }
 
 interface DeclarationFormProps {
   addressData: AddressFormData;
-  onNext: () => void;
+  onNext: (data: { dob: string; full_name: string }) => void;
   onBack?: () => void;
 }
 
@@ -25,9 +27,11 @@ const DeclarationForm = ({
   onNext,
   onBack,
 }: DeclarationFormProps) => {
+  const {user} = useAuth();
   const [formData, setFormData] = useState<DeclarationFormData>({
     full_name: "",
     age: "",
+    dob: "",
     agreed_to_declaration: false,
   });
 
@@ -40,12 +44,42 @@ const DeclarationForm = ({
     }
   }, [addressData.hindi_name, formData.full_name]);
 
+  useEffect(() => {
+    // Calculate age from user's DOB and populate both fields
+    if (user?.dob && !formData.age) {
+      const calculatedAge = calculateAge(user.dob);
+      setFormData((prev) => ({
+        ...prev,
+        age: calculatedAge,
+        dob: user.dob || "",
+      }));
+    }
+  }, [user?.dob, formData.age]);
+
+  const calculateAge = (dob: string): string => {
+    if (!dob) return "";
+    
+    const birthDate = new Date(dob);
+    const today = new Date();
+    
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age.toString();
+  };
+
   const handleInputChange = (
     field: keyof DeclarationFormData,
     value: string | boolean
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +108,7 @@ const DeclarationForm = ({
     }
 
     toast.success("Declaration accepted successfully!");
-    onNext();
+    onNext({ dob: formData.dob, full_name: formData.full_name });
   };
 
   return (

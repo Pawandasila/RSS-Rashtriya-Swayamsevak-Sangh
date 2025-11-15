@@ -59,6 +59,9 @@ const StatCard: React.FC<StatCardProps> = ({
   const [copyState, setCopyState] = useState<"idle" | "success" | "error">(
     "idle"
   );
+  const [memberCopyState, setMemberCopyState] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const referrals: ReferralItem[] = useMemo(
     () => referralData?.referrals || [],
@@ -98,6 +101,15 @@ const StatCard: React.FC<StatCardProps> = ({
     return origin ? `${origin}/auth/register?ref=${user.user_id}` : "";
   }, [user?.user_id]);
 
+  const memberReferralLink = useMemo(() => {
+    if (!user?.user_id) return "";
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_APP_URL || "";
+    return origin ? `${origin}/become-member?ref=${user.user_id}` : "";
+  }, [user?.user_id]);
+
   const handleCopy = async () => {
     if (!referralLink) return;
     try {
@@ -112,6 +124,23 @@ const StatCard: React.FC<StatCardProps> = ({
       setCopyState("error");
       toast.error("Unable to copy referral link");
       setTimeout(() => setCopyState("idle"), 2000);
+    }
+  };
+
+  const handleMemberCopy = async () => {
+    if (!memberReferralLink) return;
+    try {
+      await navigator.clipboard.writeText(memberReferralLink);
+      setMemberCopyState("success");
+      toast.success("Member referral link copied to clipboard");
+      setTimeout(() => setMemberCopyState("idle"), 2000);
+    } catch (copyError) {
+      if (copyError instanceof Error) {
+        console.error("Copy error:", copyError);
+      }
+      setMemberCopyState("error");
+      toast.error("Unable to copy member referral link");
+      setTimeout(() => setMemberCopyState("idle"), 2000);
     }
   };
 
@@ -158,10 +187,11 @@ const StatCard: React.FC<StatCardProps> = ({
       if (!res.ok) {
         const errorText = await res.text();
         let errorMessage = "Failed to generate ID card";
-        
+
         switch (res.status) {
           case 400:
-            errorMessage = "Invalid request. Please check your account details.";
+            errorMessage =
+              "Invalid request. Please check your account details.";
             break;
           case 401:
             errorMessage = "Session expired. Please login again.";
@@ -178,10 +208,11 @@ const StatCard: React.FC<StatCardProps> = ({
           default:
             errorMessage = `Error: ${res.status} - ${res.statusText}`;
         }
-        
+
         toast.error(errorMessage, {
           id: "pdf-download",
-          description: errorText || "Please contact support if the issue persists.",
+          description:
+            errorText || "Please contact support if the issue persists.",
         });
         return;
       }
@@ -202,7 +233,8 @@ const StatCard: React.FC<StatCardProps> = ({
       console.error("Error generating PDF:", error);
       toast.error("Network error", {
         id: "pdf-download",
-        description: "Failed to connect to the server. Please check your internet connection.",
+        description:
+          "Failed to connect to the server. Please check your internet connection.",
       });
     }
   }
@@ -217,7 +249,9 @@ const StatCard: React.FC<StatCardProps> = ({
       return;
     }
 
-    toast.loading("Generating volunteer certificate PDF...", { id: "certificate-download" });
+    toast.loading("Generating volunteer certificate PDF...", {
+      id: "certificate-download",
+    });
 
     try {
       const res = await fetch(
@@ -235,10 +269,11 @@ const StatCard: React.FC<StatCardProps> = ({
       if (!res.ok) {
         const errorText = await res.text();
         let errorMessage = "Failed to generate volunteer certificate";
-        
+
         switch (res.status) {
           case 400:
-            errorMessage = "Invalid request. Please check your account details.";
+            errorMessage =
+              "Invalid request. Please check your account details.";
             break;
           case 401:
             errorMessage = "Session expired. Please login again.";
@@ -255,10 +290,11 @@ const StatCard: React.FC<StatCardProps> = ({
           default:
             errorMessage = `Error: ${res.status} - ${res.statusText}`;
         }
-        
+
         toast.error(errorMessage, {
           id: "certificate-download",
-          description: errorText || "Please contact support if the issue persists.",
+          description:
+            errorText || "Please contact support if the issue persists.",
         });
         return;
       }
@@ -279,7 +315,8 @@ const StatCard: React.FC<StatCardProps> = ({
       console.error("Error generating PDF:", error);
       toast.error("Network error", {
         id: "certificate-download",
-        description: "Failed to connect to the server. Please check your internet connection.",
+        description:
+          "Failed to connect to the server. Please check your internet connection.",
       });
     }
   }
@@ -300,7 +337,9 @@ const StatCard: React.FC<StatCardProps> = ({
                 {loading ? (
                   <Skeleton className="h-8 w-20" />
                 ) : (
-                  <div className="text-xl sm:text-2xl font-semibold">{stat.value}</div>
+                  <div className="text-xl sm:text-2xl font-semibold">
+                    {stat.value}
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -309,7 +348,9 @@ const StatCard: React.FC<StatCardProps> = ({
 
         <Card>
           <CardHeader className="px-4 sm:px-6">
-            <CardTitle className="text-lg sm:text-xl">Referral Overview</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
+              Referral Overview
+            </CardTitle>
             <CardDescription className="text-xs sm:text-sm">
               {loading
                 ? "Fetching referral details..."
@@ -319,7 +360,9 @@ const StatCard: React.FC<StatCardProps> = ({
           <CardContent className="p-0">
             {error && (
               <Alert variant="destructive" className="mx-4 mb-4">
-                <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
+                <AlertDescription className="text-xs sm:text-sm">
+                  {error}
+                </AlertDescription>
               </Alert>
             )}
 
@@ -333,8 +376,12 @@ const StatCard: React.FC<StatCardProps> = ({
               ) : referrals.length === 0 ? (
                 <div className="p-4 sm:p-6 text-xs sm:text-sm text-muted-foreground flex-1 flex items-center justify-center">
                   <div className="text-center">
-                    <p className="text-base sm:text-lg font-medium mb-2">कोई रेफरल डेटा उपलब्ध नहीं है।</p>
-                    <p className="text-xs sm:text-sm">जब आप किसी को रेफर करेंगे तो वे यहाँ दिखाई देंगे।</p>
+                    <p className="text-base sm:text-lg font-medium mb-2">
+                      कोई रेफरल डेटा उपलब्ध नहीं है।
+                    </p>
+                    <p className="text-xs sm:text-sm">
+                      जब आप किसी को रेफर करेंगे तो वे यहाँ दिखाई देंगे।
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -343,10 +390,18 @@ const StatCard: React.FC<StatCardProps> = ({
                     <Table>
                       <TableHeader className="sticky top-0 bg-background z-10 border-b">
                         <TableRow>
-                          <TableHead className="bg-background text-xs sm:text-sm min-w-[120px]">नाम</TableHead>
-                          <TableHead className="bg-background text-xs sm:text-sm min-w-[150px] hidden sm:table-cell">ईमेल</TableHead>
-                          <TableHead className="bg-background text-xs sm:text-sm">स्थिति</TableHead>
-                          <TableHead className="bg-background text-xs sm:text-sm w-[100px] sm:w-[120px]">जॉइनिंग</TableHead>
+                          <TableHead className="bg-background text-xs sm:text-sm min-w-[120px]">
+                            नाम
+                          </TableHead>
+                          <TableHead className="bg-background text-xs sm:text-sm min-w-[150px] hidden sm:table-cell">
+                            ईमेल
+                          </TableHead>
+                          <TableHead className="bg-background text-xs sm:text-sm">
+                            स्थिति
+                          </TableHead>
+                          <TableHead className="bg-background text-xs sm:text-sm w-[100px] sm:w-[120px]">
+                            जॉइनिंग
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -354,14 +409,19 @@ const StatCard: React.FC<StatCardProps> = ({
                           const rowKey =
                             referral.id ?? referral.email ?? `referral-${idx}`;
                           return (
-                            <TableRow key={rowKey} className="hover:bg-muted/50">
+                            <TableRow
+                              key={rowKey}
+                              className="hover:bg-muted/50"
+                            >
                               <TableCell className="font-medium text-xs sm:text-sm">
                                 {referral.name
                                   ? referral.name.charAt(0).toUpperCase() +
                                     referral.name.slice(1).toLowerCase()
                                   : "N/A"}
                               </TableCell>
-                              <TableCell className="text-xs sm:text-sm hidden sm:table-cell">{referral.email || "-"}</TableCell>
+                              <TableCell className="text-xs sm:text-sm hidden sm:table-cell">
+                                {referral.email || "-"}
+                              </TableCell>
                               <TableCell>
                                 <div className="flex flex-wrap gap-1">
                                   <Badge
@@ -425,47 +485,66 @@ const StatCard: React.FC<StatCardProps> = ({
 
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {user?.is_verified && (
-                <Badge variant="outline" className="text-green-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                <Badge
+                  variant="outline"
+                  className="text-green-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                >
                   Verified
                 </Badge>
               )}
               {user?.is_member_account && (
-                <Badge variant="outline" className="text-blue-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                <Badge
+                  variant="outline"
+                  className="text-blue-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                >
                   Member
                 </Badge>
               )}
               {user?.is_admin_account && (
-                <Badge variant="outline" className="text-red-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                <Badge
+                  variant="outline"
+                  className="text-red-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                >
                   Admin
                 </Badge>
               )}
               {user?.is_volunteer && (
-                <Badge variant="outline" className="text-emerald-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                <Badge
+                  variant="outline"
+                  className="text-emerald-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                >
                   Volunteer
                 </Badge>
               )}
               {user?.is_staff_account && (
-                <Badge variant="outline" className="text-purple-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                <Badge
+                  variant="outline"
+                  className="text-purple-600 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                >
                   Staff
                 </Badge>
               )}
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-            {/* User ID Section */}
             <div className="space-y-2">
-              <p className="text-xs sm:text-sm font-medium text-foreground">User ID</p>
+              <p className="text-xs sm:text-sm font-medium text-foreground">
+                User ID
+              </p>
               <div className="rounded-md border bg-muted px-2 sm:px-3 py-1.5 sm:py-2 shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
-                <p className="font-mono text-xs sm:text-sm text-foreground truncate">{user?.user_id ?? "N/A"}</p>
+                <p className="font-mono text-xs sm:text-sm text-foreground truncate">
+                  {user?.user_id ?? "N/A"}
+                </p>
               </div>
             </div>
 
-            {/* Referral Link Section */}
             {user?.is_verified && (
               <div className="space-y-2 sm:space-y-3">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">रेफरल लिंक</p>
+                  <p className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
+                    रेफरल लिंक
+                  </p>
                   <p className="text-[10px] sm:text-xs text-muted-foreground mb-2 sm:mb-3">
                     अपनी रेफरल लिंक साझा करें और अधिक सदस्यों को जोड़ें।
                   </p>
@@ -500,32 +579,93 @@ const StatCard: React.FC<StatCardProps> = ({
               </div>
             )}
 
-            {/* Action Buttons Section */}
+            {user?.is_member_account && (
+              <div className="space-y-2 sm:space-y-3">
+                <div>
+                  <p className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
+                    सदस्य रेफरल लिंक
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mb-2 sm:mb-3">
+                    नए सदस्यों को सीधे सदस्यता पृष्ठ पर आमंत्रित करें।
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 truncate rounded-md border bg-muted px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]">
+                    {memberReferralLink || "रेफरल लिंक उपलब्ध नहीं"}
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="shrink-0 h-8 w-8 sm:h-10 sm:w-10 shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.06)]"
+                    disabled={!memberReferralLink || memberCopyState !== "idle"}
+                    onClick={handleMemberCopy}
+                    title={
+                      memberCopyState === "success"
+                        ? "Copied!"
+                        : memberCopyState === "error"
+                        ? "Failed to copy"
+                        : "Copy member referral link"
+                    }
+                  >
+                    {memberCopyState === "success" ? (
+                      <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                    ) : memberCopyState === "error" ? (
+                      <X className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
+                    ) : (
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t">
-              <p className="text-xs sm:text-sm font-medium text-foreground">Quick Actions</p>
+              <p className="text-xs sm:text-sm font-medium text-foreground">
+                Quick Actions
+              </p>
               <div className="space-y-1.5 sm:space-y-2">
                 {user?.is_member_account && (
-                  <Button 
-                    onClick={getpdf} 
+                  <Button
+                    onClick={getpdf}
                     variant="default"
                     className="w-full justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-xs sm:text-sm h-8 sm:h-9"
                     size="sm"
                   >
-                    <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      className="h-3 w-3 sm:h-4 sm:w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                     ID Card PDF
                   </Button>
                 )}
                 {user?.is_volunteer && (
-                  <Button 
+                  <Button
                     onClick={getVolunteerCertificate}
                     variant="default"
                     className="w-full justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-xs sm:text-sm h-8 sm:h-9"
                     size="sm"
                   >
-                    <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    <svg
+                      className="h-3 w-3 sm:h-4 sm:w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                      />
                     </svg>
                     Volunteer Certificate
                   </Button>
@@ -538,29 +678,41 @@ const StatCard: React.FC<StatCardProps> = ({
               </div>
             </div>
 
-            {/* Additional Info Section */}
             <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t">
-              <p className="text-xs sm:text-sm font-medium text-foreground">Profile Status</p>
+              <p className="text-xs sm:text-sm font-medium text-foreground">
+                Profile Status
+              </p>
               <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-muted-foreground">Account Type:</span>
                   <span className="font-medium text-right">
-                    {user?.is_admin_account ? "Admin": "" }
-                     {user?.is_member_account ? "Member" : "" }
-                     {user?.is_staff_account ? " (Staff)" : ""}
-                     {user?.is_volunteer ? "Volunteer" : ""}
-                     {user?.is_admin_account || user?.is_member_account || user?.is_staff_account || user?.is_volunteer ? "" : "User"}
+                    {user?.is_admin_account ? "Admin" : ""}
+                    {user?.is_member_account ? "Member" : ""}
+                    {user?.is_staff_account ? " (Staff)" : ""}
+                    {user?.is_volunteer ? "Volunteer" : ""}
+                    {user?.is_admin_account ||
+                    user?.is_member_account ||
+                    user?.is_staff_account ||
+                    user?.is_volunteer
+                      ? ""
+                      : "User"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-muted-foreground">Verification:</span>
-                  <span className={`font-medium text-right ${user?.is_verified ? 'text-green-600' : 'text-orange-500'}`}>
+                  <span
+                    className={`font-medium text-right ${
+                      user?.is_verified ? "text-green-600" : "text-orange-500"
+                    }`}
+                  >
                     {user?.is_verified ? "Verified" : "Pending"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-muted-foreground">Referrals:</span>
-                  <span className="font-medium text-blue-600 text-right">{totalReferrals}</span>
+                  <span className="font-medium text-blue-600 text-right">
+                    {totalReferrals}
+                  </span>
                 </div>
               </div>
             </div>

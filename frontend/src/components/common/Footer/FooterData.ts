@@ -69,6 +69,6 @@ export const organizationInfo = {
   tagline: "Nation First, Service is Duty, Sanatan is Life.",
   description:
     "Rashtriya Seva Sangh is a Sanatan-rooted, nation-devoted organization dedicated to the social, cultural, and spiritual upliftment of India. With a mission driven by service, values, education, women empowerment, cleanliness, and protection of Dharma and Gau Mata, we aim to build a stronger, united and awakened Bharat.",
-  logo: "https://joinrss.org.in/wp-content/uploads/2025/06/cropped-rss-logo_page-0001.jpg",
+  logo: "/logo/logo.png",
   copyright: "© 2025 Rashtriya Seva Sangh | All Rights Reserved",
 };

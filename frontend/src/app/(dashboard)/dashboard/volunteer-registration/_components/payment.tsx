@@ -14,7 +14,7 @@ const PaymentForm = ({ onSubmit, onBack, loading, amount }: PaymentFormProps) =>
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid gap-2">
-        <Label htmlFor="amount" className="text-sm sm:text-base">Amount (INR)</Label>
+        <Label htmlFor="amount" className="text-sm sm:text-base">Amount (INR) (राशि)</Label>
         {amount ? (
           <div
             id="amount"

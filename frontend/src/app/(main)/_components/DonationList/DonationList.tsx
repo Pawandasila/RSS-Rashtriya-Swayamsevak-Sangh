@@ -160,7 +160,41 @@ const DonationList = () => {
                   key={donation.id}
                   className="hover:bg-muted/30 transition-colors border-0"
                 >
-                  <TableCell className="px-6 py-4 border-0">
+                  {/* Mobile & Tablet View - Compact */}
+                  <TableCell className="px-4 py-3 border-0 lg:hidden">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-semibold text-primary">
+                          {donation.donorName.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1 flex-1">
+                        <p className="font-semibold text-foreground text-sm">
+                          {donation.isAnonymous
+                            ? "Anonymous Donor"
+                            : donation.donorName}
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            <span>{donation.location}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{donation.timeAgo}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-4 py-3 border-0 text-right lg:hidden">
+                    <span className="font-bold text-lg text-primary">
+                      {donation.currency}{donation.amount}
+                    </span>
+                  </TableCell>
+
+                  {/* Desktop View - Original Layout */}
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                         <span className="text-sm font-semibold text-primary">
@@ -176,12 +210,12 @@ const DonationList = () => {
                       </div>
                     </div>
                   </TableCell>
-                  {/* <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <span className="font-bold text-lg text-primary">
-                      {formatTickerAmount(donation.amount, donation.currency)}
+                      ₹{donation.amount}
                     </span>
-                  </TableCell> */}
-                  <TableCell className="px-6 py-4 border-0">
+                  </TableCell>
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       <span className="text-foreground">
@@ -189,7 +223,7 @@ const DonationList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <Badge
                       className={`${getPaymentBadgeVariant(
                         donation.paymentMode
@@ -201,7 +235,7 @@ const DonationList = () => {
                       </div>
                     </Badge>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">
@@ -209,7 +243,7 @@ const DonationList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     {donation.message ? (
                       <span className="text-sm text-muted-foreground italic">
                         &ldquo;{donation.message}&rdquo;
@@ -227,7 +261,41 @@ const DonationList = () => {
                   key={`duplicate-${donation.id}`}
                   className="hover:bg-muted/30 transition-colors border-0"
                 >
-                  <TableCell className="px-6 py-4 border-0">
+                  {/* Mobile & Tablet View - Compact */}
+                  <TableCell className="px-4 py-3 border-0 lg:hidden">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-semibold text-primary">
+                          {donation.donorName.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1 flex-1">
+                        <p className="font-semibold text-foreground text-sm">
+                          {donation.isAnonymous
+                            ? "Anonymous Donor"
+                            : donation.donorName}
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            <span>{donation.location}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{donation.timeAgo}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-4 py-3 border-0 text-right lg:hidden">
+                    <span className="font-bold text-lg text-primary">
+                      {donation.currency}{donation.amount}
+                    </span>
+                  </TableCell>
+
+                  {/* Desktop View - Original Layout */}
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                         <span className="text-sm font-semibold text-primary">
@@ -243,12 +311,12 @@ const DonationList = () => {
                       </div>
                     </div>
                   </TableCell>
-                  {/* <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <span className="font-bold text-lg text-primary">
-                      {formatTickerAmount(donation.amount, donation.currency)}
+                      ₹{donation.amount}
                     </span>
-                  </TableCell> */}
-                  <TableCell className="px-6 py-4 border-0">
+                  </TableCell>
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
                       <span className="text-foreground">
@@ -256,7 +324,7 @@ const DonationList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <Badge
                       className={`${getPaymentBadgeVariant(
                         donation.paymentMode
@@ -268,7 +336,7 @@ const DonationList = () => {
                       </div>
                     </Badge>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">
@@ -276,7 +344,7 @@ const DonationList = () => {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 border-0">
+                  <TableCell className="px-6 py-4 border-0 hidden lg:table-cell">
                     {donation.message ? (
                       <span className="text-sm text-muted-foreground italic">
                         &ldquo;{donation.message}&rdquo;

@@ -34,6 +34,7 @@ import {
   ArrowUpDown,
   CheckCircle2,
   Loader2,
+  KeyRound,
 } from "lucide-react";
 import Link from "next/link";
 import useAxios from "@/hooks/use-axios";
@@ -43,6 +44,7 @@ interface UserTableProps {
   users: User[];
   onEdit: (user: User) => void;
   onView: (user: User) => void;
+  onResetPassword: (user: User) => void;
   page: number;
   pageSize: number;
 }
@@ -51,6 +53,7 @@ export function UserTable({
   users: initialUsers,
   onEdit,
   onView,
+  onResetPassword,
   page,
   pageSize,
 }: UserTableProps) {
@@ -470,6 +473,24 @@ export function UserTable({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Edit User</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 sm:h-8 sm:w-8 text-orange-600 hover:text-orange-700"
+                                onClick={() => onResetPassword(user)}
+                              >
+                                <KeyRound className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Reset Password</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

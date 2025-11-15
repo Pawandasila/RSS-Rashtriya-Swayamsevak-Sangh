@@ -249,7 +249,7 @@ export function ViewPaymentModal({
               <div className="bg-muted/50 rounded-lg p-3 sm:p-4">
                 <div className="text-xs sm:text-sm text-muted-foreground mb-1">Amount</div>
                 <div className="text-lg sm:text-2xl font-bold text-green-600">
-                  {formatCurrency(payment.amount, currency)}
+                  {formatCurrency(payment.amount/100, currency)}
                 </div>
               </div>
               <div className="bg-muted/50 rounded-lg p-3 sm:p-4">

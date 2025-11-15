@@ -83,7 +83,6 @@ const formSchema = z.object({
   pan_number: z.string().optional(),
 
   // Account status
-  is_active: z.boolean(),
   is_verified: z.boolean(),
   is_blocked: z.boolean(),
 
@@ -137,7 +136,6 @@ export function EditUserDetailModal({
       postal_code: "",
       aadhar_number: "",
       pan_number: "",
-      is_active: true,
       is_verified: false,
       is_blocked: false,
       is_volunteer: false,
@@ -166,7 +164,6 @@ export function EditUserDetailModal({
         postal_code: user.postal_code || "",
         aadhar_number: user.aadhar_number || "",
         pan_number: user.pan_number || "",
-        is_active: user.is_active,
         is_verified: user.is_verified,
         is_blocked: user.is_blocked,
         is_volunteer: user.is_volunteer,
@@ -240,6 +237,29 @@ export function EditUserDetailModal({
       payload = rest;
     }
     await onSave(user.id, payload);
+  };
+
+  const handleSaveClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const isValid = await form.trigger();
+    if (!isValid) {
+      const errors = form.formState.errors;
+      console.log("Validation errors:", errors);
+      
+      // Show specific error messages
+      Object.keys(errors).forEach((key) => {
+        const error = errors[key as keyof typeof errors];
+        if (error?.message) {
+          toast.error(`${key}: ${error.message}`);
+        }
+      });
+      return;
+    }
+    
+    const formData = form.getValues();
+    await onSubmit(formData);
   };
 
   return (
@@ -587,29 +607,31 @@ export function EditUserDetailModal({
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7">
-                  <FormField
-                    control={form.control}
-                    name="is_volunteer"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900 p-4 hover:shadow-sm transition-shadow">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-medium">
-                            Volunteer
-                          </FormLabel>
-                          <FormDescription className="text-xs">
-                            Can participate as a volunteer
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  { !restrictRoles && (
+                    <FormField
+                      control={form.control}
+                      name="is_volunteer"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900 p-4 hover:shadow-sm transition-shadow">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-medium">
+                              Volunteer
+                            </FormLabel>
+                            <FormDescription className="text-xs">
+                              Can participate as a volunteer
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={form.control}
@@ -726,31 +748,6 @@ export function EditUserDetailModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7">
                   <FormField
                     control={form.control}
-                    name="is_active"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border-2 border-green-300 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-4 hover:shadow-md transition-all">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5 data-[state=checked]:bg-green-600"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-semibold flex items-center gap-1">
-                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                            Active
-                          </FormLabel>
-                          <FormDescription className="text-xs">
-                            Account is active
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
                     name="is_verified"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border-2 border-blue-300 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800 p-4 hover:shadow-md transition-all">
@@ -800,44 +797,44 @@ export function EditUserDetailModal({
                   />
                 </div>
               </div>
+
+              <div className="border-t pt-4 mt-2">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-sm text-muted-foreground">
+                    <AlertCircle className="h-4 w-4 inline mr-1" />
+                    Changes will be saved immediately
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => onOpenChange(false)}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={loading}
+                      onClick={handleSaveClick}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="mr-2 h-4 w-4" />
+                          Save Changes
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </form>
           </Form>
-        </div>
-
-        <div className="border-t pt-4 mt-2">
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              <AlertCircle className="h-4 w-4 inline mr-1" />
-              Changes will be saved immediately
-            </p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                onClick={form.handleSubmit(onSubmit)}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Save Changes
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
       </DialogContent>
 

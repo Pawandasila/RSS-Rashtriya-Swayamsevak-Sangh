@@ -99,7 +99,6 @@ const VolunteerCard: React.FC = () => {
                 <TableHead className="hidden md:table-cell text-xs sm:text-sm">Wing</TableHead>
                 <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Level</TableHead>
                 <TableHead className="hidden xl:table-cell text-xs sm:text-sm">Designation</TableHead>
-                <TableHead className="hidden md:table-cell w-[80px] sm:w-[100px] text-xs sm:text-sm">Affidavit</TableHead>
                 <TableHead className="w-[80px] sm:w-[130px] text-right text-xs sm:text-sm">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -138,16 +137,6 @@ const VolunteerCard: React.FC = () => {
                     <TableCell className="hidden lg:table-cell text-xs sm:text-sm">{volunteer.level_name || '—'}</TableCell>
 
                     <TableCell className="hidden xl:table-cell text-xs sm:text-sm">{volunteer.designation_title || '—'}</TableCell>
-
-                    <TableCell className="hidden md:table-cell">
-                      {volunteer.affidavit ? (
-                        <a href={volunteer.affidavit} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1 text-sm">
-                          <FileText className="w-4 h-4"/> View
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </TableCell>
 
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1 sm:gap-2">

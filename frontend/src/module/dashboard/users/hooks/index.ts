@@ -302,11 +302,24 @@ export function useUpdateCurrentUser() {
         setIsUpdating(true);
         setError(null);
 
+        // Validate file size (5MB limit)
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
         let payload: Partial<User> | FormData;
         let headers: Record<string, string> = {};
 
         
         if (data instanceof FormData) {
+          // Check file size in FormData
+          for (const [key, value] of (data as any).entries()) {
+            if (value instanceof File && value.size > MAX_FILE_SIZE) {
+              setIsUpdating(false);
+              return {
+                success: false,
+                error: `File "${value.name}" is too large. Maximum size is 5MB. Your file is ${(value.size / (1024 * 1024)).toFixed(2)}MB.`
+              };
+            }
+          }
           payload = data;
           headers = { "Content-Type": "multipart/form-data" };
         } else if (options?.useFormData) {
@@ -315,6 +328,10 @@ export function useUpdateCurrentUser() {
           Object.entries(data).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
               if ((value instanceof File) || (value instanceof Blob)) {
+                // Validate file size
+                if ((value as File).size && (value as File).size > MAX_FILE_SIZE) {
+                  throw new Error(`File is too large. Maximum size is 5MB. Your file is ${((value as File).size / (1024 * 1024)).toFixed(2)}MB.`);
+                }
                 formData.append(key, value);
               } else {
                 formData.append(key, String(value));
@@ -333,6 +350,9 @@ export function useUpdateCurrentUser() {
             Object.entries(data).forEach(([key, value]) => {
               if (value !== null && value !== undefined) {
                 if ((value instanceof File) || (value instanceof Blob)) {
+                  if ((value as File).size && (value as File).size > MAX_FILE_SIZE) {
+                    throw new Error(`File is too large. Maximum size is 5MB. Your file is ${((value as File).size / (1024 * 1024)).toFixed(2)}MB.`);
+                  }
                   formData.append(key, value);
                 } else {
                   formData.append(key, String(value));
@@ -346,6 +366,7 @@ export function useUpdateCurrentUser() {
           }
         }
  
+
         const response = await axios.put(`/account/detail/${userId}/`, payload, {
           headers: Object.keys(headers).length > 0 ? headers : undefined,
         });
@@ -356,19 +377,46 @@ export function useUpdateCurrentUser() {
           data: response.data 
         };
       } catch (err) {
-        if (err instanceof Error) {
-          console.error("Error updating current user:", err);
-        }
         const errorResponse = err as {
-          response?: { data?: { message?: string; error?: string; detail?: string } };
+          response?: { 
+            data?: { 
+              message?: string; 
+              error?: string; 
+              detail?: string;
+              [key: string]: any;
+            };
+            status?: number;
+            statusText?: string;
+          };
           message?: string;
         };
-        const errorMessage =
-          errorResponse.response?.data?.error ||
-          errorResponse.response?.data?.message ||
-          errorResponse.response?.data?.detail ||
-          errorResponse.message ||
-          "Failed to update profile";
+
+        let errorMessage = "Failed to update profile";
+        
+        if (errorResponse.response) {
+          const responseData = errorResponse.response.data;
+          errorMessage = 
+            responseData?.error ||
+            responseData?.message ||
+            responseData?.detail ||
+            (typeof responseData === 'string' ? responseData : null) ||
+            `Server error (${errorResponse.response.status})`;
+          
+          // If there are field-specific errors, include them
+          if (responseData && typeof responseData === 'object') {
+            const fieldErrors = Object.entries(responseData)
+              .filter(([key]) => !['error', 'message', 'detail'].includes(key))
+              .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+              .join('; ');
+            
+            if (fieldErrors) {
+              errorMessage += ` - ${fieldErrors}`;
+            }
+          }
+        } else if (errorResponse.message) {
+          errorMessage = errorResponse.message;
+        }
+
         setError(errorMessage);
         return { success: false, error: errorMessage };
       } finally {

@@ -36,7 +36,7 @@ export default function AuthLayout({
                 </div>
               </div>
               <div>
-                <h1 className="text-lg font-bold">राष्ट्रीय स्वयंसेवक संघ</h1>
+                <h1 className="text-lg font-bold">राष्ट्रीय सेवा संघ</h1>
                 <p className="text-xs text-primary-foreground/80">
                   RASHTRIYA SEVA SANGH
                 </p>

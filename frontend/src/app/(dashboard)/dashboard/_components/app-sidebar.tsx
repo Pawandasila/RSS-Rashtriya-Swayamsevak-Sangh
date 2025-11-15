@@ -236,14 +236,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   sideOffset={4}
                 >
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/setting">
+                    <Link href="/dashboard/setting" onClick={handleMenuClick}>
                       <Settings className="h-4 w-4 mr-2" />
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/">
+                    <Link href="/dashboard/setting/forgot-password" onClick={handleMenuClick}>
+                      <Settings className="h-4 w-4 mr-2" />
+                      <span>Forgot Password</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/" onClick={handleMenuClick}>
                       <HomeIcon className="h-4 w-4 mr-2" />
                       <span>Home</span>
                     </Link>
@@ -251,7 +258,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-red-600 focus:text-red-600"
-                    onClick={logout}
+                    onClick={() => {
+                      handleMenuClick();
+                      logout();
+                    }}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     <span>Logout</span>

@@ -53,6 +53,7 @@ const CareersPage = () => {
   );
 
   const [loading, setLoading] = useState(false);
+  const [declarationDOB, setDeclarationDOB] = useState<string>("");
 
   const { processPayment } = useDonationPayment();
 
@@ -228,7 +229,11 @@ const CareersPage = () => {
       // Step 2: Update Address
       toast.loading("Updating address information...", { id: "address-update" });
       try {
-        const addressResponse = await updateAddress(addressData);
+        const addressDataWithDOB = {
+          ...addressData,
+          dob: declarationDOB
+        };
+        const addressResponse = await updateAddress(addressDataWithDOB);
         
         if (addressResponse?.status >= 200 && addressResponse?.status < 300) {
           toast.dismiss("address-update");
@@ -387,7 +392,10 @@ const CareersPage = () => {
           {step === 3 && (
             <DeclarationForm 
               addressData={addressData}
-              onNext={handleNext}
+              onNext={(data) => {
+                setDeclarationDOB(data.dob);
+                handleNext();
+              }}
               onBack={handleBack}
             />
           )}
