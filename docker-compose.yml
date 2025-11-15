@@ -47,6 +47,8 @@ services:
       - VIRTUAL_HOST=api.joinrss.org.in
       - LETSENCRYPT_HOST=api.joinrss.org.in
       - LETSENCRYPT_EMAIL=admin@joinrss.org.in
+    labels:
+      - "com.github.nginx-proxy.client-max-body-size=50m"
 
   ### ─── CELERY WORKERS ────────────────────────────────────────────────────────
   celery:
